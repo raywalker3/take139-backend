@@ -6,6 +6,16 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 # Use persistent volume path on Railway, fallback to local for dev
 DB_PATH = os.environ.get("DATABASE_PATH", "./take139.db")
+
+# Ensure the parent directory exists (Railway volume mount may be empty at first)
+_db_dir = os.path.dirname(DB_PATH)
+if _db_dir and not os.path.exists(_db_dir):
+    try:
+        os.makedirs(_db_dir, exist_ok=True)
+        print(f"[database] Created directory: {_db_dir}")
+    except Exception as e:
+        print(f"[database] Could not create {_db_dir}: {e}")
+
 DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 engine = create_engine(
