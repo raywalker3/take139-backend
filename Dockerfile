@@ -1,9 +1,5 @@
-# Take 139 Backend — Dockerfile for Railway deployment
-# Uses Debian slim with full WeasyPrint system dependencies
-
 FROM python:3.11-slim
 
-# System packages WeasyPrint needs (Pango, Cairo, GDK-Pixbuf, GObject, fonts)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpango-1.0-0 \
     libpangoft2-1.0-0 \
@@ -20,17 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application
 COPY . .
 
-# Default port (Railway overrides via env var)
-ENV PORT=8000
-EXPOSE 8000
-
-# Start via Python so it reads PORT from env natively — avoids shell expansion issues
 CMD ["python", "start.py"]
-# build 1776831315
