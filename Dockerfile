@@ -27,9 +27,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application
 COPY . .
 
-# Expose the port Railway will set
+# Default port (Railway overrides via env var)
 ENV PORT=8000
 EXPOSE 8000
 
-# Start the server — use sh -c so $PORT expands at runtime
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Start via Python so it reads PORT from env natively — avoids shell expansion issues
+CMD ["python", "start.py"]
