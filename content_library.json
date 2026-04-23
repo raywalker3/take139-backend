@@ -1,0 +1,1036 @@
+{
+  "TRIGGERS": {
+    "DIS": {
+      "name": "Disrespect-Sensitive",
+      "short": "disrespect — being dismissed, overlooked, or treated as though my perspective doesn't count",
+      "desc": "This trigger typically activates around perceived slights to competence, authority, or standing. You don't just feel hurt — you often feel diminished. Minor moments (an eye roll, a dismissive tone, not being consulted on a decision) can land like direct challenges to personhood.",
+      "examples": "My partner corrects me in public. My idea is dismissed without consideration. I'm left out of a decision that affects me. I'm spoken to with condescension. My contribution isn't acknowledged.",
+      "signature": "A hot flash of shame that often converts to indignation. The emotion is experienced as anger, but it typically originates in shame."
+    },
+    "DISC": {
+      "name": "Disconnection-Sensitive",
+      "short": "disconnection — feeling emotionally distant from my partner, sensing warmth cool or presence withdraw",
+      "desc": "This trigger typically activates around perceived relational distance, emotional unavailability, or signs that the bond may be threatened. You may not always be able to articulate why — you just sense something is wrong in the relationship long before your partner is aware anything has changed.",
+      "examples": "My partner goes quiet for no apparent reason. Physical affection decreases. They seem distracted when I'm talking. They choose something else over time with me. I can feel us drifting.",
+      "signature": "Anxious preoccupation. Intrusive thinking about the relationship. Reading into small cues."
+    },
+    "INJ": {
+      "name": "Injustice-Sensitive",
+      "short": "injustice — being treated unfairly, seeing scales that are unequal, witnessing wrongs that go uncorrected",
+      "desc": "This trigger typically activates around perceived unfairness, broken agreements, unreciprocated effort, or moral wrongdoing. You often have a finely calibrated internal justice scale, and when it tips, the response can feel completely disproportionate — because it isn't merely about this incident; it's often about every uncorrected imbalance.",
+      "examples": "I've given far more than I've received and no one notices. A clear wrong isn't being called out. Someone breaks an agreement and acts as if it doesn't matter. I'm blamed for something I didn't do.",
+      "signature": "Righteous indignation that can be hard to distinguish from genuine righteousness."
+    },
+    "CTRL": {
+      "name": "Control-Sensitive",
+      "short": "control — feeling trapped, hemmed in, pressured, or like someone is managing my choices or freedom",
+      "desc": "This trigger typically activates around perceived threats to autonomy. You don't necessarily want to be irresponsible — you need to feel that your choices are your own. Being told what to do, having your schedule crowded, or sensing that someone is managing you often activates a visceral withdrawal or resistance.",
+      "examples": "My partner tracks where I am. I feel like I'm being scheduled. My preferences are overridden without discussion. Someone is emotionally pushing me to respond before I'm ready. My alone time gets colonized.",
+      "signature": "A physical sensation of constriction, followed by withdrawal or irritability. The feeling is often trapped-ness, not anger."
+    },
+    "SHM": {
+      "name": "Shame-Sensitive",
+      "short": "shame — feeling exposed, embarrassed, or seen in a bad light when a failure or flaw becomes visible",
+      "desc": "This trigger typically activates around visibility. You are not primarily afraid of being wrong or of losing connection — you are often afraid of being seen as deficient. The enemy is exposure. This trigger can be activated by genuine failure, by a partner's disappointment, by comparison, or by moments of vulnerable openness that weren't received well.",
+      "examples": "My partner points out something I did wrong in front of others. I catch disappointment in their face. I fail at something they saw me try. They tell someone else about my struggles. An old mistake gets brought back up.",
+      "signature": "A hot flush, desire to disappear, or immediate defensive counter-attack."
+    },
+    "SIG": {
+      "name": "Significance-Sensitive",
+      "short": "insignificance — feeling like I don't matter, my presence is unimportant, or I'm an afterthought to the people I love most",
+      "desc": "This trigger typically activates around questions of value and worth-of-presence. Unlike the shame-sensitive person (who fears being seen negatively), you often fear not being seen at all. Invisibility is the wound. This trigger is sometimes misread by partners as neediness — but beneath the behavior is often an ancient question about whether your presence makes any difference.",
+      "examples": "My partner doesn't remember something I told them. I'm not introduced to their friends. I feel like a supporting character in my own relationship. My excitement is met with flat response. My preferences don't factor into decisions.",
+      "signature": "A deflating hollowness, followed by either withdrawal into sadness or escalation to force a response."
+    }
+  },
+  "CORE_QUESTIONS": {
+    "COMP": {
+      "name": "Am I competent?",
+      "short": "competent",
+      "desc": "The Disrespect-Sensitive person is not simply asking \"am I smart?\" but something more primal: \"When you see what I'm actually capable of, will you still respect me?\" This is often the performance-orientation question, rooted in conditional acceptance — a home or school environment where love or approval was tied to achievement.",
+      "bridge": "I am Justified — Christ's perfect righteousness has been credited to my account. The performance ledger is closed.",
+      "why": "You often carry a permanently active internal ledger: others are scoring you. When justification hasn't been received by the part of the brain that conducts conflict, you typically fight to prove you were right.",
+      "gospelAnchor": "I am Justified — Christ's perfect righteousness has been credited to my account. There is no verdict left to win. My competence is not on trial in any conflict because my standing before the only Judge who matters is already settled. I can be wrong in an argument without being wronged at the soul level.",
+      "scripture": "2 Corinthians 5:21; Romans 8:1; Galatians 2:20",
+      "markers": [
+        "You replay conversations after the fact — not because you feel guilty, but because you're rechecking whether you came across well. Did I sound like I knew what I was talking about?",
+        "When someone gives you feedback — even gently — your first instinct is to explain why you did it that way, not to say thank you. You're not defensive on purpose; it just comes out.",
+        "You have strong opinions about the right way to do things, and it bothers you more than it should when people do it the clearly wrong way.",
+        "Being corrected in front of someone else lands very differently than being corrected in private. The information might be the same; the experience is entirely different.",
+        "You've noticed you apologize less quickly than other people — not because you don't care, but because admitting you were wrong feels like losing something.",
+        "Asking for help is genuinely hard. You'd rather figure it out yourself, research it, watch the tutorial, and get it done than let someone see you not know how to do something.",
+        "There's a version of yourself you feel like you have to perform in certain rooms — capable, informed, on top of it. When that version cracks, you feel the crack everywhere.",
+        "You're more comfortable giving advice than receiving it, even from people who love you and know you well."
+      ]
+    },
+    "LOV": {
+      "name": "Am I lovable?",
+      "short": "lovable",
+      "desc": "The Disconnection-Sensitive person often asks a question formed in a home with inconsistent warmth — they may have learned that closeness is conditional, that they must do something to maintain love, and that when it withdraws, it is probably because of something in them.",
+      "bridge": "I am an Adopted Son — the Abba relationship, unconditional and unearnable.",
+      "why": "You often cannot distinguish between your partner having a bad day and your partner beginning to fall out of love with you, because those two things may have felt the same in childhood.",
+      "gospelAnchor": "I am an Adopted Son — the love the Father has for his Son flows over to me because I am in him. God loves me not because I am loveable but because I am in Christ. My partner's emotional temperature today does not determine my standing. I do not have to earn this love; I cannot lose it; I do not have to panic when the feeling is temporarily absent.",
+      "scripture": "Romans 8:15–17; Galatians 4:7; 1 Peter 1:3–4",
+      "markers": [
+        "You're very aware of your partner's emotional temperature — and when it drops, even slightly, your brain immediately starts wondering if you did something wrong.",
+        "You find it hard to sit with a rupture — even a small one. Until things feel warm again, there's a low-level hum of anxiety that won't fully quiet.",
+        "You've been told you apologize too much. You're not entirely sure you can stop.",
+        "When you're not getting enough closeness or reassurance, you don't usually say \"I need more closeness.\" You just start acting differently — sometimes quieter, sometimes more intense.",
+        "Long text response = they're fine. Short text response = something's wrong. You track these things even when you know it's not rational.",
+        "You've loved people hard and felt invisible at the same time. That combination feels familiar.",
+        "You'd rather be in a difficult, close relationship than in an easy, distant one. Distance feels worse than conflict.",
+        "When someone you love pulls back — even temporarily, even for a completely unrelated reason — your first thought is about yourself. What did I do?"
+      ]
+    },
+    "PROT": {
+      "name": "Am I protected?",
+      "short": "protected",
+      "desc": "The Injustice-Sensitive person often grew up in a world where the scales were regularly unfair — a home that may have modeled unaddressed injustice or capricious unpredictability. You typically carry a hypervigilant justice monitor, because in your developmental history, no one else was going to correct the wrong.",
+      "bridge": "I am a Creature — acknowledging God as sovereign, as the one who holds the scales.",
+      "why": "You often cannot rest in God's justice, so you keep prosecuting every small case yourself — because if you don't, no one will.",
+      "gospelAnchor": "I am a Creature — utterly dependent on God, not self-sufficient, not the judge of the universe. God holds the scales. He sees every injustice. Nothing escapes him. I do not have to correct every wrong or prosecute every case because I am not the justice of last resort. The thrones are occupied.",
+      "scripture": "Romans 12:19; Psalm 75:6–7; Revelation 20:11–13",
+      "markers": [
+        "Something in you feels responsible for noticing when things are unfair. If you don't say something, no one will.",
+        "When an agreement gets broken — even something small — it bothers you at a level that seems disproportionate to others. It's not the thing. It's what the thing means.",
+        "You carry a running internal ledger of who's contributed what to the relationship. You try not to bring it up, but you know the numbers.",
+        "You are fiercely loyal to the people in your inner circle, and you expect that loyalty to run both directions. When it doesn't, the disappointment runs deep.",
+        "You don't need to win every argument, but you need wrongs to be acknowledged. \"Moving on\" without accountability feels less like peace and more like defeat.",
+        "You're the one who will say the hard thing in a group that everyone else is avoiding. Sometimes that's admired. Sometimes it's exhausting to be that person.",
+        "Unpredictability — in people, in plans, in situations — registers as unsafe. You build in redundancies, check in, verify. Just to be sure.",
+        "When someone you love is being treated badly and no one is doing anything about it, it is very hard for you to stay quiet."
+      ]
+    },
+    "FREE": {
+      "name": "Am I free?",
+      "short": "free",
+      "desc": "The Control-Sensitive person carries a question about personhood: \"Will my individuality survive this relationship?\" This is often somatic — the feeling is constriction. In your family of origin, something about your personhood may have been overridden — intrusive parenting, enmeshment, or a family system that swallowed individual identity.",
+      "bridge": "I am a New Creation — the old identity in Adam (slavery, domination, bondage) is dead.",
+      "why": "The anxiety about autonomy often comes from never having heard the gospel say: \"You are free — not from commitment, but from the tyranny of being anyone's source of meaning.\"",
+      "gospelAnchor": "I am a New Creation — my old identity in Adam (slavery, captivity, bondage) is dead. I have been freed from the things that once controlled me. I am also freed for connection — genuine intimacy is now possible without being consumed. The freedom I protect so fiercely is already fully mine in Christ; I don't need to flee to keep it.",
+      "scripture": "Romans 6:6–7; 2 Corinthians 5:17; John 8:36",
+      "markers": [
+        "You genuinely love your partner — and you also need significant amounts of space that have nothing to do with them.",
+        "When you feel emotionally pushed or pressured to respond before you're ready, your first reaction isn't to engage — it's to withdraw. Not to punish. Just to survive.",
+        "A full social calendar doesn't feel like abundance to you. It feels like deficit. Too many obligations leaves you with a tightness in your chest.",
+        "You can be extremely close to someone and still need to spend significant time alone in your head. The two things are not in conflict for you — but they confuse the people who love you.",
+        "When someone asks \"What are you thinking?\" at the wrong moment, the answer is genuinely \"nothing useful\" — you don't have access to it yet. You'll process first, then share.",
+        "You can feel someone trying to pull something out of you — a feeling, a response, a decision — and the more they pull, the less you can access it.",
+        "Your independence isn't about freedom from the relationship. It's about needing to prove — mostly to yourself — that you're not dependent on anyone for your survival.",
+        "You've had moments in relationships where you couldn't explain what was wrong, only that you needed less of everything for a while."
+      ]
+    },
+    "ACC": {
+      "name": "Am I acceptable?",
+      "short": "acceptable",
+      "desc": "The Shame-Sensitive person's question goes deeper than competence — it is about being acceptable as a person, flaws and all. This question was often written in experiences of genuine exposure — being mocked, criticized, publicly failed, abused, or made to feel fundamentally unclean.",
+      "bridge": "I am Justified and I am In Christ — covered, clean, beloved.",
+      "why": "You often know justification doctrinally but have not received it as a felt covering. Christ took shame into himself — he was exposed, mocked, and hung naked before the crowd. He didn't merely forgive; he entered the experience of exposure and reversed it.",
+      "gospelAnchor": "I am In Christ — united to him in his sinless life and sin-bearing death. And I am Justified — just as if I had never sinned AND just as if I had always obeyed. The exposure I fear has already happened: God has seen everything, and the verdict is \"covered, clean, beloved.\" Christ was exposed, mocked, hung naked before the crowd — and he bore my shame into death and left it there.",
+      "scripture": "2 Corinthians 5:21; 1 Peter 2:24; Romans 8:1; Isaiah 53:5",
+      "markers": [
+        "You have a deep awareness of your own failures and flaws. You know them by name. You revisit them more than you let on.",
+        "When someone catches you in a mistake, the first thing you feel isn't regret — it's exposure. The looking-at-you feeling is worse than the consequence of the mistake.",
+        "You present well. People tend to think you have it more together than you do. That gap between the exterior and the interior is exhausting.",
+        "You don't talk about your struggles with most people. Not because you're proud — but because once the thing is out there, it becomes part of how they see you.",
+        "There's a version of intimacy you love — being truly known — and a version that terrifies you: being truly seen and then found lacking.",
+        "Humor is often your first defense when things get uncomfortable. Better to be the one making the joke than the one being studied.",
+        "Receiving affirmation is harder than it looks. Part of you suspects people would feel differently if they knew everything.",
+        "You are harder on yourself than you'd ever be on a friend in the same situation. The standard is just different when it applies to you."
+      ]
+    },
+    "REM": {
+      "name": "Am I enough to be remembered?",
+      "short": "enough to be remembered",
+      "desc": "The Significance-Sensitive person's deepest fear is not death, but anonymity — going through life without having mattered. This question often develops in families where emotional presence was diluted or where the child's contributions were regularly overlooked.",
+      "bridge": "I am an Adopted Son and I am a Saint — set apart by God as his own possession, known fully, named, inscribed on the palms of his hands.",
+      "why": "You often carry an invisible tally of whether people remember what you said, whether you are being thought of, whether your preferences are factored in.",
+      "gospelAnchor": "I am an Adopted Son and I am a Saint — set apart by God as his own possession, known fully, named, inscribed on the palms of his hands. I am not an afterthought in the cosmos. My significance does not depend on whether my partner remembered what I said this week. I am fully known and fully kept by the One whose memory is perfect and whose love is permanent.",
+      "scripture": "Isaiah 49:15–16; Romans 8:38–39; Ephesians 1:4–5",
+      "markers": [
+        "You can feel it when you're being half-listened to. You'll finish the sentence, but something in you already clocked it.",
+        "Small things mean a lot — when someone remembers a detail you mentioned in passing, you notice. When they don't, you notice that too.",
+        "You've had the experience of being in a room and feeling completely invisible — not mistreated, just unseen. That feeling is one of the worst ones.",
+        "You put real thought into what you give people — your time, your words, your gifts. You want your presence in someone's life to matter, to leave something behind.",
+        "The thing you most dread is being ordinary. Not failing — ordinary. Forgettable.",
+        "When your excitement about something is met with a flat response, it doesn't just feel like they're not excited. It feels like they don't see you.",
+        "You care deeply about being thought of between interactions — not constantly, but knowing that someone thinks of you when you're not around matters.",
+        "You want to make a difference. Not eventually, in some vague way — but now, in the relationships and work that are right in front of you. And when you feel like you're not, the emptiness runs deep."
+      ]
+    }
+  },
+  "MECHANISMS": {
+    "ARCH": {
+      "name": "The Architect",
+      "short": "an Architect",
+      "desc": "I protect myself by building order. If I can control the environment, the plan, the outcome — my question typically won't get triggered.",
+      "full": "The Architect organizes their internal world around competence, planning, and systems. They are typically high-functioning, responsible, and often perceived as the \"together\" one. They protect against the Core Question by ensuring they are always prepared, always capable, never caught off guard.",
+      "markers": [
+        "Your friends and family tend to come to you when things fall apart. You're the competent one. The reliable one. The \"they've got it figured out\" one.",
+        "You are almost always the most prepared person in any room. You've thought through the scenarios. You have a plan B.",
+        "When the plan changes unexpectedly, your response is faster and sharper than the situation usually warrants. The disruption lands harder than it should.",
+        "You show love by solving problems. When your partner shares something difficult, your instinct is to help them fix it — not because you don't care about their feelings, but because fixing it is how you care.",
+        "You have high standards — for yourself first, then for others — and you sometimes don't realize how high the bar is for everyone around you until they tell you.",
+        "Rest feels unearned unless the work is done. The work is never entirely done.",
+        "You rarely ask for help. If you do, there's a good chance you've already tried to solve it alone first, and asking feels like the last resort.",
+        "Your systems and routines are not just habits — they're how you stay safe. When they get disrupted, you feel the disruption in your body before you understand it in your mind."
+      ],
+      "spouseSees": "The Architect partner is reliable, competent, and responsible — a genuine strength. But they can feel controlling, critical, and emotionally unavailable. Their advice when empathy is needed, and their difficulty receiving help without shame, can make intimacy feel one-directional.",
+      "gospelNeed": "Release of control; rest in God's sovereignty. \"You don't have to hold everything together. The One who does is not tired.\" (Proverbs 3:5–6)"
+    },
+    "ISLE": {
+      "name": "The Island",
+      "short": "an Island",
+      "desc": "I protect myself by needing very little. If I can make my world small enough to manage alone, my question typically won't get triggered.",
+      "full": "The Island has often learned that other people are unreliable, depleting, or dangerous — so they have systematically reduced their emotional dependence on others. This is not depression; it is a sophisticated adaptation. They can live full lives, have deep intellectual lives, and appear content — but the intimacy dimension has been carefully cordoned off.",
+      "markers": [
+        "You genuinely enjoy being alone. Not as a consolation prize — as a preference. Your best thinking happens in solitude.",
+        "You can go a surprisingly long time without feeling lonely. The need for connection refills slowly, and you don't always notice when it's empty until suddenly it's very empty.",
+        "You're described as private — and you don't entirely disagree with that, though you wouldn't call it private so much as \"selective.\" There are things you share and things you don't, and the line is real to you.",
+        "There are topics that are off-limits in the sense that you don't know how to open them. Not won't — don't know how.",
+        "You've been accused of not needing people. The truth is more complicated. You need people in certain doses, in certain ways, and when that's respected you're actually quite present.",
+        "Your default response to stress is to go internal. You'd rather think something through entirely on your own before bringing it to another person, if you bring it at all.",
+        "You're calm in a crisis in a way others find stabilizing, and you're not entirely sure why they're always so worked up. The chaos doesn't hit you the same way.",
+        "In relationships, you give what you have — but your partner often wants more of what you don't know how to generate. That gap confuses you both."
+      ],
+      "spouseSees": "The Island partner is calm in crisis, objective, and non-demanding. But they can feel unreachable. Emotional conversation often goes nowhere. The spouse may feel like they are talking to a door.",
+      "gospelNeed": "Courage to need; safety in connection. \"God made you for connection. Needing does not mean losing.\" (Ecclesiastes 4:9–10)"
+    },
+    "AMB": {
+      "name": "The Ambassador",
+      "short": "an Ambassador",
+      "desc": "I protect myself by making sure everyone is okay. If I can maintain peace and be genuinely needed, my question typically won't get triggered.",
+      "full": "The Ambassador manages their Core Question by making themselves irreplaceable in others' emotional lives. They are extraordinarily attuned to others' needs — almost supernaturally empathetic. They give generously, solve problems, smooth conflicts, and ensure the people they love feel cared for. The cost is that they often lose track of their own needs and build unspoken resentment.",
+      "markers": [
+        "You are almost always aware of whether everyone in the room is okay. If they're not, some part of you is quietly trying to fix it.",
+        "You apologize easily. Sometimes for things that aren't your fault. Sometimes just to smooth the air.",
+        "When conflict appears in a room — between other people, not just you — you feel a pull to mediate, smooth, or at least quietly reduce the temperature.",
+        "You are very, very good at taking care of other people. You're not as good at receiving it. When someone tries to care for you, you tend to redirect back to them.",
+        "People tell you their problems. You don't always know how that started — you didn't advertise. But they do.",
+        "Saying \"no\" is harder than it should be. Not impossible, but harder. You think about the other person's face. You think about whether the relationship will absorb it.",
+        "You have things you want and need that you rarely voice. You suspect that voicing them would be a burden, so you don't. The quiet resentment that builds from this surprises you when it shows up.",
+        "You are genuinely happiest when the people you love are okay and know they're cared for. When that's true, you can rest. When it isn't — even if it has nothing to do with you — you can't quite settle."
+      ],
+      "spouseSees": "The Ambassador partner is warm, generous, attentive, and easy to be with — until they aren't. The surprise eruption (\"I've been giving and giving and no one ever asks how I'm doing\") can feel disproportionate because the partner had no visible warning.",
+      "gospelNeed": "Identity apart from approval; worth without performance. \"You are wanted, not for what you do, but for who you are in him.\" (Galatians 1:10)"
+    },
+    "VAULT": {
+      "name": "The Vault",
+      "short": "a Vault",
+      "desc": "I protect myself by keeping the tender parts hidden. If no one can see the real me, my question typically can't be triggered.",
+      "full": "The Vault protects against the Core Question by controlling what others can see. Unlike the Island (who genuinely accesses little), the Vault knows what's there — but chooses not to show it. They are often expressive in some domains (humor, opinion, intellect) while completely locked down in others (fear, need, grief, failure).",
+      "markers": [
+        "You are a genuinely warm, engaging person. People feel comfortable around you. And yet there's a layer of you that very few people have ever accessed.",
+        "You share ideas, opinions, jokes, observations — freely and comfortably. You share fears, needs, and grief much less readily. Often not at all.",
+        "When you process something hard, you do it internally first, reach a conclusion, and then — maybe — bring a tidy version to someone you trust. The messy middle is private.",
+        "You're very good in someone else's crisis. Calm, clear, present. But when the crisis is yours, something closes.",
+        "People who know you well sometimes say you seem like two different people — wide-open in some ways, completely locked in others. You know what they mean. You just don't always know what to do with that.",
+        "Compliments about your depth or wisdom feel good. Compliments about your courage or vulnerability feel almost uncomfortable — like they're for someone else.",
+        "You can talk for a long time about things without talking about the most important thing. This is not conscious manipulation. It just happens.",
+        "The gap between who you actually are and who other people see is one of your private concerns. You're not sure which you'd rather they knew better."
+      ],
+      "spouseSees": "Charming, capable, interesting — but never fully known. The spouse may feel like an outsider to their partner's inner life. The lack of vulnerability can feel like distrust, even when the Vault doesn't mean it that way.",
+      "gospelNeed": "Courage to be known; safety in transparency. \"Walking in the light does not expose you to judgment — it exposes you to fellowship.\" (1 John 1:7)"
+    },
+    "ADPT": {
+      "name": "The Adapter",
+      "short": "an Adapter",
+      "desc": "I protect myself by becoming whatever the situation needs. If I'm indispensable to everyone, my question typically won't get triggered.",
+      "full": "The Adapter is a relational chameleon — extraordinarily good at reading what a person needs and becoming that. This is not calculating; it is a deeply ingrained survival skill that often developed in an unpredictable or unsafe family environment. They are highly attuned, excellent partners — but partners may eventually find it difficult to know who they actually are.",
+      "markers": [
+        "In any social situation, you can find the person who needs to be talked to and become the version of yourself they need. You've always been able to do this.",
+        "Your preferences shift depending on who you're with. This isn't performance — you genuinely feel them. But later, alone, you sometimes wonder what you actually think.",
+        "You are extraordinarily good at making people feel understood. When someone talks to you, they feel like you get them. You usually do.",
+        "In relationships, your baseline is \"whatever works for you\" — which is generous, and also means your partner sometimes doesn't know who they're actually with.",
+        "You avoid conflict not because you can't handle it, but because you find it genuinely disorienting. Who are you in a fight? What position are you defending? You often don't know.",
+        "You've adapted to so many environments and people that you sometimes have difficulty distinguishing your own voice from the accumulated echo of everyone else's.",
+        "When the relationship feels threatened, your first instinct is to become whatever version of yourself seems most likely to fix it. You may not even realize you're doing this.",
+        "You're a good chameleon and you know it. What you don't always know is whether the person beneath all the adaptation has a clear shape of their own."
+      ],
+      "spouseSees": "Incredibly supportive and attuned early in the relationship. Over time, the spouse may feel like they're relating to a reflection rather than a person. Arguments can feel strange — the Adapter doesn't always seem to have a position to argue from.",
+      "gospelNeed": "A self to bring to the relationship. \"Be transformed by the renewing of your mind — not the mirroring of others.\" (Romans 12:2)"
+    },
+    "CAMP": {
+      "name": "The Campaign",
+      "short": "a Campaign",
+      "desc": "I protect myself by being impressive. If I can become undeniably great at something, my question typically won't get triggered.",
+      "full": "The Campaign manages the Core Question through achievement, image management, and the cultivation of a notable identity. Unlike the Architect (who manages through order), the Campaign manages through reputation. They are often genuinely gifted, frequently successful, and highly energized — but beneath the drive is often a terror of being ordinary.",
+      "markers": [
+        "You're compelling. People feel it when you walk in a room. That's real — and it's also something you work at, even when it looks effortless.",
+        "You are most alive when you're building something, pursuing something, or becoming something. Stillness is genuinely difficult for you. It can feel like stagnation.",
+        "Ordinary scares you. Not in a dramatic way — but the idea of living a life that leaves no mark is one of the things you push hardest against.",
+        "You're good at telling your own story in a way that's compelling. The version of you that other people know is accurate — but edited. The unedited version is harder to show.",
+        "When you fail or fall short, your instinct is to minimize it quickly, reframe it, or get back up publicly before the story sets. Failure needs a redemption arc, fast.",
+        "You do your best work when people are watching. Not because you don't care when they're not — but because the audience activates something.",
+        "In relationships, you sometimes discover that your partner feels like they're competing with your work, your goals, or your social world for access to you.",
+        "Deep rest — genuine sabbath, genuine stillness — is something you've heard is good for you. You're not convinced. You're working on being convinced."
+      ],
+      "spouseSees": "An exciting, dynamic partner — the relationship feels important. But the spouse can feel they are an audience more than a partner. During conflict, the Campaign's defensive management of their image can feel dishonest.",
+      "gospelNeed": "Rest from the need to be remarkable. \"You were bought with a price. Your worth is settled. Come and rest.\" (Matthew 11:28–30)"
+    }
+  },
+  "BREAKDOWNS": {
+    "COURT": {
+      "name": "The Attorney",
+      "short": "the Attorney",
+      "desc": "I prosecute the case until the verdict is clear — typically in my favor.",
+      "full": "When the mechanism fails, you often convert the relationship into a legal proceeding. You gather evidence, build arguments, cite past incidents, and typically will not stop until the other person acknowledges that they were wrong. The goal is not usually resolution — it is vindication.",
+      "markers": [
+        "When you're really hurt, you don't just tell someone what they did. You build the case. Evidence, timeline, precedent. The goal shifts from resolution to vindication.",
+        "You remember things. The date. The exact words. What they were wearing. When the argument starts, the archive opens.",
+        "It is very difficult for you to accept \"I'm sorry\" at face value without a full acknowledgment of what was done wrong. Apology without accountability feels like a door half-opened.",
+        "You can keep an argument going long past the point where the other person has completely lost the thread, because you're not done with the evidence yet.",
+        "In these moments, part of you knows you're pressing too hard. But the need to be vindicated is louder than the knowledge that you're pressing too hard.",
+        "You are not always loud in this mode. Sometimes you're methodical, cold, precise. The quiet version is sometimes more frightening than the loud one.",
+        "After the argument, you feel a complicated mix of relief (the case was made) and shame (that wasn't my best self). The shame doesn't always arrive right away.",
+        "What you want more than winning is for someone to say, genuinely: \"You were right. I was wrong. I see it.\" When that happens, something in you softens immediately."
+      ],
+      "spouseSees": "Evidence being cited (\"Remember what you did last March?\"). Escalating logic. Inability to change the subject or take a break. Feeling cross-examined. The conversation continuing until a confession or surrender is extracted. An inability to accept \"I'm sorry\" without a full admission of guilt.",
+      "gospelWord": "The verdict is already in. Stop prosecuting. Justification means the performance ledger is closed — Christ's righteousness credited to your account."
+    },
+    "DISAP": {
+      "name": "The Disappearance",
+      "short": "a Disappearance",
+      "desc": "I go somewhere you can't reach me — physically, emotionally, or both.",
+      "full": "When the mechanism fails, you often exit the relationship space — sometimes physically (leaving the room, the house), sometimes emotionally (shutting down while remaining present). This is total shutdown. It can last hours or days. You may return without acknowledgment of what happened.",
+      "markers": [
+        "When something crosses a certain line, you stop. Everything just — stops. It's not a strategy. It's a circuit breaker.",
+        "You go quiet in a way that is qualitatively different from your normal quietness. The people close to you can feel the difference even when you're saying the same words.",
+        "You may physically leave — the room, the house, the conversation. Or you may stay and be completely unreachable. Either way, you're gone.",
+        "The longer someone pushes once you're in this mode, the further in you go. Pressure doesn't open you — it seals you.",
+        "You can go days in this state, and in some ways they feel like the most peaceful days you've had. The stillness of shutdown has its own relief.",
+        "You don't usually come back with an explanation. You come back when you're ready, and sometimes that's enough for you even when it's not enough for the person who was waiting.",
+        "You sometimes don't understand why this hurts other people as much as it does. You weren't attacking them. You were just gone.",
+        "What's happening internally is not nothing. It is actually quite full. But the bridge between the internal experience and the language to share it has been completely raised."
+      ],
+      "spouseSees": "Stonewalling. One-word answers or complete silence. Physical absence or emotional vacancy. The sense that they have been locked out. No acknowledgment that anything happened when you return. Days of emotional winter.",
+      "gospelWord": "You are free to stay. Closeness won't kill you. You are a New Creation — the old captivity is broken. Freedom in Christ is not license to be alone; it is security to be close without being consumed."
+    },
+    "FLOOD": {
+      "name": "The Flood",
+      "short": "a Flood",
+      "desc": "I release everything I've been holding — at full volume, at full speed, until I'm empty.",
+      "full": "When the mechanism fails, your emotional regulation can collapse and everything comes out at once. This is not necessarily loud — it can be tears, a rapid stream of grievances, or an emotionally overwhelming disclosure. You often feel relief during the flood; your partner often feels attacked or overwhelmed.",
+      "markers": [
+        "When you finally break, everything comes at once. The thing that happened today, the thing from last month, the thing from six months ago, the pattern you've noticed, the feeling underneath all of it.",
+        "You can't always control the order or the volume. It comes out the way it comes out.",
+        "Part of you knows this is a lot. Part of you doesn't care. You have been managing this quietly for a long time and now the managing is over.",
+        "You can feel your partner trying to respond to something specific you said, and you've already moved to the next thing. You know this is hard to track. You can't slow down yet.",
+        "There's often crying — not because you're sad, but because the emotional pressure needed somewhere to go and tears are the exit.",
+        "After the flood — sometimes hours later, sometimes the next day — you feel wrung out and strangely calm. The pressure is gone. The embarrassment about how it came out might arrive later.",
+        "What your partner experiences as an attack is, for you, a release. You were not trying to destroy them. You were trying to stop carrying it alone.",
+        "In the aftermath, what you most need is to feel like the flood didn't end the relationship. That it was held. That the person is still there."
+      ],
+      "spouseSees": "High emotional intensity. Rapid speech or uncontrolled tears. Bringing up multiple issues simultaneously. Dramatic language (\"you always,\" \"you never\"). Inability to receive responses — keeps moving to the next grievance. Exhaustion and relief when it's over.",
+      "gospelWord": "You are seen. You don't have to force it. You are Adopted — the love you're fighting to receive has already been given. Bring your need from security, not from panic."
+    },
+    "GHOST": {
+      "name": "The Ghost",
+      "short": "a Ghost",
+      "desc": "I act completely normal — as if nothing happened — and wait.",
+      "full": "When the mechanism fails, you don't fight and don't flee. You freeze. You perform normalcy. You answer questions, go through routines, and appear fine — while internally carrying a significant unresolved wound. You are often waiting for the other person to notice, to ask, to fix it.",
+      "markers": [
+        "You're still present. You're answering questions, going through the motions, showing up. But something in you has gone very quiet, and you hope they notice.",
+        "You know exactly what's wrong. You have simply decided not to say it directly — not because you're being cruel, but because the thought of saying it directly feels too exposed, or too demanding, or too risky.",
+        "\"I'm fine\" is what you say. What you mean is something much more complicated and much more loaded. You're not ready to say the complicated thing yet.",
+        "Part of you is waiting for them to come find you — to notice the difference, to ask, to pursue. When they don't, the wound deepens.",
+        "You've been told this is confusing and unfair. You know it is. And you still can't seem to do it differently in the moment.",
+        "The thing you're holding was often real and legitimate. But by the time you finally surface it — sometimes weeks later — it arrives with accumulated weight.",
+        "You're not performing coldness. You're actually hurting. The performance of normalcy is a cover for something you don't yet have words for.",
+        "What you want is for someone to care enough to go looking for what's hidden. That this want is, in some sense, unfair doesn't make it any less real."
+      ],
+      "spouseSees": "You seem \"fine\" but something is clearly wrong. Flat affect behind normal words. Unusual quiet. Not initiating affection. When pressed — \"I'm fine.\" Your partner feels \"haunted\" — they know something happened but can't get to it.",
+      "gospelWord": "Walking in the light is safer than you think. You are Justified and In Christ — being known won't destroy you. The covering is already on."
+    },
+    "VERD": {
+      "name": "The Verdict",
+      "short": "a Verdict",
+      "desc": "I decide — internally — that I've been failed, and I begin pulling away.",
+      "full": "When the mechanism fails, you don't explode, confront, or ghost — you decide. Internally, you render a verdict that the relationship has failed you. You begin emotionally withdrawing — slowly, invisibly — not as a punishing strategy but as a self-protective conclusion.",
+      "markers": [
+        "You've been here before — the moment when something shifts and you realize, quietly, that you've stopped fighting for it. You haven't said anything. You just know.",
+        "The verdict doesn't usually come from one thing. It comes from accumulation — from a hundred smaller moments that added up to a conclusion.",
+        "You don't announce it. You don't explode. You just begin, slowly, to withdraw your investment. The warmth cools. The effort reduces. You stop initiating.",
+        "You might not even be able to explain it clearly to yourself, let alone to them. The word \"fine\" still applies to everything. And yet everything has changed.",
+        "By the time the other person realizes something is seriously wrong, you've been privately at this juncture for longer than they know.",
+        "There's often a kind of exhausted peace in the verdict. The striving is over. The question has been answered. You don't have to want this anymore.",
+        "The relationship may or may not end. But something ends. The version of it where you were fully present and hoping — that ends.",
+        "What a very different outcome looks like: someone asking the right question early enough, and you having the courage to answer honestly before the verdict was already in."
+      ],
+      "spouseSees": "Gradual decline in warmth, investment, and engagement. No obvious conflict — just a slow disappearance of enthusiasm. When pressed, you can't explain it clearly. Eventually: withdrawal of affection, interest, or commitment.",
+      "gospelWord": "The offense is forgivable. You are not alone in it. Go and be reconciled — the Seven A's of forgiveness open the door back."
+    },
+    "PLEA": {
+      "name": "The Plea",
+      "short": "a Plea",
+      "desc": "I become small, apologetic, and desperate — doing anything to restore the connection.",
+      "full": "When the mechanism fails, you often abandon normal functioning and focus entirely on restoring the relational bond. You may apologize excessively, seek reassurance repeatedly, agree to things you don't believe, or perform visible acts of love to produce a response. The Plea is typically driven by panic — the attachment system's alarm at relational distance.",
+      "markers": [
+        "When you feel the relationship slipping — or even just threatening to slip — something in you goes into overdrive. You need this to be okay. You need it now.",
+        "You find yourself apologizing, sometimes for things you're not sure you did. It doesn't feel dishonest — it feels necessary. Whatever it takes to close the gap.",
+        "\"Are we okay?\" comes out multiple times. Maybe with different wording, but it's the same question, and you ask it until you're convinced of the answer.",
+        "You can agree with positions you don't actually hold just to stop the argument. The relationship being intact feels more important in the moment than being right.",
+        "Grand gestures make sense to you in these moments. A gift, an act of service, something that says \"look, I'm here, I'm still here.\"",
+        "There is a specific kind of torture in not knowing — in going to sleep without resolution, in waking up still carrying it. The discomfort of that is genuinely intense.",
+        "After it resolves, you sometimes feel a complicated mix of relief and embarrassment. You didn't want them to see how much you needed that.",
+        "What's underneath all of it is a question that's almost too vulnerable to say out loud: Do you still want me? Everything else is just different ways of asking that."
+      ],
+      "spouseSees": "Excessive apologies. Rapid \"I love you\" statements in the middle of an argument. Asking \"are we okay?\" repeatedly. Agreeing with your position even when unreasonable. Grand gestures. Inability to let the argument be unresolved.",
+      "gospelWord": "The \"yes\" is already spoken. It's not in their hands. You are Adopted — the Abba answer is \"yes\" before you ask. Hear that answer first, then bring your need from security, not from panic."
+    }
+  },
+  "WRAPUP_QUESTIONS": {
+    "mechanisms": {
+      "ARCH": {
+        "mc": {
+          "id": "wu_mech_mc",
+          "type": "mc",
+          "text": "A lot of your answers suggest you tend to organize, plan, and take charge — especially when things feel uncertain. Why do you think that is? Select the one that feels most true.",
+          "options": [
+            {
+              "label": "Growing up, love felt conditional. I got more of it when I performed well. Somewhere along the way, being good at things became how I felt okay.",
+              "value": "a"
+            },
+            {
+              "label": "I watched things fall apart around me as a kid — chaos, instability, unpredictability — and I decided early that I was going to be the one who held things together.",
+              "value": "b"
+            },
+            {
+              "label": "I genuinely love the satisfaction of things done well. The planning and executing isn't a defense mechanism for me — it's how I feel most alive. But I think I've let it take over in relationships.",
+              "value": "c"
+            },
+            {
+              "label": "I'm not great at emotions — mine or other people's. Systems and plans feel more manageable. I think I've substituted control for connection without fully realizing it.",
+              "value": "d"
+            },
+            {
+              "label": "I've been let down by people — including people who were supposed to be responsible and weren't. I stopped trusting others to do their part, so I started doing it myself.",
+              "value": "e"
+            },
+            {
+              "label": "Honestly, I don't fully know. I've just always been this way. The anxiety underneath the planning is something I'm only starting to recognize.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_mech_rank",
+          "type": "rank",
+          "text": "That instinct to plan, organize, and stay in control — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It keeps me from feeling helpless. As long as I'm doing something, I'm not just at the mercy of what happens.",
+            "It earns me respect. Being capable is how I know I belong in a room.",
+            "It keeps relationships from getting too emotionally deep too fast. Tasks are safer than feelings.",
+            "It gives me a way to love people that doesn't require me to be vulnerable. I show up. I provide. That's real love.",
+            "It manages my anxiety. Having a plan means the worst-case scenario is at least thought through."
+          ]
+        }
+      },
+      "ISLE": {
+        "mc": {
+          "id": "wu_mech_mc",
+          "type": "mc",
+          "text": "Your answers suggest you tend to keep your inner world pretty self-contained — processing alone, needing less from others than most people expect. Why do you think that is? Select the one that feels most true.",
+          "options": [
+            {
+              "label": "Emotional expression wasn't really welcome in my house growing up. Not punished, exactly — just not valued. Feelings were something you handled on your own.",
+              "value": "a"
+            },
+            {
+              "label": "I learned early that needing people set you up to be disappointed. Self-sufficiency felt smarter and safer than relying on anyone.",
+              "value": "b"
+            },
+            {
+              "label": "I watched a parent or someone close to me need too much from other people — always dependent, always in crisis — and I decided I would never be that.",
+              "value": "c"
+            },
+            {
+              "label": "I've been in relationships where my need felt like a burden to the other person. I started reducing how much I asked for to protect both of us.",
+              "value": "d"
+            },
+            {
+              "label": "I don't think I'm pulling away intentionally. I genuinely process better alone. I think I've just never built the bridge between my internal life and other people.",
+              "value": "e"
+            },
+            {
+              "label": "I was given a lot of independence early — maybe more than was healthy. I got comfortable with solitude before I understood what I was missing.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_mech_rank",
+          "type": "rank",
+          "text": "That tendency to pull inward and handle things on your own — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It keeps me safe from needing something I might not get. If I don't ask, I can't be disappointed.",
+            "It preserves my sense of self. When I'm close to people, I feel like I lose track of who I am.",
+            "It's just easier. Other people's emotions are unpredictable. My own inner world is something I can navigate.",
+            "It protects my energy. Being deeply known is exhausting, not just intimate.",
+            "It means I never put someone in the position of having to hold more than they can. I'm protecting both of us."
+          ]
+        }
+      },
+      "AMB": {
+        "mc": {
+          "id": "wu_mech_mc",
+          "type": "mc",
+          "text": "Your answers suggest you tend to take care of everyone around you — you're the one who shows up, smooths things over, and makes sure people feel okay. Why do you think that is? Select the one that feels most true.",
+          "options": [
+            {
+              "label": "I think I learned that love was something I had to earn. Being helpful, being warm, being needed — those were how I got love back. I'm still running that equation.",
+              "value": "a"
+            },
+            {
+              "label": "There was real pain in my home growing up, and I became the one who managed the emotional temperature. If I kept everyone okay, things didn't fall apart.",
+              "value": "b"
+            },
+            {
+              "label": "I genuinely love caring for people. I'm not sure this is all wounds — I think some of it is just who I am. But I've let it cost me more than I realized.",
+              "value": "c"
+            },
+            {
+              "label": "Expressing my own needs has always felt risky. What if it's too much? What if it pushes people away? It's easier to focus on them.",
+              "value": "d"
+            },
+            {
+              "label": "My worth felt tied to being useful. If I wasn't taking care of something or someone, I wasn't sure what my purpose was.",
+              "value": "e"
+            },
+            {
+              "label": "I think I'm afraid that if I stop giving, people will stop staying. The giving is, in part, an insurance policy.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_mech_rank",
+          "type": "rank",
+          "text": "That instinct to care for everyone and keep the peace — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It keeps me loved. Or at least, it keeps people close — which feels like the same thing most of the time.",
+            "It keeps conflict at bay. If everyone's okay, nothing threatens the relationship.",
+            "It gives me a sense of identity. Being the caring one is who I am. I'm not sure who I am without it.",
+            "It means I never have to be the needy one. I can need through giving — it's just less visible.",
+            "It gives me control over the emotional temperature of my relationships. I'm not at the mercy of how other people feel if I'm the one making them feel good."
+          ]
+        }
+      },
+      "VAULT": {
+        "mc": {
+          "id": "wu_mech_mc",
+          "type": "mc",
+          "text": "Your answers suggest you know what's going on inside you — you just tend to keep it close. You're selective about what you show and to whom. Why do you think that is? Select the one that feels most true.",
+          "options": [
+            {
+              "label": "I've been vulnerable before and it didn't go well. What I showed was used against me, or minimized, or just met with blank confusion. I learned to keep the important things private.",
+              "value": "a"
+            },
+            {
+              "label": "I think I'm ashamed of some of what's in there. Showing it means risking being seen as weak, broken, or too much.",
+              "value": "b"
+            },
+            {
+              "label": "I process things internally and then bring a conclusion. The messy middle feels like it belongs to me. Sharing it in real time feels like inviting someone into a half-built house.",
+              "value": "c"
+            },
+            {
+              "label": "I came from a home where emotional expression was either discouraged or made into a big dramatic thing. Both options made me not want to share.",
+              "value": "d"
+            },
+            {
+              "label": "I've just always been private. I'm not sure it's traumatic — I think some people just have thicker walls than others. Though I know mine have cost me something.",
+              "value": "e"
+            },
+            {
+              "label": "I think I've confused privacy with safety for so long that I'm not sure where one ends and the other begins. The walls were protective once. Now they might just be habit.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_mech_rank",
+          "type": "rank",
+          "text": "That habit of keeping the real stuff hidden and only showing what feels safe — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It protects me from exposure. If the real me stays hidden, the real me can't be rejected.",
+            "It lets me control the narrative. I'd rather show you a finished product than a work in progress.",
+            "It keeps relationships stable. If I don't show the messy parts, the relationship doesn't have to deal with them.",
+            "It preserves my sense of competence. Showing need feels like showing weakness.",
+            "It's just how I was raised. Privacy isn't a wound — it's a value. But I'm starting to wonder if the value has become a wall."
+          ]
+        }
+      },
+      "ADPT": {
+        "mc": {
+          "id": "wu_mech_mc",
+          "type": "mc",
+          "text": "Your answers suggest you're really good at reading people and becoming what they need — sometimes at the expense of knowing what you want. Why do you think that is? Select the one that feels most true.",
+          "options": [
+            {
+              "label": "I grew up in a home where the emotional climate changed a lot. Reading the room and becoming what someone needed was how I survived — or at least how I stayed safe.",
+              "value": "a"
+            },
+            {
+              "label": "I grew up in a home with high relational pressure — enmeshment, very low differentiation — where having a self that differed from the family felt threatening to the whole unit.",
+              "value": "b"
+            },
+            {
+              "label": "I learned early that being exactly what someone needed was the most intoxicating experience. The pattern formed around the reward.",
+              "value": "c"
+            },
+            {
+              "label": "I grew up with a parent whose love was present but highly conditional on me conforming. I adapted into lovability and never quite found my way back to myself.",
+              "value": "d"
+            },
+            {
+              "label": "I'm genuinely good at reading people and meeting them where they are. I'm not sure it's all wounds — but I've realized I sometimes lose myself in the process.",
+              "value": "e"
+            },
+            {
+              "label": "I think I'm afraid of conflict. Not the surface kind — the deep kind. The kind where someone sees the real me and decides it's not what they wanted.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_mech_rank",
+          "type": "rank",
+          "text": "That instinct to read the room and shape yourself around what others need — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It keeps me safe from rejection. If I become what you need, you won't leave.",
+            "It keeps the peace. Conflict is disorienting, and adaptation is the fastest way to avoid it.",
+            "It makes me feel valued. Being understood and attuned is something people notice and love.",
+            "It means I never have to figure out who I actually am. The adaptation is easier than the self-discovery.",
+            "It gives me intimacy, or something that feels like it. If I mirror you well enough, we feel close — even if you don't fully know me."
+          ]
+        }
+      },
+      "CAMP": {
+        "mc": {
+          "id": "wu_mech_mc",
+          "type": "mc",
+          "text": "Your answers suggest you carry a strong drive to achieve, build, and be known for something meaningful. Why do you think that is? Select the one that feels most true.",
+          "options": [
+            {
+              "label": "Growing up, ordinary wasn't celebrated. Achievement was noticed, praised, rewarded. I learned that being remarkable was the currency of belonging.",
+              "value": "a"
+            },
+            {
+              "label": "There was significant loss or inadequacy in my family — financial hardship, a parent's failure, a reputation that needed rehabilitating — and I became the one who would prove the family name was worth something.",
+              "value": "b"
+            },
+            {
+              "label": "I grew up feeling invisible. In a large family, or a depressed household, or a school where I felt overlooked — and achievement was the antidote. \"If I am impressive enough, I cannot be ignored.\"",
+              "value": "c"
+            },
+            {
+              "label": "I genuinely love building things and pursuing vision. I'm not sure the drive is all wound — but I've realized it can take over in ways that leave my partner feeling like an afterthought.",
+              "value": "d"
+            },
+            {
+              "label": "I carry a particular awareness of life's brevity. The drive to leave a mark is partly grief looking for somewhere to live.",
+              "value": "e"
+            },
+            {
+              "label": "I'm terrified of being ordinary. Not in a way I usually admit — but the thought of a quiet, unnoticed life makes something in me panic.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_mech_rank",
+          "type": "rank",
+          "text": "That drive to achieve, build, and leave a mark — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It answers the question \"Do I matter?\" through achievement. If I can point to something I built, I know I existed.",
+            "It keeps me from sitting with the emptiness underneath. Activity is an anesthetic.",
+            "It makes me feel alive. The pursuit itself — the building, the vision — is genuinely energizing.",
+            "It earns me a place in people's lives. If I'm impressive enough, I'm not forgettable.",
+            "It gives me a story to tell. The Campaign is who I am when I'm at my best. Without it, I'm not sure who I'd be."
+          ]
+        }
+      }
+    },
+    "breakdowns": {
+      "COURT": {
+        "mc": {
+          "id": "wu_bd_mc",
+          "type": "mc",
+          "text": "Your answers suggest that when you're really hurt, you tend to build a case — gathering evidence, citing past examples, pressing until the other person acknowledges what happened. When you do that, what are you really hoping to accomplish? Which is closest to the truth?",
+          "options": [
+            {
+              "label": "I want the truth to be established — the real, accurate version of what happened. I can't rest until the facts are on the table.",
+              "value": "a"
+            },
+            {
+              "label": "I want them to understand the impact. Not just what happened, but how it felt. The case is the only way I know how to communicate that.",
+              "value": "b"
+            },
+            {
+              "label": "I want vindication. I need to hear \"you were right.\" Not because I need to win, but because I need to be seen as credible.",
+              "value": "c"
+            },
+            {
+              "label": "I think I want to feel safe again. If the wrong is acknowledged, maybe I can trust that it won't happen the same way again.",
+              "value": "d"
+            },
+            {
+              "label": "Honestly, I think part of it is punishment. Not intentionally — but the extended argument is how I make them feel what I felt.",
+              "value": "e"
+            },
+            {
+              "label": "I don't fully know. It takes over. By the time I realize what I'm doing, I'm already deep into the case and I can't find the off switch.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_bd_rank",
+          "type": "rank",
+          "text": "That instinct to argue your case and press for acknowledgment when you're wounded — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It establishes the record. If the truth is on the table, at least I know what happened — even if nothing changes.",
+            "It restores my dignity. Being wronged without acknowledgment feels like the wrong is still happening.",
+            "It forces engagement. As long as the case is open, they can't leave the conversation. The argument is, paradoxically, a form of connection.",
+            "It organizes my pain. Chaotic feelings become evidence. The case gives the hurt a structure I can manage.",
+            "It prevents it from happening again. If I make the cost of the wrong clear enough, maybe they won't do it next time."
+          ]
+        }
+      },
+      "DISAP": {
+        "mc": {
+          "id": "wu_bd_mc",
+          "type": "mc",
+          "text": "Your answers suggest that when conflict gets intense, you tend to shut down and pull away — going quiet, leaving the room, or becoming emotionally unreachable. When that happens, what's actually going on inside? Which is closest to the truth?",
+          "options": [
+            {
+              "label": "Something shuts off. It's not a choice. It's like a circuit breaker tripping. I go from fully present to completely internal in a moment.",
+              "value": "a"
+            },
+            {
+              "label": "I'm overwhelmed and the only way to manage it is to remove myself. The distance isn't about them — it's about the noise in my head being too loud.",
+              "value": "b"
+            },
+            {
+              "label": "I'm angry and I don't trust what I'd say if I stayed. The disappearance is actually me protecting them from the version of me that would come out.",
+              "value": "c"
+            },
+            {
+              "label": "I need to think. I can't process in real time with someone watching. I need to be alone with it before I can name it.",
+              "value": "d"
+            },
+            {
+              "label": "Part of it is a test. If I go, will they come looking? The answer tells me something I need to know.",
+              "value": "e"
+            },
+            {
+              "label": "I've been here before — the shutdown is familiar. It's what my body does with pain it can't convert into words.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_bd_rank",
+          "type": "rank",
+          "text": "That tendency to shut down and go unreachable when things get intense — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It restores my sense of self when the intensity of the conflict has made me feel dissolved.",
+            "It stops things from getting worse. I've seen what I can become if I don't stop, and I don't like it.",
+            "It punishes, even when I don't intend it to. The silence communicates something I can't say.",
+            "It buys me time to process. I need the distance to understand what I actually feel.",
+            "It proves to me that I can survive this — that I don't need the resolution the way they need it. That's both a relief and, I think, a problem."
+          ]
+        }
+      },
+      "FLOOD": {
+        "mc": {
+          "id": "wu_bd_mc",
+          "type": "mc",
+          "text": "Your answers suggest that when you've been holding things in and something finally breaks through, everything comes out at once — tears, grievances, intensity. When that happens, what are you hoping for? Which is closest to the truth?",
+          "options": [
+            {
+              "label": "I want to be seen — fully, finally. I've been managing and containing myself for so long, and right now I need someone to see the whole thing.",
+              "value": "a"
+            },
+            {
+              "label": "I want relief. The pressure has been building for longer than they know, and I need it to come out. The outcome almost matters less than the release.",
+              "value": "b"
+            },
+            {
+              "label": "I want them to understand the scope of what I've been carrying. Single incidents don't capture it. You need the whole picture.",
+              "value": "c"
+            },
+            {
+              "label": "I want to know if this relationship can hold this. If it can hold me at my most intense, then maybe it's real.",
+              "value": "d"
+            },
+            {
+              "label": "I want them to feel something. I've been invisible in this for too long. The flood is impossible to ignore.",
+              "value": "e"
+            },
+            {
+              "label": "I don't want anything, rationally. I've lost control of it. By the time it comes out, I'm not choosing anymore.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_bd_rank",
+          "type": "rank",
+          "text": "That pattern of holding it together until everything comes out at once — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It releases pressure that has nowhere else to go. I've been containing this for too long.",
+            "It tests the relationship. Can they handle the real me? The flood is the real me.",
+            "It's a bid for intimacy. Total exposure feels, paradoxically, like an attempt at closeness.",
+            "It ends the pretending. I'm tired of acting like everything is fine when it isn't.",
+            "It gets their attention in a way that nothing else does. I hate that it works like that, but it does."
+          ]
+        }
+      },
+      "GHOST": {
+        "mc": {
+          "id": "wu_bd_mc",
+          "type": "mc",
+          "text": "Your answers suggest that when you're hurt, you tend to act like everything is fine — going through the motions, saying \"I'm good\" when you're not, waiting for the other person to notice. When that happens, what's actually going on? Which is closest to the truth?",
+          "options": [
+            {
+              "label": "I want them to notice. Not for me to have to point it out — for them to care enough to come looking. When they don't, it tells me something.",
+              "value": "a"
+            },
+            {
+              "label": "I'm protecting myself from a conversation that might not go well. As long as I don't say it, I can't be dismissed or hurt by their response.",
+              "value": "b"
+            },
+            {
+              "label": "I don't fully know what I'm doing or why. I go quiet when I'm hurt, and I stay quiet until it passes — or doesn't.",
+              "value": "c"
+            },
+            {
+              "label": "I'm processing. I need time before I can say anything coherent. The silence is real, not strategic.",
+              "value": "d"
+            },
+            {
+              "label": "I think I want them to work for it a little. The fact that something is wrong and they haven't noticed feels like part of the problem.",
+              "value": "e"
+            },
+            {
+              "label": "I'm afraid of what I'll say if I open it. The silence is a safety measure as much as anything.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_bd_rank",
+          "type": "rank",
+          "text": "That habit of performing normalcy when something is clearly wrong inside — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It protects me from a conversation that might expose something I'm not ready to show.",
+            "It gives me time to understand what I actually feel before I have to name it.",
+            "It tests how much they care. Do they notice? Do they pursue? That matters.",
+            "It keeps the wound safe. If I surface it and it's minimized, that would be worse than not surfacing it at all.",
+            "It's the only way I know how to communicate that something is wrong without having to actually say that something is wrong."
+          ]
+        }
+      },
+      "VERD": {
+        "mc": {
+          "id": "wu_bd_mc",
+          "type": "mc",
+          "text": "Your answers suggest that when you've been hurt enough times, something in you quietly decides \"I'm done\" — you start pulling back emotionally, slowly and invisibly. When that happens, what's actually going on? Which is closest to the truth?",
+          "options": [
+            {
+              "label": "I'm protecting myself from being hurt again. The verdict isn't about punishing them — it's about me deciding I've had enough and choosing to be okay on my own.",
+              "value": "a"
+            },
+            {
+              "label": "Honestly, I think I've given up. Not in a dramatic way — just a quiet recognition that this isn't what I thought it was. The withdrawal is a conclusion, not a strategy.",
+              "value": "b"
+            },
+            {
+              "label": "I think I want them to fight for me. If I pull back enough, maybe they'll notice and prove that I was wrong to give up. I'm not proud of that.",
+              "value": "c"
+            },
+            {
+              "label": "The verdict is the only control I have left. I can't make them treat me differently. But I can decide what I'm willing to keep carrying.",
+              "value": "d"
+            },
+            {
+              "label": "I've been here before — in other relationships, maybe even in childhood. Something in me knows this pattern. I'm repeating it even when I don't want to.",
+              "value": "e"
+            },
+            {
+              "label": "I think I'm punishing them for the accumulation. Every small thing they did wrong has compounded into this. The verdict is what happens when I stop forgiving privately.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_bd_rank",
+          "type": "rank",
+          "text": "That pattern of quietly deciding the relationship has failed you and beginning to pull away — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It ends the hope, which ends the pain. As long as I'm hoping, I can be disappointed. The verdict stops that.",
+            "It's self-protection. I've absorbed too much to stay open. The withdrawal is armor.",
+            "It's a test — the last one. Will they notice? Will they fight for me? This is me finding out.",
+            "It gives me back a sense of agency. I can't control what they do, but I can control whether I keep trying.",
+            "It's become familiar. I have a pattern of emotionally exiting before things end. I know it's a problem. I'm not sure how to stop."
+          ]
+        }
+      },
+      "PLEA": {
+        "mc": {
+          "id": "wu_bd_mc",
+          "type": "mc",
+          "text": "Your answers suggest that when conflict threatens the connection, you tend to go into overdrive trying to fix it — apologizing, seeking reassurance, doing whatever it takes to close the gap. When that happens, what are you really hoping for? Which is closest to the truth?",
+          "options": [
+            {
+              "label": "I want reassurance. I need to hear that we're okay — that I haven't lost them, that they still want this. Once I have that, I can breathe.",
+              "value": "a"
+            },
+            {
+              "label": "I want to close the gap as fast as possible. The distance between us when we're in conflict is physically painful to me. The plea is how I get it to stop.",
+              "value": "b"
+            },
+            {
+              "label": "I want to fix it. Whatever I broke, I want to fix it. If that means apologizing for things I'm not sure I did, that feels worth it.",
+              "value": "c"
+            },
+            {
+              "label": "I want to be chosen. Not just reassured — actively chosen. I want them to say \"I want to be with you\" and mean it in this moment.",
+              "value": "d"
+            },
+            {
+              "label": "I think I want them to understand how much this matters to me. The intensity of the plea is me saying: this relationship is not something I take lightly.",
+              "value": "e"
+            },
+            {
+              "label": "I don't fully understand it. I just know that when the connection feels threatened, I go into a kind of survival mode. Everything else can wait.",
+              "value": "f"
+            }
+          ]
+        },
+        "rank": {
+          "id": "wu_bd_rank",
+          "type": "rank",
+          "text": "That urgency to restore the connection at any cost when things feel threatened — what does it actually do for you? Rank from most true to least true.",
+          "items": [
+            "It restores the connection I need to function. Without resolution, I can't think about anything else.",
+            "It puts my need for the relationship on the table — which is scary, but honest.",
+            "It keeps me from having to sit with uncertainty. The plea is how I force a resolution when waiting is unbearable.",
+            "It's the only way I know how to communicate how much this person matters to me.",
+            "It's my best attempt at repair. Even when it's clumsy, it's genuine. I'm trying to save something worth saving."
+          ]
+        }
+      }
+    }
+  },
+  "PERSONALIZED_TEMPLATES": {
+    "mechanisms": {
+      "ARCH": "For you, being an Architect isn't about needing to control other people — it's about [SELECTED_REASON]. When you take over the planning or start pushing for a solution, the thing you're really protecting is [TOP_RANKED]. The people who know you well would say you're one of the most reliable people they've ever met — and they might also say they sometimes wish you'd put down the clipboard and just be present with them. Here's the thing though: the same quality that makes you exhausting in conflict — the way you can't let something be unresolved, unplanned, or wrong — is also what makes you the person people call when everything falls apart. That's not nothing. But for marriage to work well, you're going to need to develop a second skill: the ability to be incompetent, unfinished, and still in process — and let your partner see that version of you.",
+      "ISLE": "For you, being an Island isn't about not caring — it's about [SELECTED_REASON]. When you pull inward, the thing you're really protecting is [TOP_RANKED]. People who know you well would say you're one of the most dependable, clear-headed, non-dramatic people in their lives — and they'd also say you're genuinely hard to reach when it matters most. Here's the honest truth: you were built for connection. The self-sufficiency you've developed isn't who you are at your deepest level — it's armor you built because connection felt dangerous or depleting. It is good armor. It has served you. But it is not a home. And your partner is going to keep knocking on a door they're not sure you know is closed.",
+      "AMB": "For you, being an Ambassador isn't about being a people-pleaser — it's about [SELECTED_REASON]. When you focus on everyone else's needs, the thing you're really protecting is [TOP_RANKED]. The people who know you well would say you are one of the warmest, most other-centered people they know — and they'd also say they sometimes have no idea how you actually are, because you deflect so well. Here's the hard part: your partner can't fully love you if they can't fully find you. All the giving — however genuinely motivated — is also keeping them at arm's length from the actual you. The need underneath all that care? It's real and it's okay. You're allowed to put it on the table.",
+      "VAULT": "For you, being a Vault isn't about distrust — it's about [SELECTED_REASON]. What you're protecting behind all that selective sharing is [TOP_RANKED]. People who know you well would say you're fascinating, capable, and interesting — and that they feel both known by you and, somehow, not quite known. Here's what your partner needs to understand: you are not withholding to be distant. You are withholding because exposure has felt costly, and the return on vulnerability has felt uncertain. What they need to understand about themselves: your walls are not a referendum on them. What you need to understand about yourself: the door you keep closed is the door the good stuff comes through — both ways.",
+      "ADPT": "For you, being an Adapter isn't about being fake — it's about [SELECTED_REASON]. When you read the room and become what someone needs, what you're really protecting is [TOP_RANKED]. The people who know you well would say you're unusually attuned, easy to be with, and genuinely caring — and some of them, the ones who know you best, would say they sometimes wonder who you are when no one is watching. Here's what matters for your marriage: your partner doesn't just need someone who fits their life perfectly. They need someone with a self — someone who will occasionally disagree, occasionally disappoint, and occasionally show up with a need of their own. That person? That's the one they fell in love with. Let them meet them.",
+      "CAMP": "For you, being a Campaign isn't about ego — it's about [SELECTED_REASON]. When you push toward the next thing, the thing you're really protecting is [TOP_RANKED]. The people who know you will tell you that you are one of the most compelling, energizing, vision-generating people in their world — and some of them, in their honest moments, would say they sometimes feel like the relationship comes second to the campaign. Here's the thing worth sitting with: the question you're trying to answer through achievement — 'Do I matter? Will I be remembered? Am I enough?' — is not answerable that way. You can build an impressive life and still not have an answer to the question underneath it. Marriage is actually one of the places where that question gets answered differently. Are you ready to let it be answered quietly instead of loudly?"
+    },
+    "breakdowns": {
+      "COURT": "When you go into Attorney mode, it isn't because you love to argue — it's because [SELECTED_REASON]. What the case is really trying to accomplish is [TOP_RANKED]. Your partner experiences this as being cross-examined and convicted before they've had a chance to respond. What they may not see is that the prosecution is driven by something much more vulnerable than anger: a need to be vindicated, to have the record corrected, to hear someone say 'you were right and you were wronged.' That is a legitimate need. But the courtroom is not the way to get it. Because when you win, the verdict doesn't actually quiet the question underneath. It just buys temporary relief before the next case opens.",
+      "DISAP": "When you disappear, it isn't about punishment — it's about [SELECTED_REASON]. What the shutdown is really protecting is [TOP_RANKED]. What your partner experiences in those moments is abandonment, even if that's not what you intend. What's actually happening inside you is something closer to a circuit breaker tripping — the emotional current got too high and the system shut down to prevent a worse outcome. The painful irony is that the person who needs you most when you disappear is the person your silence lands on hardest. Finding a way to signal 'I'm not gone, I just need two hours' is a different act than disappearing — and it's the one that keeps the connection alive while you regulate.",
+      "FLOOD": "When the flood comes, it isn't an attack — it's [SELECTED_REASON]. What you're trying to communicate through the flood is [TOP_RANKED]. Your partner experiences it as being overwhelmed, targeted from multiple directions, unable to track what the conversation is actually about. What's actually happening is that you've been carrying something for a long time that finally found the door open. The problem isn't the feeling — the feeling is real and it deserved to come out. The problem is that it came out all at once, at full volume, without a shape, and your partner couldn't hold all of it. Learning to surface things in smaller doses — before the pressure builds to flood stage — is one of the most generous things you can do for this marriage.",
+      "GHOST": "When you go ghost, it isn't passive aggression — it's [SELECTED_REASON]. What you're protecting in that silence is [TOP_RANKED]. What your partner experiences is haunting — they can feel something is wrong, they can't get to it, and they're not sure if they're imagining it. What's actually happening inside you is that the thing you're holding feels too raw, too risky, or too unformed to say out loud. The irony is that the silence designed to protect you is often the thing that does the most damage. It compounds the original wound with days of ambiguity and accumulated weight. The version of you that says 'something's wrong and I'm not ready to talk about it yet but I will be' — that's braver than the ghost, and it keeps the person you love from going crazy wondering.",
+      "VERD": "When you render the verdict, it isn't cruelty — it's [SELECTED_REASON]. What the emotional withdrawal is really protecting is [TOP_RANKED]. Your partner experiences it as a slow, bewildering loss — warmth draining without explanation, effort declining without incident. What's actually happening is that you've been absorbing injuries quietly for longer than they know, and the verdict is what happens when the account runs out. The problem with the verdict is that it renders a sentence without a trial. Your partner never got to respond to the charges because the charges were never spoken out loud. The most important thing you can do for this marriage is to surface the case early — when there's still something to be done about it — rather than after you've already decided.",
+      "PLEA": "When you go into Plea mode, it isn't weakness — it's [SELECTED_REASON]. What the plea is really asking for is [TOP_RANKED]. Your partner experiences it as intensity that's hard to respond to — the apologies, the 'are we okay?', the inability to let the moment be unresolved. What's actually happening is that your attachment system has been activated and it is driving everything: heart rate, thoughts, behavior. The part of you that's running this show is not your rational mind — it's the part of you that, as a child, learned that relational distance was dangerous. Finding a way to soothe that system — to say 'I know we're going to be okay' to yourself before you can hear it from them — is some of the most important work you'll do in this marriage."
+    }
+  },
+  "ORIGIN_STORIES": {
+    "ARCH": [
+      "People with this pattern often grew up in a home that felt unpredictable or unstable — financially, emotionally, or in terms of a parent's moods or sobriety. Planning became the way to create safety when the environment wouldn't provide it.",
+      "Sometimes this pattern develops in a home that was warm and stable, but where achievement was the primary love language — where performance was consistently celebrated and ordinary moments weren't. The child learns that doing well is what earns belonging.",
+      "For some, the Architect pattern comes from having a parent who underfunctioned — through depression, addiction, absence, or immaturity — and the child stepped into a gap that was never theirs to fill. They have been 'holding it together' ever since.",
+      "Occasionally this pattern has less to do with wounds and more to do with temperament and giftedness — they are genuinely excellent at systems and planning. But even here, the integration work is learning that their worth is not their competence."
+    ],
+    "ISLE": [
+      "People with this pattern often grew up in a home where emotional expression was discouraged or penalized — feelings weren't welcomed, and the child learned to process them privately or not at all.",
+      "Sometimes this pattern develops in a home that was actually warm and loving, but where the person received consistent messages — spoken or unspoken — that self-sufficiency was the highest virtue. 'Figure it out yourself' was the household motto.",
+      "For some, the Island pattern comes from watching a parent who was emotionally needy, consistently overwhelmed, or who made the child feel responsible for their emotional state — and deciding 'I will never be that kind of burden on anyone.'",
+      "Some Islands developed their pattern through a significant loss or betrayal — a friendship that imploded, a parent who left, a relationship where their vulnerability was exploited. They tried openness once and it cost them."
+    ],
+    "AMB": [
+      "People with this pattern often grew up in a home where their emotional needs were secondary to someone else's — a parent's depression, addiction, volatility, or chronic crisis created an environment where the child learned to manage others' feelings before their own.",
+      "Sometimes this pattern develops in a home with high relational warmth, where caregiving was deeply modeled and valued — the child absorbed that love looks like service, and service is where worth lives.",
+      "For some, the Ambassador pattern comes from a home where love felt conditional on being easy — on not needing too much, not causing problems, not being a burden. They trained themselves out of need.",
+      "Occasionally the Ambassador is the oldest child or the most emotionally capable sibling, placed in a caretaking role early — by family structure or expectation — and the role became an identity before they were old enough to choose it."
+    ],
+    "VAULT": [
+      "People with this pattern often grew up in a home where vulnerability was dangerous — where what you expressed could be mocked, dismissed, used against you, or met with such disproportionate responses that it felt safer to keep things inside.",
+      "Sometimes this pattern develops in a home that was generally healthy, but where the child had a particularly exposing experience — a public failure, a betrayal of confidence, a moment of genuine shame that taught them the cost of being seen.",
+      "For some, the Vault pattern comes from a home with strong emotional repression as a cultural or religious value — feelings were not wrong exactly, but they were private. 'We don't air our dirty laundry.' The vault was the family itself.",
+      "Some Vaults developed in a home where one parent was emotionally explosive or intrusive, and the child learned that keeping things hidden was a form of self-protection from being consumed."
+    ],
+    "ADPT": [
+      "People with this pattern often grew up in a home with an unpredictable emotional climate — a parent with mood swings, addiction, or mental illness where the child's survival required constant vigilance and rapid adjustment. Reading the room became a life skill.",
+      "Sometimes this pattern develops in a home with high relational pressure — enmeshment, very low differentiation, a family system that absorbed individuality — where having a self that differed from the family felt threatening to the whole unit.",
+      "For some, the Adapter pattern came from being in a relationship early where being exactly what the other person needed was the most intoxicating experience they'd had. The pattern formed around the reward.",
+      "Some Adapters grew up with a parent whose love was present but highly conditional on the child conforming — to expectations, to temperament, to role. They adapted into lovability and never quite found their way back to themselves."
+    ],
+    "CAMP": [
+      "People with this pattern often grew up in a home where ordinary wasn't celebrated — where achievement was noticed, praised, and rewarded, while quiet days of simple presence weren't. They learned that being remarkable was the currency of belonging.",
+      "Sometimes this pattern develops in a home with significant loss or inadequacy — financial hardship, a parent's failure, a family reputation that needed rehabilitating — and the Campaign became the one who would prove the family name was worth something.",
+      "For some, the Campaign pattern forms around a wound of invisibility — a large family, a depressed parent, a school environment where they felt overlooked — and achievement was discovered as the antidote. 'If I am impressive enough, I cannot be ignored.'",
+      "Some Campaigns carry a particular relationship with mortality or legacy — influenced by a parent's early death, a family history of tragedy, or a deep theological awareness of life's brevity. The drive to leave a mark is partly grief looking for somewhere to live."
+    ]
+  },
+  "REFLECTION_QUESTIONS": {
+    "ARCH": [
+      "When have you felt most criticized or undermined by me — and looking back, what do you think the criticism landed on in you? What was the question underneath the sting?",
+      "Tell me about a time when something went wrong in your life and you had to let someone else handle it. What did that feel like? What would it feel like to let me do that for you sometimes?",
+      "When I share a problem with you and you go into solution mode — what percentage of the time is that the response I actually needed? What would you need from me so I could get the other response more often?",
+      "What does rest look like for you? Not vacation, not a productive Saturday — genuine rest with no agenda. When did you last have that? What gets in the way of it in our relationship?",
+      "If you could be incompetent at one thing in front of me — fully, without managing how I see you — what would it be? What would it take for that to feel safe?"
+    ],
+    "ISLE": [
+      "When you go quiet and need space, what's actually happening inside you? Not what you want me to think is happening — what's actually going on? Help me understand what that feels like from the inside.",
+      "Is there a topic — one topic — that you've kept from me not because you don't trust me, but because you don't know how to open it? You don't have to open it right now. Just naming it is enough.",
+      "When I reach for more closeness than you can give in a moment, what do you feel? Is it irritation? Panic? Sadness? Something else? I want to understand what that reach lands on.",
+      "When has this relationship felt safe enough that you went somewhere emotionally you usually don't go? What made it safe in that moment?",
+      "What would you need from me to make connection feel less depleting and more like something that refills you? I'm not asking you to need more than you need — I'm asking what would make the need you do have feel safer to bring to me."
+    ],
+    "AMB": [
+      "What do you actually want from this relationship that you've never asked for — because you thought it would be too much, or you couldn't quite name it, or you just always made do without it?",
+      "Tell me about a time when you were caring for me and internally resenting it. Not to confess something — but so I can understand what that invisible tally looks like. What were you putting on the list?",
+      "When I try to take care of you — bring you coffee, give you a night off, check in on how you're doing — why does it sometimes seem to go right past you? What happens in you when someone tries to give you something?",
+      "What would it feel like to need something from me and just ask for it directly, without framing it as okay if I can't, or wrapping it in concern for me? Can we practice that once right now?",
+      "If I told you that your needs in this marriage have equal standing to mine — that they're not a burden and they're not less important — what would you want me to know about you that you've been quietly carrying?"
+    ],
+    "VAULT": [
+      "Pick one thing — one thing about your inner life that you've never shown me. Not the darkest thing, not the most dramatic thing — just something real that I don't know about you. Can you show it to me right now?",
+      "When you hit the ceiling — the point where you're willing to go in a conversation and no further — what does that feel like in your body? What is the internal signal that says \"this far and no further\"?",
+      "What would have to be true about me — or about this relationship — for you to feel like the door to the parts you keep locked could be opened? What would safe enough look like?",
+      "Is there a version of our relationship where you feel like you're truly known, not just well-known? What's the difference between those two things for you?",
+      "When I tell you something vulnerable — a fear, a failure, a grief — do you feel closer to me or do you feel pressure? I'm asking because I want to understand what vulnerability does to you when it's coming at you, not from you."
+    ],
+    "ADPT": [
+      "Who are you when no one is watching? Not the best version, not the version adapted to what this room needs — just you, alone, with no one to read. Describe that person to me.",
+      "In this relationship, where have you lost yourself? Where have your preferences, your opinions, your needs quietly dissolved into mine? Can you give me a specific example?",
+      "What's the most honest thing you've wanted to disagree with me about but haven't? What stopped you?",
+      "When conflict starts between us, what is the thing you are most afraid will happen? What's the worst-case scenario that the adaptation is trying to prevent?",
+      "What does it feel like to be truly chosen — not accommodated, not adjusted to, but chosen for who you actually are? When have you felt that? What was different about that moment?"
+    ],
+    "CAMP": [
+      "When this relationship competes with the campaign for your time and energy — and loses — what is actually happening inside you? Is it that the relationship matters less, or that the campaign feels like it can't afford to stop?",
+      "If you removed every external marker of success or achievement from your life — job, platform, reputation, community standing — who would you be? And would that person be enough? For yourself? For me?",
+      "Tell me about a failure — not a learning experience, not a setback-that-made-me-stronger — a genuine failure that you haven't fully redeemed yet. What happened? What do you feel when you think about it?",
+      "What part of your inner life do I not see because it doesn't fit the story you're telling publicly? I'm not looking for confession — I'm looking for access to the person behind the campaign.",
+      "If this marriage is one of the primary places where you get to be extraordinary at something, what would extraordinary look like here? Not impressive — extraordinary in the way that only I would notice?"
+    ]
+  },
+  "PRAYERS": {
+    "ARCH": "Lord, this person right here is holding a lot. You know that. They've been holding it for a long time — probably since before they were old enough to decide to. Someone needed them to be competent and capable and together, and they stepped up, and they've been stepping up ever since. And we want to honor that tonight, right? Because it's real. The faithfulness is real. The reliability is real. The way they show up when things fall apart — that's not nothing.\n\nBut God, underneath all the planning and the preparation and the systems is a question they've been asking since they were small: Am I competent enough to be okay? Am I good enough to be kept? And here's the thing — the answer to that question isn't in the next plan or the next project or the next time they hold everything together. The answer has already been given. Christ's competence, credited to them. Christ's righteousness, not theirs, covering the ledger. The verdict is already in.\n\nSo would you help them to put down the clipboard, just for a moment? Not forever — they're going to keep being who they are. But help them learn that when they can't hold it together, they are not less. Help them let their partner see the unfinished version. Help them ask for help without feeling like they're losing something. Because they've been holding the world, and you are the one who holds the world — and the difference matters.\n\nIn Jesus' name. Amen.",
+    "ISLE": "Lord, you made us for connection. That's just true — and it's in the bones of this person even when the bone is buried under years of self-sufficiency. You know what it cost them to learn that needing people was dangerous, or depleting, or likely to end in disappointment. You know exactly where that decision got made. And we're not here to undo it tonight. We're just here to begin.\n\nBecause the Island pattern runs deep, doesn't it? The self-sufficiency isn't just a habit — it's a whole architecture. It kept them safe. It gave them a self when everything else was uncertain. We honor that even as we name it. But God, you created this person for the kind of closeness that can't be managed from a distance, right? \"It is not good for man to be alone\" — you said it before the Fall. Before anything went wrong, you looked at the human alone and said: this is not enough.\n\nSo would you do what only you can do, which is make connection feel less like a threat and more like what it actually is — a form of your own presence? Help them know that needing does not mean losing. Help them find the courage to go somewhere in this relationship that is unfamiliar and uncomfortable and real. Help their partner be patient enough to keep knocking on the door. And when it opens — even just a crack — may something come through that was worth the wait.\n\nIn Jesus' name. Amen.",
+    "AMB": "Lord, this person has spent a lot of their life looking after other people. Making sure everyone was okay. Smoothing the air. Giving without being asked. And you've used that — we know you have. That gift is real. The warmth is real. The attunement to other people's needs is remarkable and it is yours.\n\nBut God, somewhere along the way — and you know when — they started using care as a way to answer the question: Am I loved? Am I enough? Will they stay if I stop giving? And so the giving never stops, right? Because stopping feels like risking the answer. And the resentment builds quietly, in a place that people who only see the warmth would never think to look.\n\nTonight, would you speak directly into that question? Would you say, to this specific person: You are wanted. Not for what you do. For who you are. I don't need anything from you and I love you anyway. That's the Abba answer, isn't it? That's what adoption means — the love is prior to the performance. The performance doesn't create the love. The love creates the freedom to stop performing.\n\nGive them the courage to let themselves be known. Give them the words to ask for what they need. And give their partner the grace to receive what's given, and then to look the giver in the eye and say: Now it's your turn. What do you need?\n\nIn Jesus' name. Amen.",
+    "VAULT": "God, you know what's behind the door. You know all of it — the fears, the griefs, the failures, the tender things that got put away because the cost of showing them was too high. Nothing in there surprises you. Nothing in there is disqualifying. And that matters, because this person has built a life around the possibility that the real them — fully seen — would be too much.\n\nAnd here's the thing, Lord — the fear is not irrational. They've shown things before and paid for it, haven't they? The vulnerability went somewhere it shouldn't have gone. Or it landed in silence. Or it made someone uncomfortable and they could feel the discomfort and filed the lesson away: stay covered.\n\nBut your gospel says something different. It says that the one who needs covering has been covered — not because they hid well, but because Christ stood in the exposure on their behalf. He was hung out for everyone to see, right? He took the shame. And on the other side of that, there is a clothing — a righteousness, a belonging — that doesn't have to be earned or protected. It just is.\n\nSo would you help this person take one step toward the door? Not all the way through — just toward it. Help them trust that what comes out will be received, and not weaponized, and that the person they love is sturdy enough to hold it. And help that partner be exactly that — a person who can be trusted with the unlocked version. That's a holy thing, being entrusted with someone's unlocked self. Help them receive it that way.\n\nIn Jesus' name. Amen.",
+    "ADPT": "Lord, this person has been so good at becoming what others need. So good that somewhere along the way, they lost track of themselves. And it wasn't malicious — it was survival, wasn't it? Reading the room, becoming the right version, keeping things smooth — that's how they stayed safe, how they stayed close, how they stayed loved. The adaptation wasn't a lie. It was a language.\n\nBut you made this person. With specificity. With a particular shape, a particular voice, particular needs and passions and wounds that are irreducibly theirs. And the work of this season — the work of this marriage — is not more adaptation. It's less. It's the slow, brave work of finding out who they are when no one is watching, and then — harder — becoming that person in front of someone they love.\n\nWould you do that renewal work? Not from the outside in — not behavior modification, not \"try harder to assert yourself.\" From the inside out — the renewing of the mind that only you do. Help them find the self you made, not the self that kept the peace. Help them discover that being a full person with an actual perspective and an occasional \"no\" is not the end of the relationship — it might actually be the beginning of the real one.\n\nAnd for their partner: thank you for loving them. Please be patient. The real person is in there. They're just learning to trust that you want them.\n\nIn Jesus' name. Amen.",
+    "CAMP": "God, this person wants to matter. They want their life to mean something. They want to leave something behind. And can we just say — that is not wrong. That is not vain. That is the imago Dei in them recognizing that they were made for something, that their existence has weight, that eternity is supposed to intersect with their days.\n\nBut the way they've been answering that question — through achievement, through reputation, through becoming remarkable — that's a treadmill, isn't it? You can run hard on it and stay exactly where you are in terms of the question actually being answered. Because the question isn't Am I impressive? The real question is Am I enough to be remembered? Does my presence matter to anyone?\n\nAnd you've already answered that. You answered it before the foundation of the world. Their name is in the book. They are inscribed on your palms. You don't need their highlights reel — you know the part they never show anyone and you want them anyway. That's the answer. Not impressive — known. Not remarkable — loved.\n\nSo would you give this person permission to rest? Real rest — not vacation with a plan, not time off with a project — actual sabbath, actual stillness, actual marriage that doesn't need to be impressive to be good? Help them find out what they're like when they're not on. Help their partner be one of the safest places they know to be ordinary. And may this marriage be one of the places where the question finally gets answered quietly, for once — and it turns out that's enough.\n\nIn Jesus' name. Amen."
+  }
+}

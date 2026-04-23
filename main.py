@@ -85,6 +85,13 @@ class SubmissionIn(BaseModel):
     # Optional free-form home description ("warm and tense", etc.)
     home_desc: Optional[str] = None
 
+    # Optional wrap-up answers captured on the final results screen.
+    # Shape (both keys optional):
+    #   { "mechanism": {"mc": "b", "rank": [3,0,1,4,2]},
+    #     "breakdown": {"mc": "a", "rank": [2,1,0,3,4]} }
+    # where "rank" is a list of original item indexes in rank order (most-true first).
+    wrapup_answers: Optional[dict] = None
+
 
 class SubmissionOut(BaseModel):
     pair_code: str
@@ -131,6 +138,7 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
             "breakdown": payload.breakdown,
             "trigger_scores": payload.trigger_scores.dict(),
             "home_desc": payload.home_desc,
+            "wrapup_answers": payload.wrapup_answers,
         }),
         primary_trigger=payload.primary_trigger,
         primary_core_question=payload.core_question,
@@ -151,6 +159,7 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
         home_desc=payload.home_desc or "",
         name=payload.name or "",
         pair_code=pair_code,
+        wrapup_answers=payload.wrapup_answers,
     )
 
     # Generate PDF

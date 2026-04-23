@@ -6,20 +6,25 @@
 <style>
   @page {
     size: letter;
-    margin: 0.75in;
+    margin: 0.7in 0.75in 0.85in 0.75in;
     @bottom-center {
       content: "Take 139 · Search Me and Know Me · Ps. 139";
       font-family: 'Georgia', serif;
       font-size: 8pt;
-      color: #8a7f72;
+      color: #9a8f7f;
       font-style: italic;
     }
     @bottom-right {
       content: "Page " counter(page) " of " counter(pages);
       font-family: 'Helvetica', sans-serif;
       font-size: 8pt;
-      color: #8a7f72;
+      color: #9a8f7f;
     }
+  }
+
+  @page :first {
+    @bottom-center { content: ""; }
+    @bottom-right { content: ""; }
   }
 
   body {
@@ -31,12 +36,12 @@
     padding: 0;
   }
 
+  /* ═══════════════ COVER PAGE ═══════════════ */
   .cover {
     page-break-after: always;
     text-align: center;
-    padding-top: 1.5in;
+    padding-top: 1.3in;
   }
-
   .cover-brand {
     font-family: 'Helvetica', sans-serif;
     font-size: 9pt;
@@ -46,39 +51,34 @@
     font-weight: 600;
     margin-bottom: 0.8in;
   }
-
   .cover-title {
     font-family: 'Georgia', serif;
-    font-size: 38pt;
-    line-height: 1.1;
+    font-size: 40pt;
+    line-height: 1.05;
     color: #2a2620;
     margin: 0 0 0.15in 0;
     font-weight: 400;
   }
-
   .cover-verse {
     font-family: 'Georgia', serif;
     font-style: italic;
     font-size: 13pt;
     color: #c8956c;
-    margin-bottom: 0.6in;
+    margin-bottom: 0.55in;
   }
-
   .cover-subtitle {
     font-family: 'Helvetica', sans-serif;
     font-size: 11pt;
     color: #6b6158;
     letter-spacing: 0.05em;
-    margin-bottom: 1.2in;
+    margin-bottom: 1.1in;
   }
-
   .cover-name-block {
     border-top: 1px solid #d4ccc0;
     border-bottom: 1px solid #d4ccc0;
     padding: 0.3in 0;
-    margin: 0 1in;
+    margin: 0 0.8in;
   }
-
   .cover-prepared {
     font-family: 'Helvetica', sans-serif;
     font-size: 8pt;
@@ -87,20 +87,18 @@
     text-transform: uppercase;
     margin-bottom: 0.08in;
   }
-
   .cover-name {
     font-family: 'Georgia', serif;
     font-size: 22pt;
     color: #2a2620;
   }
-
   .cover-meta {
-    margin-top: 1.2in;
+    margin-top: 1in;
     font-family: 'Helvetica', sans-serif;
     font-size: 9pt;
     color: #8a7f72;
+    line-height: 1.6;
   }
-
   .cover-meta .pair-code {
     margin-top: 0.2in;
     font-family: 'Courier New', monospace;
@@ -109,18 +107,18 @@
     font-size: 11pt;
   }
 
+  /* ═══════════════ HEADINGS ═══════════════ */
   h1 {
     font-family: 'Georgia', serif;
     font-size: 22pt;
     font-weight: 400;
     color: #2a2620;
     border-bottom: 2px solid #c8956c;
-    padding-bottom: 0.1in;
+    padding-bottom: 0.08in;
     margin-top: 0;
-    margin-bottom: 0.25in;
+    margin-bottom: 0.2in;
     page-break-after: avoid;
   }
-
   h2 {
     font-family: 'Georgia', serif;
     font-size: 15pt;
@@ -130,54 +128,52 @@
     margin-bottom: 0.12in;
     page-break-after: avoid;
   }
-
   h3 {
     font-family: 'Helvetica', sans-serif;
-    font-size: 10pt;
+    font-size: 9pt;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.13em;
     color: #c8956c;
-    margin-top: 0.2in;
+    margin-top: 0.18in;
     margin-bottom: 0.08in;
     page-break-after: avoid;
   }
 
-  .section {
-    page-break-inside: avoid;
-    margin-bottom: 0.3in;
+  p { margin: 0 0 0.1in 0; }
+  p + p { margin-top: 0.1in; }
+
+  .section-break { page-break-before: always; }
+  .noprintbreak { page-break-inside: avoid; }
+
+  .intro {
+    font-size: 11pt;
+    color: #4a433a;
+    line-height: 1.65;
+    margin-bottom: 0.22in;
+    font-style: italic;
+    border-left: 2px solid #e0d6c5;
+    padding-left: 0.2in;
   }
 
-  .section-break {
-    page-break-before: always;
-  }
-
-  .eyebrow {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 8pt;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: #c8956c;
-    font-weight: 600;
-    margin-bottom: 0.05in;
-  }
-
+  /* ═══════════════ SENTENCE BLOCK ═══════════════ */
   .sentence-block {
     background: #faf6ef;
     border-left: 3px solid #c8956c;
-    padding: 0.25in 0.3in;
+    padding: 0.3in 0.35in;
     margin: 0.2in 0;
     font-family: 'Georgia', serif;
     font-size: 12pt;
-    line-height: 1.7;
+    line-height: 1.8;
     color: #2a2620;
   }
-
   .sentence-block .highlight {
     color: #9a6f4e;
     font-style: italic;
+    font-weight: 500;
   }
 
+  /* ═══════════════ PROFILE CARDS ═══════════════ */
   .profile-card {
     background: #f7f3ec;
     border: 1px solid #e0d6c5;
@@ -186,7 +182,6 @@
     margin-bottom: 0.18in;
     page-break-inside: avoid;
   }
-
   .profile-label {
     font-family: 'Helvetica', sans-serif;
     font-size: 8pt;
@@ -194,162 +189,265 @@
     text-transform: uppercase;
     color: #8a7f72;
     margin-bottom: 0.04in;
+    font-weight: 600;
   }
-
   .profile-name {
     font-family: 'Georgia', serif;
     font-size: 15pt;
     color: #2a2620;
     margin-bottom: 0.08in;
   }
-
   .profile-desc {
     font-size: 10pt;
     color: #4a433a;
+    line-height: 1.55;
+  }
+
+  /* ═══════════════ SCORE BARS ═══════════════ */
+  .scores-list {
+    margin: 0.15in 0;
+  }
+  .score-row {
+    display: flex;
+    align-items: center;
     margin-bottom: 0.1in;
+    font-size: 10pt;
+    page-break-inside: avoid;
   }
-
-  .scores-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.12in;
-    margin: 0.2in 0;
-  }
-
-  .score-item {
-    border: 1px solid #e0d6c5;
-    padding: 0.12in;
-    border-radius: 3px;
-  }
-
-  .score-name {
+  .score-label {
+    width: 1.4in;
+    color: #6b6158;
     font-family: 'Helvetica', sans-serif;
-    font-size: 8pt;
-    color: #8a7f72;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 0.03in;
+    font-size: 9pt;
+    font-weight: 600;
   }
-
-  .score-value {
-    font-family: 'Georgia', serif;
-    font-size: 14pt;
-    color: #2a2620;
-  }
-
-  .score-bar {
-    height: 4px;
-    background: #e8dfd0;
-    border-radius: 2px;
-    margin-top: 0.04in;
+  .score-track {
+    flex: 1;
+    height: 8px;
+    background: #ece4d3;
+    border-radius: 4px;
     overflow: hidden;
+    margin: 0 0.12in;
+    position: relative;
   }
-
   .score-fill {
     height: 100%;
     background: #c8956c;
-    border-radius: 2px;
-  }
-
-  ul.markers {
-    margin: 0.1in 0;
-    padding-left: 0.2in;
-  }
-
-  ul.markers li {
-    margin-bottom: 0.06in;
-    line-height: 1.5;
-    padding-left: 0.05in;
-  }
-
-  .gospel-block {
-    background: #2a2620;
-    color: #faf6ef;
-    padding: 0.3in;
     border-radius: 4px;
+  }
+  .score-num {
+    width: 0.45in;
+    text-align: right;
+    font-family: 'Georgia', serif;
+    font-size: 11pt;
+    color: #2a2620;
+  }
+
+  /* ═══════════════ BULLET LISTS ═══════════════ */
+  ul.markers {
+    margin: 0.05in 0 0.15in 0;
+    padding-left: 0.2in;
+    list-style: none;
+  }
+  ul.markers li {
+    position: relative;
+    padding-left: 0.25in;
+    margin-bottom: 0.08in;
+    line-height: 1.55;
+    font-size: 10pt;
+    color: #3a342c;
+  }
+  ul.markers li::before {
+    content: "·";
+    position: absolute;
+    left: 0.1in;
+    top: -2pt;
+    color: #c8956c;
+    font-size: 16pt;
+    font-weight: bold;
+  }
+
+  ul.origins {
+    margin: 0.05in 0 0.2in 0;
+    padding-left: 0;
+    list-style: none;
+  }
+  ul.origins li {
+    margin-bottom: 0.1in;
+    padding: 0.12in 0.18in;
+    background: #fbf9f4;
+    border-left: 2px solid #d4ccc0;
+    line-height: 1.55;
+    font-size: 10pt;
+    color: #3a342c;
+  }
+
+  /* ═══════════════ PERSONALIZED BLOCK ═══════════════ */
+  .personalized {
+    background: #f2ebdb;
+    border: 1px solid #d9c9a7;
+    border-left: 3px solid #c8956c;
+    border-radius: 4px;
+    padding: 0.2in 0.25in;
     margin: 0.2in 0;
     page-break-inside: avoid;
   }
-
-  .gospel-block .eyebrow {
-    color: #c8956c;
+  .personalized .label {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 8pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #9a6f4e;
+    margin-bottom: 0.05in;
+    font-weight: 700;
+  }
+  .personalized .title {
+    font-family: 'Georgia', serif;
+    font-size: 13pt;
+    color: #2a2620;
+    margin-bottom: 0.1in;
+  }
+  .personalized p {
+    font-size: 10.5pt;
+    line-height: 1.65;
+    color: #2a2620;
   }
 
+  /* ═══════════════ GOSPEL BLOCK ═══════════════ */
+  .gospel-block {
+    background: #2a2620;
+    color: #faf6ef;
+    padding: 0.35in 0.35in;
+    border-radius: 4px;
+    margin: 0.25in 0;
+    page-break-inside: avoid;
+  }
+  .gospel-block .eyebrow {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 8pt;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #c8956c;
+    font-weight: 700;
+    margin-bottom: 0.1in;
+  }
   .gospel-block h2 {
     color: #faf6ef;
     margin-top: 0;
+    margin-bottom: 0.12in;
   }
-
   .gospel-truth {
     font-family: 'Georgia', serif;
     font-size: 12pt;
     font-style: italic;
     line-height: 1.7;
     color: #f0e6d4;
-    margin: 0.15in 0;
+    margin: 0.12in 0;
+  }
+  .gospel-scripture {
+    font-size: 9.5pt;
+    color: #c8956c;
+    margin-top: 0.15in;
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.02em;
+  }
+  .gospel-expansion {
+    font-size: 10pt;
+    line-height: 1.6;
+    color: #d4ccc0;
+    margin-top: 0.18in;
   }
 
+  /* ═══════════════ REFLECTION ═══════════════ */
   .reflection-q {
     margin-bottom: 0.18in;
-    padding-left: 0.3in;
-    text-indent: -0.3in;
+    padding-left: 0.35in;
+    text-indent: -0.35in;
     line-height: 1.6;
+    font-size: 10.5pt;
+    color: #3a342c;
+    page-break-inside: avoid;
   }
-
   .reflection-q .n {
     color: #c8956c;
     font-family: 'Georgia', serif;
     font-weight: 700;
-    margin-right: 0.08in;
+    margin-right: 0.1in;
+    font-size: 12pt;
   }
 
+  /* ═══════════════ PRAYER ═══════════════ */
   .prayer {
     font-family: 'Georgia', serif;
     font-style: italic;
-    font-size: 11pt;
-    line-height: 1.75;
+    font-size: 11.5pt;
+    line-height: 1.85;
+    color: #3a342c;
+    margin: 0.18in 0;
+    padding: 0 0.15in;
+  }
+
+  /* ═══════════════ PAIR CODE CALLOUT ═══════════════ */
+  .couple-callout {
+    background: #f0ddc4;
+    border: 1px solid #c8956c;
+    border-radius: 4px;
+    padding: 0.25in 0.3in;
+    margin: 0.3in 0;
+    page-break-inside: avoid;
+    text-align: center;
+  }
+  .couple-callout .eyebrow {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 8pt;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #9a6f4e;
+    font-weight: 700;
+    margin-bottom: 0.05in;
+  }
+  .couple-callout .title {
+    font-family: 'Georgia', serif;
+    font-size: 14pt;
+    color: #2a2620;
+    margin-bottom: 0.12in;
+  }
+  .pair-code-display {
+    font-family: 'Courier New', monospace;
+    font-size: 16pt;
+    letter-spacing: 0.15em;
+    color: #c8956c;
+    background: #faf6ef;
+    padding: 0.1in 0.25in;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 0.05in 0 0.1in 0;
+    font-weight: 700;
+  }
+  .couple-callout p {
+    font-size: 10pt;
     color: #4a433a;
-    margin: 0.2in 0;
+    line-height: 1.55;
+    max-width: 5.2in;
+    margin: 0.12in auto 0;
   }
 
   .footer-note {
-    margin-top: 0.4in;
+    margin-top: 0.35in;
     padding-top: 0.15in;
     border-top: 1px solid #d4ccc0;
     font-size: 8.5pt;
     color: #8a7f72;
     font-style: italic;
     text-align: center;
+    line-height: 1.5;
   }
 
-  .couple-callout {
-    background: #f0ddc4;
-    border: 1px solid #c8956c;
-    border-radius: 4px;
-    padding: 0.2in 0.25in;
-    margin: 0.25in 0;
-    page-break-inside: avoid;
-  }
-
-  .couple-callout .eyebrow {
-    color: #9a6f4e;
-  }
-
-  .couple-callout h3 {
-    color: #9a6f4e;
-    margin-top: 0.05in;
-  }
-
-  .pair-code-display {
-    font-family: 'Courier New', monospace;
-    font-size: 14pt;
-    letter-spacing: 0.15em;
-    color: #c8956c;
-    background: #faf6ef;
-    padding: 0.1in 0.2in;
-    border-radius: 3px;
-    display: inline-block;
-    margin: 0.08in 0;
+  /* Small helper */
+  .small-muted {
+    font-size: 9.5pt;
+    color: #6b6158;
+    line-height: 1.55;
   }
 </style>
 </head>
@@ -361,12 +459,10 @@
   <div class="cover-title">Search Me<br>and Know Me</div>
   <div class="cover-verse">Psalm 139</div>
   <div class="cover-subtitle">A Premarital Diagnostic · Conflict Origins Profile</div>
-
   <div class="cover-name-block">
     <div class="cover-prepared">Prepared For</div>
     <div class="cover-name">{{ name or "Friend" }}</div>
   </div>
-
   <div class="cover-meta">
     {{ date }}<br>
     An assessment created by Dr. Christopher Hilken
@@ -374,115 +470,170 @@
   </div>
 </div>
 
-<!-- ═══════════ SUMMARY SENTENCE ═══════════ -->
+<!-- ═══════════ OPENING SENTENCE ═══════════ -->
 <h1>Your Conflict Origin Story</h1>
-<p style="font-size: 11pt; color: #6b6158; margin-bottom: 0.2in;">
-  Every conflict has a story underneath it. Yours is written in four layers — a trigger, a question, a defense, and a breakdown. Here is yours in one sentence.
-</p>
+<p class="intro">Every conflict has a story underneath it. Yours is written in four layers — a trigger, a question, a defense, and a breakdown. Here is yours in one sentence.</p>
 
 <div class="sentence-block">
 I am <span class="highlight">{{ name or "_______" }}</span>, and I grew up in a home that was <span class="highlight">{{ home_desc }}</span>.<br><br>
-You will find that I'm mainly bothered when I experience <span class="highlight">{{ primary_trigger_name }}</span> — <span class="highlight">{{ primary_trigger_short }}</span>.<br><br>
-The reason this triggers something deep in me is because a question I'm constantly asking myself is <span class="highlight">"{{ core_question }}"</span>.<br><br>
-I protect myself from feeling this way most of the time by being <span class="highlight">{{ mechanism_article }} {{ mechanism_name }}</span> — <span class="highlight">{{ mechanism_short }}</span>.<br><br>
-But when something gets through my defenses, I cope with that pain by becoming <span class="highlight">{{ breakdown_article }} {{ breakdown_name }}</span> — <span class="highlight">{{ breakdown_short }}</span>.
+
+You will find that I'm mainly bothered when I experience <span class="highlight">{{ trigger_short }}</span>.<br><br>
+
+The reason this triggers something deep in me is because a question I'm constantly asking myself is <span class="highlight">"{{ core_question_name }}"</span>.<br><br>
+
+I protect myself from feeling this way most of the time by being <span class="highlight">{{ mechanism_short }}</span> — {{ mechanism_desc }}<br><br>
+
+But when something gets through my defenses, I cope with that pain by becoming <span class="highlight">{{ breakdown_short }}</span> — {{ breakdown_desc }}
 </div>
 
-<!-- ═══════════ YOUR FULL PROFILE ═══════════ -->
-<div class="section-break"></div>
-<h1>Your Full Profile</h1>
-<p style="font-size: 11pt; color: #6b6158; margin-bottom: 0.25in;">
-  Your assessment scored four dimensions of your conflict pattern. These are drawn from attachment theory, biblical counseling frameworks, and family systems research.
-</p>
+<!-- ═══════════ PROFILE CARDS ═══════════ -->
+<h2 style="margin-top: 0.3in;">Your Four Profile Layers</h2>
 
 <div class="profile-card">
   <div class="profile-label">Your Primary Trigger</div>
-  <div class="profile-name">{{ primary_trigger_name }}</div>
-  <div class="profile-desc">{{ primary_trigger_long }}</div>
+  <div class="profile-name">{{ trigger_name }}</div>
+  <div class="profile-desc">{{ trigger_desc }}</div>
 </div>
 
 <div class="profile-card">
   <div class="profile-label">Your Core Question</div>
-  <div class="profile-name">"{{ core_question }}"</div>
-  <div class="profile-desc">{{ core_question_long }}</div>
+  <div class="profile-name">"{{ core_question_name }}"</div>
+  <div class="profile-desc">{{ core_question_desc }}</div>
 </div>
 
 <div class="profile-card">
   <div class="profile-label">Your Mechanism</div>
   <div class="profile-name">{{ mechanism_article|title }} {{ mechanism_name }}</div>
-  <div class="profile-desc">{{ mechanism_long }}</div>
+  <div class="profile-desc">{{ mechanism_desc }}</div>
 </div>
 
 <div class="profile-card">
   <div class="profile-label">Your Breakdown Pattern</div>
   <div class="profile-name">{{ breakdown_article|title }} {{ breakdown_name }}</div>
-  <div class="profile-desc">{{ breakdown_long }}</div>
+  <div class="profile-desc">{{ breakdown_desc }}</div>
 </div>
 
-<!-- ═══════════ TRIGGER SCORES ═══════════ -->
+<!-- ═══════════ TRIGGER SCORE CHART ═══════════ -->
 <h2>Your Trigger Profile</h2>
-<p style="font-size: 10pt; color: #6b6158;">How sensitive you are to each type of relational pain, out of 100.</p>
-
-<div class="scores-grid">
-  {% for trigger in trigger_scores %}
-  <div class="score-item">
-    <div class="score-name">{{ trigger.name }}</div>
-    <div class="score-value">{{ trigger.score }}</div>
-    <div class="score-bar"><div class="score-fill" style="width: {{ trigger.score }}%"></div></div>
+<p class="small-muted">How sensitive you are to each kind of relational pain, scored out of 100.</p>
+<div class="scores-list">
+  {% for t in trigger_scores %}
+  <div class="score-row">
+    <div class="score-label">{{ t.name }}</div>
+    <div class="score-track"><div class="score-fill" style="width: {{ t.score }}%"></div></div>
+    <div class="score-num">{{ t.score }}</div>
   </div>
   {% endfor %}
 </div>
 
-<!-- ═══════════ BEHAVIORAL MARKERS ═══════════ -->
+<!-- ═══════════ TRIGGER DEEP DIVE ═══════════ -->
 <div class="section-break"></div>
-<h1>How This Shows Up In Your Life</h1>
-<p style="font-size: 11pt; color: #6b6158; margin-bottom: 0.2in;">
-  These are the typical patterns that show up when your profile is running. Most people recognize themselves in 5 or 6 of them — not every single one.
-</p>
+<h1>Your Trigger · {{ trigger_name }}</h1>
+<p class="intro">Your most-activated trigger is where conflict will find you first. Here's what it looks like when it fires.</p>
 
-<h2>{{ mechanism_article|title }} {{ mechanism_name }} — Typical Patterns</h2>
+<h3>What This Trigger Feels Like</h3>
+<p>{{ trigger_desc }}</p>
+
+<h3>Everyday Moments That Activate It</h3>
+<p class="small-muted">{{ trigger_examples }}</p>
+
+<h3>What You'll Feel When It Fires</h3>
+<p class="small-muted">{{ trigger_signature }}</p>
+
+<!-- ═══════════ CORE QUESTION DEEP DIVE ═══════════ -->
+<div class="section-break"></div>
+<h1>Your Core Question · "{{ core_question_name }}"</h1>
+<p class="intro">Under every trigger is a question you've been asking yourself since long before this relationship started. For you, it's this one.</p>
+
+<h3>Where This Question Typically Comes From</h3>
+<p>{{ core_question_desc }}</p>
+
+<h3>Why It Shows Up In Conflict</h3>
+<p>{{ core_question_why }}</p>
+
+<h3>Typical Patterns In Your Life</h3>
 <ul class="markers">
-  {% for marker in mechanism_markers %}
-  <li>{{ marker }}</li>
-  {% endfor %}
+{% for marker in core_question_markers %}
+<li>{{ marker }}</li>
+{% endfor %}
 </ul>
 
-<h2>{{ breakdown_article|title }} {{ breakdown_name }} — When Things Break Down</h2>
+<!-- ═══════════ MECHANISM DEEP DIVE ═══════════ -->
+<div class="section-break"></div>
+<h1>Your Mechanism · {{ mechanism_article|title }} {{ mechanism_name }}</h1>
+<p class="intro">Your mechanism is how you organize your inner world day-to-day to keep the question from being answered the wrong way. It's your default operating system.</p>
+
+<h3>What {{ mechanism_article|title }} {{ mechanism_name }} Looks Like</h3>
+<p>{{ mechanism_desc }}</p>
+
+<h3>Typical Patterns In Your Life</h3>
 <ul class="markers">
-  {% for marker in breakdown_markers %}
-  <li>{{ marker }}</li>
-  {% endfor %}
+{% for marker in mechanism_markers %}
+<li>{{ marker }}</li>
+{% endfor %}
 </ul>
 
-<h2>Your Core Question — How It Runs in the Background</h2>
-<ul class="markers">
-  {% for marker in core_question_markers %}
-  <li>{{ marker }}</li>
-  {% endfor %}
+<h3>What People Close To You Often Say</h3>
+<p>{{ mechanism_partner_view }}</p>
+
+<h3>Where This Pattern Typically Comes From</h3>
+<p class="small-muted">No single origin story fits every person — but here are the most common ones we see.</p>
+<ul class="origins">
+{% for story in origin_stories %}
+<li>{{ story }}</li>
+{% endfor %}
 </ul>
+
+{% if mechanism_personalized %}
+<div class="personalized">
+  <div class="label">How This Shows Up For You Specifically</div>
+  <div class="title">What your answers revealed</div>
+  <p>{{ mechanism_personalized }}</p>
+</div>
+{% endif %}
+
+<!-- ═══════════ BREAKDOWN DEEP DIVE ═══════════ -->
+<div class="section-break"></div>
+<h1>Your Breakdown · {{ breakdown_article|title }} {{ breakdown_name }}</h1>
+<p class="intro">When your everyday mechanism isn't enough — when something gets through your defenses — this is what comes out.</p>
+
+<h3>What {{ breakdown_article|title }} {{ breakdown_name }} Looks Like</h3>
+<p>{{ breakdown_desc }}</p>
+
+<h3>Typical Patterns When You're At Your Worst</h3>
+<ul class="markers">
+{% for marker in breakdown_markers %}
+<li>{{ marker }}</li>
+{% endfor %}
+</ul>
+
+<h3>What Your Partner Will See</h3>
+<p>{{ breakdown_partner_view }}</p>
+
+{% if breakdown_personalized %}
+<div class="personalized">
+  <div class="label">How This Shows Up For You Specifically</div>
+  <div class="title">What your answers revealed</div>
+  <p>{{ breakdown_personalized }}</p>
+</div>
+{% endif %}
 
 <!-- ═══════════ GOSPEL TRUTH ═══════════ -->
 <div class="section-break"></div>
 <h1>The Gospel Truth You Need</h1>
-<p style="font-size: 11pt; color: #6b6158; margin-bottom: 0.2in;">
-  Every conflict pattern is ultimately an attempt to answer your core question on your own terms. The gospel answers it on better ones. Here is the truth your profile most needs to hear.
-</p>
+<p class="intro">Every conflict pattern is ultimately an attempt to answer your core question on your own terms. The gospel answers it on better ones. Here is the truth your profile most needs to hear.</p>
 
 <div class="gospel-block">
   <div class="eyebrow">Gospel Anchor</div>
-  <h2>{{ gospel_title }}</h2>
-  <div class="gospel-truth">{{ gospel_truth }}</div>
-  <p style="color: #d4ccc0; font-size: 10pt; margin-top: 0.15in;">{{ gospel_scripture }}</p>
+  <h2>{{ gospel_bridge }}</h2>
+  <div class="gospel-truth">{{ gospel_anchor }}</div>
+  <div class="gospel-scripture">{{ gospel_scripture }}</div>
 </div>
-
-<p>{{ gospel_expansion }}</p>
 
 <!-- ═══════════ REFLECTION ═══════════ -->
 <div class="section-break"></div>
 <h1>Reflection Questions</h1>
-<p style="font-size: 11pt; color: #6b6158; margin-bottom: 0.25in;">
-  These questions are designed for you and your partner (or a trusted friend or counselor) to walk through together. Don't rush them. The point is not to answer quickly — it's to answer honestly.
-</p>
+<p class="intro">These questions are designed for you and your partner (or a trusted friend or counselor) to walk through together. Don't rush them. The point is not to answer quickly — it's to answer honestly.</p>
 
 {% for q in reflection_questions %}
 <div class="reflection-q">
@@ -491,22 +642,25 @@ But when something gets through my defenses, I cope with that pain by becoming <
 {% endfor %}
 
 <!-- ═══════════ PRAYER ═══════════ -->
-<h2 style="margin-top: 0.4in;">A Prayer For You</h2>
-<div class="prayer">{{ prayer }}</div>
+<h2>A Prayer For {{ mechanism_article|title }} {{ mechanism_name }}</h2>
+<div class="prayer">
+{% for para in prayer_paragraphs %}
+<p>{{ para }}</p>
+{% endfor %}
+</div>
 
-<!-- ═══════════ COUPLE CALLOUT ═══════════ -->
+<!-- ═══════════ PAIR CODE CALLOUT ═══════════ -->
 <div class="couple-callout">
   <div class="eyebrow">Save This Code</div>
-  <h3>Your Pair Code</h3>
+  <div class="title">Your Pair Code</div>
   <div class="pair-code-display">{{ pair_code }}</div>
-  <p style="font-size: 10pt; color: #4a433a; margin-top: 0.1in;">
-    If you're engaged or in a serious relationship, have your partner take the Take 139 assessment and receive their own pair code. When you're both ready, you can unlock a combined Couple's Report that shows how your two profiles interact — where you'll clash, where you'll complement, and how to lead each other well. Visit <strong>take139.com</strong> for details.
-  </p>
+  <p>If you're engaged or in a serious relationship, have your partner take the Take 139 assessment and receive their own pair code. When you're both ready, you can use your pair codes to unlock a Couple's Report that shows how your two profiles interact — where you'll clash, where you'll complement, and how to lead each other well. Visit <strong>take139.com</strong> for details.</p>
 </div>
 
 <div class="footer-note">
-  Take 139 · Search Me and Know Me · Psalm 139<br>
-  © {{ year }} · Dr. Christopher Hilken · take139.com
+  "Search me, God, and know my heart; test me and know my anxious thoughts. See if there is any offensive way in me, and lead me in the way everlasting." — Psalm 139:23–24<br><br>
+  Take 139 · An assessment created by Dr. Christopher Hilken · take139.com<br>
+  © {{ year }}
 </div>
 
 </body>
