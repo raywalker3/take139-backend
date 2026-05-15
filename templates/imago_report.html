@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IMAGO Hardwiring Profile — {{ name }}</title>
+<style>
+  @page {
+    size: letter;
+    margin: 0.7in 0.75in 0.95in 0.75in;
+    @bottom-center {
+      content: "IMAGO · Fearfully and Wonderfully Made · Ps. 139:14";
+      font-family: 'Georgia', serif;
+      font-size: 8pt;
+      color: #9a8f7f;
+      font-style: italic;
+    }
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-family: 'Helvetica', sans-serif;
+      font-size: 8pt;
+      color: #9a8f7f;
+    }
+  }
+  @page :first {
+    @bottom-center { content: ""; }
+    @bottom-right { content: ""; }
+  }
+
+  body {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 10.5pt;
+    color: #2a2620;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0;
+  }
+
+  i, em { font-style: italic; }
+  b, strong { font-weight: 700; }
+
+  /* ════════════════ COVER ════════════════ */
+  .cover {
+    page-break-after: always;
+    text-align: center;
+    padding-top: 1.3in;
+  }
+  .cover-brand {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 9pt;
+    letter-spacing: 0.4em;
+    color: #c8956c;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 0.7in;
+  }
+  .cover-title {
+    font-family: 'Georgia', serif;
+    font-size: 64pt;
+    line-height: 1.0;
+    color: #2a2620;
+    margin: 0 0 0.1in 0;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+  }
+  .cover-subtitle {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 14pt;
+    color: #c8956c;
+    margin-bottom: 0.4in;
+  }
+  .cover-divider {
+    width: 3.5in;
+    height: 1px;
+    background: #d4ccc0;
+    margin: 0.4in auto;
+    border: none;
+  }
+  .cover-verse {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 12pt;
+    color: #6b6158;
+    line-height: 1.6;
+    margin: 0.5in 1in 0.6in 1in;
+  }
+  .cover-name-block {
+    border-top: 1px solid #d4ccc0;
+    border-bottom: 1px solid #d4ccc0;
+    padding: 0.3in 0;
+    margin: 0 1in;
+  }
+  .cover-name {
+    font-family: 'Georgia', serif;
+    font-size: 22pt;
+    color: #2a2620;
+    margin: 0;
+  }
+  .cover-meta {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 10pt;
+    color: #8a7f72;
+    margin-top: 0.45in;
+    line-height: 1.7;
+  }
+
+  /* ═══════════ HEADERS / TYPOGRAPHY ═══════════ */
+  h1 {
+    font-family: 'Georgia', serif;
+    font-size: 28pt;
+    color: #2a2620;
+    font-weight: 400;
+    margin: 0 0 0.1in 0;
+    line-height: 1.15;
+  }
+  h2 {
+    font-family: 'Georgia', serif;
+    font-size: 20pt;
+    color: #2a2620;
+    font-weight: 400;
+    margin: 0.35in 0 0.1in 0;
+    line-height: 1.2;
+  }
+  h3 {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 9pt;
+    color: #c8956c;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    margin: 0.25in 0 0.05in 0;
+  }
+  .accent-rule {
+    width: 100%;
+    height: 1.5px;
+    background: #c8956c;
+    margin: 0.1in 0 0.2in 0;
+    border: none;
+  }
+  .subtitle {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 12pt;
+    color: #9a6f4e;
+    margin: 0.05in 0 0.25in 0;
+  }
+  p { margin: 0 0 0.12in 0; }
+
+  /* ════════════════ SIDEBAR BOXES ════════════════ */
+  .sidebar {
+    background: #f5ede0;
+    border: 0.5px solid #e0d6c5;
+    border-left: 3px solid #c8956c;
+    padding: 0.18in 0.25in;
+    margin: 0.2in 0;
+    page-break-inside: avoid;
+  }
+  .sidebar-title {
+    font-family: 'Georgia', serif;
+    font-size: 18pt;
+    color: #2a2620;
+    margin: 0 0 0.1in 0;
+  }
+  .sidebar-anchor {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 10pt;
+    color: #9a6f4e;
+    margin: 0.05in 0;
+  }
+  .sidebar-eyebrow {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 8pt;
+    color: #9a6f4e;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    margin: 0.1in 0 0.05in 0;
+  }
+  .sidebar-line {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 10pt;
+    color: #3a342c;
+    margin: 0.04in 0;
+  }
+  .score-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.05in 0;
+  }
+  .score-table td {
+    padding: 3pt 0;
+    font-size: 10pt;
+    vertical-align: top;
+  }
+  .score-table .score-key {
+    font-weight: 700;
+    color: #2a2620;
+    width: 1.7in;
+  }
+  .score-table .score-val {
+    color: #3a342c;
+  }
+
+  /* ════════════════ LETTER TYPE PAGE ════════════════ */
+  .letter-type-display {
+    text-align: center;
+    margin: 0.6in 0 0.4in 0;
+    page-break-inside: avoid;
+  }
+  .letter-type-text {
+    font-family: 'Georgia', serif;
+    font-size: 96pt;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    margin: 0;
+  }
+  .letter-type-text .upper { color: #2a2620; }
+  .letter-type-text .lower { color: #c8956c; opacity: 0.85; }
+  .letter-type-text .borderline { text-decoration: underline; text-decoration-color: #c8956c; text-decoration-thickness: 2pt; text-underline-offset: 8pt; }
+  .letter-type-caption {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 13pt;
+    color: #6b6158;
+    margin-top: 0.15in;
+  }
+
+  /* ════════════════ DOMAIN BAR ════════════════ */
+  .pct-bar-wrap { margin: 0.06in 0 0.18in 0; }
+  .pct-bar-track {
+    width: 100%;
+    height: 5pt;
+    background: #ede4d2;
+    border-radius: 3pt;
+    overflow: hidden;
+  }
+  .pct-bar-fill { height: 100%; background: #c8956c; }
+  .pct-bar-label {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 8pt;
+    color: #6b6158;
+    margin-top: 3pt;
+  }
+
+  /* ════════════════ DOMAIN/ASPECT SECTIONS ════════════════ */
+  .domain-block { margin-bottom: 0.3in; }
+  .aspect-mini-block {
+    margin-bottom: 0.18in;
+    padding: 0.12in 0.18in;
+    background: #faf6ef;
+    border-left: 2px solid #d4ccc0;
+    page-break-inside: avoid;
+  }
+  .aspect-mini-name {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #2a2620;
+    margin: 0 0 0.03in 0;
+  }
+  .aspect-mini-meta {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 9pt;
+    color: #9a6f4e;
+    font-weight: 700;
+    margin-bottom: 0.05in;
+  }
+  .aspect-mini-sidebar {
+    font-style: italic;
+    color: #6b6158;
+    font-size: 9.5pt;
+    margin-bottom: 0.05in;
+  }
+
+  /* ════════════════ PRAYER ════════════════ */
+  .prayer-box {
+    background: #f5ede0;
+    border-left: 3px solid #c8956c;
+    padding: 0.22in 0.3in;
+    margin: 0.25in 0;
+    page-break-inside: avoid;
+  }
+  .prayer-eyebrow {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 8pt;
+    color: #9a6f4e;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    margin-bottom: 0.08in;
+  }
+  .prayer-body {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 11pt;
+    color: #2a2620;
+    line-height: 1.65;
+  }
+
+  /* ════════════════ BIBLICAL FIGURES ════════════════ */
+  .scripture-figure { margin-bottom: 0.15in; }
+  .scripture-figure-name {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #9a6f4e;
+    margin-bottom: 0.03in;
+  }
+  .scripture-figure-text {
+    font-size: 10.5pt;
+    color: #2a2620;
+  }
+
+  /* ════════════════ REFLECTION QUESTIONS ════════════════ */
+  .reflection-q {
+    margin-bottom: 0.2in;
+    page-break-inside: avoid;
+  }
+  .reflection-q-num {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 9pt;
+    color: #9a6f4e;
+    margin-bottom: 0.04in;
+  }
+  .reflection-q-text {
+    font-size: 10.5pt;
+    color: #2a2620;
+    line-height: 1.55;
+  }
+
+  .section-divider { page-break-before: always; }
+  .pair-callout {
+    background: #2a2620;
+    color: #faf6ef;
+    padding: 0.3in 0.4in;
+    margin: 0.4in 0;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+  .pair-callout-eyebrow {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 8pt;
+    color: #c8956c;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-weight: 700;
+  }
+  .pair-callout-code {
+    font-family: 'Georgia', serif;
+    font-size: 24pt;
+    color: #faf6ef;
+    margin: 0.1in 0;
+    letter-spacing: 0.05em;
+  }
+  .pair-callout-note {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 11pt;
+    color: #d4ccc0;
+  }
+  .closing-verse {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 12pt;
+    color: #6b6158;
+    line-height: 1.6;
+    text-align: center;
+    margin: 0.4in 1in;
+  }
+
+  ul.markers { margin: 0.1in 0 0.15in 0.3in; padding: 0; }
+  ul.markers li { margin-bottom: 0.04in; list-style: disc; }
+
+  .gift-line {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 12pt;
+    color: #9a6f4e;
+    text-align: center;
+    margin: 0.3in 0;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ═══════════ COVER ═══════════ -->
+  <div class="cover">
+    <div class="cover-brand">Take 139 · IMAGO</div>
+    <h1 class="cover-title">IMAGO</h1>
+    <div class="cover-subtitle"><i>The Hardwiring Profile</i></div>
+    <hr class="cover-divider">
+    <div class="cover-verse">
+      "I praise you, for I am fearfully and wonderfully made.<br>
+      Wonderful are your works; my soul knows it very well."<br>
+      — Psalm 139:14
+    </div>
+    <div class="cover-name-block">
+      <p class="cover-name">{{ name }}</p>
+    </div>
+    <div class="cover-meta">
+      {{ date }}<br>
+      {{ pair_code }}
+    </div>
+  </div>
+
+  <!-- ═══════════ TIER 1 — SOUL SHAPE ═══════════ -->
+  <h1>Your Soul Shape</h1>
+  <p class="subtitle">The opening line of who you are.</p>
+  <hr class="accent-rule">
+
+  <div class="sidebar">
+    <div class="sidebar-title">The {{ soul_shape_name }}</div>
+    {% if soul_shape_stability or soul_shape_plasticity %}
+      <div class="sidebar-line">
+        {% if soul_shape_stability %}Stability: {{ soul_shape_stability }}{% endif %}{% if soul_shape_stability and soul_shape_plasticity %} · {% endif %}{% if soul_shape_plasticity %}Plasticity: {{ soul_shape_plasticity }}{% endif %}
+      </div>
+    {% endif %}
+    {% if soul_shape_biblical_anchor %}
+      <div class="sidebar-anchor">Biblical anchor: {{ soul_shape_biblical_anchor|safe }}</div>
+    {% endif %}
+  </div>
+
+  {% if soul_shape_tagline %}<p class="subtitle" style="margin-top: 0.1in;">{{ soul_shape_tagline|safe }}</p>{% endif %}
+
+  {% for paragraph in soul_shape_narrative %}
+    <p>{{ paragraph|safe }}</p>
+  {% endfor %}
+
+  <!-- ═══════════ TIER 2 — LETTER TYPE ═══════════ -->
+  <div class="section-divider"></div>
+  <h1>Your IMAGO Type</h1>
+  <p class="subtitle">A summary in five letters.</p>
+  <hr class="accent-rule">
+
+  <div class="letter-type-display">
+    <div class="letter-type-text">
+      {%- for L in letter_type_display -%}
+        <span class="{% if L.is_high %}upper{% else %}lower{% endif %}{% if L.is_borderline %} borderline{% endif %}">{{ L.display_letter }}</span>
+      {%- endfor -%}
+    </div>
+    <div class="letter-type-caption">Your type: {{ letter_type }}</div>
+  </div>
+
+  <p>The letters above are the shape of your wiring across five domains. Capital letters mark areas where you score in or above the 60th percentile — wiring that runs strong in you. Lowercase letters are below the 60th — wiring that is quieter in you, by design and not by deficit.</p>
+
+  {% if letter_type_borderline %}
+    <p><i>Borderline letters: {{ letter_type_borderline|join(", ") }}. On a different day or in a different season, these letters might present as the opposite case. The pattern is real but not fixed.</i></p>
+  {% endif %}
+
+  <div class="sidebar">
+    <div class="sidebar-eyebrow">Your scores at a glance</div>
+    <table class="score-table">
+      {% for d in domain_sections %}
+      <tr>
+        <td class="score-key">{{ d.code }} · {{ d.name }}</td>
+        <td class="score-val">{{ d.percentile|ordinal }} — <i>{{ d.pole }}</i></td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <p>Each of the five domains is a way of being human that images something true about God. The pages that follow walk through each one in turn.</p>
+
+  <!-- ═══════════ TIER 2 — THE FIVE DOMAINS ═══════════ -->
+  <div class="section-divider"></div>
+  <h1>The Five Domains</h1>
+  <p class="subtitle">How your wiring shows up, one piece at a time.</p>
+  <hr class="accent-rule">
+
+  {% for d in domain_sections %}
+    {% if not loop.first %}<div class="section-divider"></div>{% endif %}
+    <div class="domain-block">
+      <h2>{{ d.code }} — {{ d.name }}</h2>
+      <p class="subtitle">{{ d.percentile|ordinal }} percentile · <i>{{ d.pole }}</i></p>
+
+      <div class="pct-bar-wrap">
+        <div class="pct-bar-track">
+          <div class="pct-bar-fill" style="width: {{ d.percentile|round|int }}%;"></div>
+        </div>
+        <div class="pct-bar-label">{{ d.percentile|ordinal }} percentile</div>
+      </div>
+
+      {% if d.sidebar %}
+        <div class="sidebar">
+          {% if d.sidebar.name %}<div class="sidebar-title">{{ d.sidebar.name|safe }}</div>{% endif %}
+          {% if d.sidebar.description %}<div class="sidebar-line">{{ d.sidebar.description|safe }}</div>{% endif %}
+          {% if d.sidebar.biblical_anchor %}<div class="sidebar-anchor">Biblical anchor: {{ d.sidebar.biblical_anchor|safe }}</div>{% endif %}
+        </div>
+      {% endif %}
+
+      {% for paragraph in d.opening_paragraphs %}<p>{{ paragraph|safe }}</p>{% endfor %}
+
+      {% if d.what_this_looks_like %}
+        <h3>What This Looks Like</h3>
+        {% for paragraph in d.what_this_looks_like %}<p>{{ paragraph|safe }}</p>{% endfor %}
+      {% endif %}
+
+      {% if d.imago_dei_connection %}
+        <h3>The Image It Bears</h3>
+        {% for paragraph in d.imago_dei_connection %}<p>{{ paragraph|safe }}</p>{% endfor %}
+      {% endif %}
+
+      {% if d.calling %}
+        <h3>The Calling</h3>
+        {% for paragraph in d.calling %}<p>{{ paragraph|safe }}</p>{% endfor %}
+      {% endif %}
+
+      {% if d.shadow %}
+        <h3>The Shadow</h3>
+        {% for paragraph in d.shadow %}<p>{{ paragraph|safe }}</p>{% endfor %}
+      {% endif %}
+
+      {% if d.gospel_anchor %}
+        <h3>Gospel Anchor</h3>
+        {% for paragraph in d.gospel_anchor %}<p>{{ paragraph|safe }}</p>{% endfor %}
+      {% endif %}
+
+      {% if d.partner_insight %}
+        <h3>What Your Partner Will Notice</h3>
+        {% for paragraph in d.partner_insight %}<p>{{ paragraph|safe }}</p>{% endfor %}
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  <!-- ═══════════ TIER 3 — THE TEN ASPECTS ═══════════ -->
+  <div class="section-divider"></div>
+  <h1>The Ten Aspects</h1>
+  <p class="subtitle">The finer texture of the five domains.</p>
+  <hr class="accent-rule">
+
+  <p>Each domain breaks down into two aspects. Below is your score on each, with the relevant passage for where you land. Counselors and pastors often find this section the most useful in a working session.</p>
+
+  {% for a in aspect_sections %}
+    <div class="aspect-mini-block">
+      <div class="aspect-mini-name">{{ a.name }} <span style="color: #8a7f72; font-weight: 400; font-size: 9.5pt;">({{ a.code }})</span></div>
+      <div class="aspect-mini-meta">{{ a.percentile|ordinal }} percentile</div>
+      {% if a.sidebar and a.sidebar.description %}
+        <div class="aspect-mini-sidebar">{{ a.sidebar.description|safe }}</div>
+      {% endif %}
+      {% if a.pole_paragraph %}<p>{{ a.pole_paragraph|safe }}</p>{% endif %}
+      {% if a.pastoral_note %}<p style="font-style: italic; color: #6b6158; font-size: 10pt;">{{ a.pastoral_note|safe }}</p>{% endif %}
+    </div>
+  {% endfor %}
+
+  <!-- ═══════════ TIER 4 — ARCHETYPE ═══════════ -->
+  <div class="section-divider"></div>
+  <h1>Your Archetype</h1>
+  <p class="subtitle">A vocation, not a verdict.</p>
+  <hr class="accent-rule">
+
+  <div class="sidebar">
+    <div class="sidebar-title">The {{ archetype_name }}</div>
+    {% if archetype_biblical_anchor %}<div class="sidebar-anchor">Biblical anchor: {{ archetype_biblical_anchor|safe }}</div>{% endif %}
+    {% if archetype_sidebar_scores %}
+      <div class="sidebar-eyebrow">Your scores at a glance</div>
+      <table class="score-table">
+        {% for row in archetype_sidebar_scores %}
+        <tr>
+          <td class="score-key">{{ row[0]|safe }}</td>
+          <td class="score-val">{{ row[1]|safe }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+  </div>
+
+  {% if archetype_opening %}
+    <h3>Opening</h3>
+    {% for paragraph in archetype_opening %}<p>{{ paragraph|safe }}</p>{% endfor %}
+  {% endif %}
+
+  {% if archetype_what_this_looks_like %}
+    <h3>What This Looks Like</h3>
+    {% for paragraph in archetype_what_this_looks_like %}<p>{{ paragraph|safe }}</p>{% endfor %}
+  {% endif %}
+
+  {% if archetype_behavioral_markers %}
+    <h3>Behavioral Markers</h3>
+    <ul class="markers">
+      {% for marker in archetype_behavioral_markers %}<li>{{ marker|safe }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if archetype_what_you_bring %}
+    <h3>What You Bring to the Body of Christ</h3>
+    {% for paragraph in archetype_what_you_bring %}<p>{{ paragraph|safe }}</p>{% endfor %}
+  {% endif %}
+
+  {% if archetype_scripture_figures %}
+    <h3>Scripture Figures</h3>
+    {% for fig in archetype_scripture_figures %}
+      <div class="scripture-figure">
+        {% if fig.name %}<div class="scripture-figure-name">{{ fig.name|safe }}</div>{% endif %}
+        {% if fig.text %}<div class="scripture-figure-text">{{ fig.text|safe }}</div>{% endif %}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  {% if archetype_shadow %}
+    <h3>The Shadow</h3>
+    {% for paragraph in archetype_shadow %}<p>{{ paragraph|safe }}</p>{% endfor %}
+  {% endif %}
+
+  {% if archetype_gospel_calling %}
+    <h3>The Gospel Calling</h3>
+    {% for paragraph in archetype_gospel_calling %}<p>{{ paragraph|safe }}</p>{% endfor %}
+  {% endif %}
+
+  {% if archetype_deepest_call %}
+    <h3>The Deepest Call</h3>
+    {% for paragraph in archetype_deepest_call %}<p>{{ paragraph|safe }}</p>{% endfor %}
+  {% endif %}
+
+  {% if archetype_prayer %}
+    <div class="prayer-box">
+      <div class="prayer-eyebrow">A prayer in your voice</div>
+      <div class="prayer-body">
+        {% if archetype_prayer is string %}{{ archetype_prayer|safe }}{% else %}{% for p in archetype_prayer %}<p style="margin-bottom: 0.1in;">{{ p|safe }}</p>{% endfor %}{% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if archetype_gift_to_body %}
+    <p class="gift-line">Your gift to the body: {{ archetype_gift_to_body|safe }}</p>
+  {% endif %}
+
+  <!-- ═══════════ REFLECTION QUESTIONS ═══════════ -->
+  <div class="section-divider"></div>
+  <h1>Reflection</h1>
+  <p class="subtitle">Five questions for the road ahead.</p>
+  <hr class="accent-rule">
+
+  <p>The IMAGO instrument can name the pattern of your wiring. It cannot tell you whether that wiring is being shaped by the Spirit or by old wounds. Only prayer and trusted Christian community can sort that. Below are five reflection questions for you alone — ideally with a pastor, spouse, or trusted friend who knows you well enough to push back.</p>
+
+  {% for q in reflection_questions %}
+    <div class="reflection-q">
+      <div class="reflection-q-num">Question {{ q.number }}</div>
+      <div class="reflection-q-text">{{ q.question_text|safe }}</div>
+    </div>
+  {% endfor %}
+
+  <!-- ═══════════ PAIR CODE / CLOSING ═══════════ -->
+  <div class="pair-callout">
+    <div class="pair-callout-eyebrow">Your IMAGO pair code</div>
+    <div class="pair-callout-code">{{ pair_code }}</div>
+    <div class="pair-callout-note">
+      Share this with your spouse, pastor, or counselor.<br>
+      In the future, this code lets us pair your IMAGO with another person's for a couple's report.
+    </div>
+  </div>
+
+  <div class="closing-verse">
+    "Search me, God, and know my heart;<br>
+    test me and know my anxious thoughts.<br>
+    See if there is any offensive way in me,<br>
+    and lead me in the way everlasting."<br>
+    — Psalm 139:23–24
+  </div>
+
+  <div style="text-align: center; margin-top: 0.4in;">
+    <p style="font-size: 9pt; color: #8a7f72;">
+      Take 139 · IMAGO · Phase 1<br>
+      Generated {{ date }} for {{ name }}
+    </p>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: Georgia, serif; color: #2a2620; max-width: 600px; margin: 0 auto; padding: 24px; background: #faf6ef; line-height: 1.6; }
+  .brand { font-family: Helvetica, sans-serif; font-size: 10px; letter-spacing: 0.3em; color: #c8956c; text-transform: uppercase; font-weight: 600; }
+  h1 { font-family: Georgia, serif; font-size: 36px; color: #2a2620; margin: 16px 0 4px 0; }
+  .subtitle { font-style: italic; color: #c8956c; font-size: 15px; }
+  .accent { width: 60px; height: 2px; background: #c8956c; margin: 18px 0 24px 0; border: none; }
+  p { font-size: 14px; }
+  .summary-box { background: #f5ede0; border-left: 3px solid #c8956c; padding: 14px 18px; margin: 18px 0; }
+  .summary-box h3 { font-family: Helvetica, sans-serif; font-size: 11px; color: #9a6f4e; letter-spacing: 0.15em; text-transform: uppercase; margin: 0 0 6px 0; }
+  .summary-box .key-result { font-family: Georgia, serif; font-size: 18px; color: #2a2620; margin: 4px 0; }
+  .verse { font-style: italic; color: #6b6158; border-top: 1px solid #d4ccc0; border-bottom: 1px solid #d4ccc0; padding: 16px 0; margin: 24px 0; text-align: center; }
+  .signature { color: #6b6158; font-size: 13px; margin-top: 30px; }
+</style>
+</head>
+<body>
+  <div class="brand">Take 139 · IMAGO</div>
+  <h1>Your Hardwiring Profile</h1>
+  <div class="subtitle">{{ name }}, here is who you were made to be.</div>
+  <hr class="accent">
+
+  <p>Thank you for taking IMAGO. Attached is your full report — a pastoral walk through the way you were knit together, drawn from Scripture and from decades of trustworthy personality research.</p>
+
+  <div class="summary-box">
+    <h3>The headline</h3>
+    <div class="key-result">Soul Shape: The {{ soul_shape }}</div>
+    <div class="key-result">Archetype: The {{ archetype }}</div>
+    <div class="key-result">IMAGO type: {{ letter_type }}</div>
+    <div class="key-result" style="font-size: 14px; color: #6b6158; font-style: italic; margin-top: 8px;">
+      Pair code: {{ pair_code }}
+    </div>
+  </div>
+
+  <p>The full report is the PDF attached to this email. It includes:</p>
+  <ul>
+    <li>Your Soul Shape — the opening line of who you are</li>
+    <li>Your IMAGO letter type — your scores at a glance</li>
+    <li>Each of the five domains, with what your score looks like in real life</li>
+    <li>The ten aspects — finer texture for counselors and pastors</li>
+    <li>Your archetype portrait, with prayer and Scripture figures</li>
+    <li>Five reflection questions for you to take into prayer and community</li>
+  </ul>
+
+  <p><b>What to do with this.</b> Read it with someone — a spouse, pastor, or trusted friend. The report ends with five questions that are best taken into conversation rather than answered alone. Your wiring is a gift, not a destiny; this is a starting point for growth, not a verdict.</p>
+
+  <div class="verse">
+    "I praise you, for I am fearfully and wonderfully made.<br>
+    Wonderful are your works; my soul knows it very well."<br>
+    — Psalm 139:14
+  </div>
+
+  <div class="signature">
+    With prayer for your next season,<br>
+    <b>Dr. Christopher Hilken</b><br>
+    Take 139 · IMAGO
+  </div>
+</body>
+</html>

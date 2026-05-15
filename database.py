@@ -65,6 +65,49 @@ class Submission(Base):
     emailed_to_admin = Column(Boolean, default=False)
 
 
+class ImagoSubmission(Base):
+    """A completed IMAGO assessment submission.
+
+    Parallel to Submission (which is for Take 139). Lives in the same
+    database so a single user can have both records linked by email
+    or pair_code in the future.
+    """
+    __tablename__ = "imago_submissions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    pair_code = Column(String(32), unique=True, index=True, nullable=False)
+
+    # Identity
+    name = Column(String(200), nullable=True)
+    email = Column(String(200), nullable=True, index=True)
+
+    # Access context
+    access_code_used = Column(String(100), nullable=True, index=True)
+
+    # All raw item answers (JSON: {item_id: 1-5})
+    answers_json = Column(Text, nullable=False)
+
+    # Computed result (JSON of ImagoResult.to_dict())
+    results_json = Column(Text, nullable=False)
+
+    # Quick-filter columns from results
+    letter_type = Column(String(10), nullable=True, index=True)
+    soul_shape = Column(String(50), nullable=True, index=True)
+    archetype = Column(String(50), nullable=True, index=True)
+
+    # Linkage to a Take 139 submission (if the same person took both)
+    take139_pair_code = Column(String(32), nullable=True, index=True)
+
+    # Couple linking (for future couple's report)
+    paired_with_code = Column(String(32), nullable=True, index=True)
+    paired_at = Column(DateTime, nullable=True)
+
+    # Metadata
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    emailed_to_user = Column(Boolean, default=False)
+    emailed_to_admin = Column(Boolean, default=False)
+
+
 def init_db():
     """Create tables if they don't exist."""
     Base.metadata.create_all(bind=engine)

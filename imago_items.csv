@@ -1,0 +1,101 @@
+item_id,domain,aspect_code,aspect_name,item_number,item_text,direction,source
+IMAGO-001,Imagination,I1,Artistry,1,I get deeply immersed in music.,FORWARD,BFAS_VERBATIM
+IMAGO-002,Imagination,I1,Artistry,2,I believe in the importance of art.,FORWARD,BFAS_VERBATIM
+IMAGO-003,Imagination,I1,Artistry,3,I notice beauty in things that others might not notice.,FORWARD,BFAS_ADAPTED
+IMAGO-004,Imagination,I1,Artistry,4,Certain pieces of art or music move me deeply.,FORWARD,NEW
+IMAGO-005,Imagination,I1,Artistry,5,I am drawn to beautiful or striking visual things.,FORWARD,NEW
+IMAGO-006,Imagination,I1,Artistry,6,I do not enjoy art or music much.,REVERSE,BFAS_ADAPTED
+IMAGO-007,Imagination,I1,Artistry,7,I do not get much out of looking at paintings or photographs.,REVERSE,NEW
+IMAGO-008,Imagination,I1,Artistry,8,Poetry and song lyrics rarely move me emotionally.,REVERSE,NEW
+IMAGO-009,Imagination,I1,Artistry,9,I seldom notice the beauty in my surroundings.,REVERSE,NEW
+IMAGO-010,Imagination,I1,Artistry,10,Aesthetic experiences — art music nature — leave me mostly unmoved.,REVERSE,NEW
+IMAGO-011,Imagination,I2,Intellect,1,I like to solve complex problems.,FORWARD,BFAS_VERBATIM
+IMAGO-012,Imagination,I2,Intellect,2,I am quick to understand things.,FORWARD,BFAS_VERBATIM
+IMAGO-013,Imagination,I2,Intellect,3,I enjoy thinking through complicated ideas.,FORWARD,BFAS_ADAPTED
+IMAGO-014,Imagination,I2,Intellect,4,I like to think about abstract ideas and theories.,FORWARD,BFAS_ADAPTED
+IMAGO-015,Imagination,I2,Intellect,5,I like to think about why things work the way they do.,FORWARD,NEW
+IMAGO-016,Imagination,I2,Intellect,6,I avoid philosophical discussions.,REVERSE,BFAS_VERBATIM
+IMAGO-017,Imagination,I2,Intellect,7,I find abstract reasoning boring.,REVERSE,NEW
+IMAGO-018,Imagination,I2,Intellect,8,I prefer not to think too deeply about complicated topics.,REVERSE,NEW
+IMAGO-019,Imagination,I2,Intellect,9,I lose interest quickly when a conversation turns theoretical.,REVERSE,NEW
+IMAGO-020,Imagination,I2,Intellect,10,I do not enjoy puzzles or problems that require a lot of thinking.,REVERSE,NEW
+IMAGO-021,Mastery,M1,Industriousness,1,I carry out my plans.,FORWARD,BFAS_VERBATIM
+IMAGO-022,Mastery,M1,Industriousness,2,I work hard to reach my goals.,FORWARD,BFAS_ADAPTED
+IMAGO-023,Mastery,M1,Industriousness,3,I get things done right away.,FORWARD,BFAS_ADAPTED
+IMAGO-024,Mastery,M1,Industriousness,4,I keep working until the task is finished.,FORWARD,NEW
+IMAGO-025,Mastery,M1,Industriousness,5,I stay focused on what I need to get done.,FORWARD,NEW
+IMAGO-026,Mastery,M1,Industriousness,6,I waste my time.,REVERSE,BFAS_VERBATIM
+IMAGO-027,Mastery,M1,Industriousness,7,I find it difficult to get down to work.,REVERSE,BFAS_VERBATIM
+IMAGO-028,Mastery,M1,Industriousness,8,I leave things half-finished.,REVERSE,BFAS_ADAPTED
+IMAGO-029,Mastery,M1,Industriousness,9,I put off tasks I do not want to do.,REVERSE,NEW
+IMAGO-030,Mastery,M1,Industriousness,10,I often start things without finishing them.,REVERSE,NEW
+IMAGO-031,Mastery,M2,Orderliness,1,I like order.,FORWARD,BFAS_VERBATIM
+IMAGO-032,Mastery,M2,Orderliness,2,I keep things tidy.,FORWARD,BFAS_VERBATIM
+IMAGO-033,Mastery,M2,Orderliness,3,I put things back where they belong.,FORWARD,BFAS_ADAPTED
+IMAGO-034,Mastery,M2,Orderliness,4,I like having a place for everything.,FORWARD,NEW
+IMAGO-035,Mastery,M2,Orderliness,5,I follow a routine every day.,FORWARD,BFAS_ADAPTED
+IMAGO-036,Mastery,M2,Orderliness,6,I leave my things lying around.,REVERSE,BFAS_ADAPTED
+IMAGO-037,Mastery,M2,Orderliness,7,I let things pile up until they become a real mess.,REVERSE,NEW
+IMAGO-038,Mastery,M2,Orderliness,8,I pay little attention to whether my surroundings are tidy.,REVERSE,NEW
+IMAGO-039,Mastery,M2,Orderliness,9,I often lose track of where I put things.,REVERSE,NEW
+IMAGO-040,Mastery,M2,Orderliness,10,I prefer flexibility over fixed routines.,REVERSE,NEW
+IMAGO-041,Animation,A1,Enthusiasm,1,I make friends easily.,FORWARD,BFAS_VERBATIM
+IMAGO-042,Animation,A1,Enthusiasm,2,I warm up quickly to others.,FORWARD,BFAS_VERBATIM
+IMAGO-043,Animation,A1,Enthusiasm,3,I laugh a lot.,FORWARD,BFAS_VERBATIM
+IMAGO-044,Animation,A1,Enthusiasm,4,I have a lot of fun.,FORWARD,BFAS_VERBATIM
+IMAGO-045,Animation,A1,Enthusiasm,5,I genuinely enjoy meeting new people.,FORWARD,NEW
+IMAGO-046,Animation,A1,Enthusiasm,6,I prefer keeping to myself rather than being around people.,REVERSE,BFAS_ADAPTED
+IMAGO-047,Animation,A1,Enthusiasm,7,I find being around people tiring rather than energizing.,REVERSE,NEW
+IMAGO-048,Animation,A1,Enthusiasm,8,I rarely feel the urge to be with others just for the fun of it.,REVERSE,NEW
+IMAGO-049,Animation,A1,Enthusiasm,9,I do not express much joy even when I feel it.,REVERSE,NEW
+IMAGO-050,Animation,A1,Enthusiasm,10,I feel little buzz or excitement when I am around other people.,REVERSE,NEW
+IMAGO-051,Animation,A2,Assertiveness,1,I take charge.,FORWARD,BFAS_VERBATIM
+IMAGO-052,Animation,A2,Assertiveness,2,I see myself as a good leader.,FORWARD,BFAS_VERBATIM
+IMAGO-053,Animation,A2,Assertiveness,3,I have a strong personality.,FORWARD,BFAS_VERBATIM
+IMAGO-054,Animation,A2,Assertiveness,4,I am the first to act.,FORWARD,BFAS_VERBATIM
+IMAGO-055,Animation,A2,Assertiveness,5,I speak up when I disagree with someone.,FORWARD,BFAS_ADAPTED
+IMAGO-056,Animation,A2,Assertiveness,6,I let others take the lead.,REVERSE,BFAS_ADAPTED
+IMAGO-057,Animation,A2,Assertiveness,7,I hold back my opinions when there is a risk of conflict.,REVERSE,NEW
+IMAGO-058,Animation,A2,Assertiveness,8,I feel uncomfortable being the one in charge.,REVERSE,NEW
+IMAGO-059,Animation,A2,Assertiveness,9,I rarely try to influence how others think or act.,REVERSE,NEW
+IMAGO-060,Animation,A2,Assertiveness,10,I tend to go along with what the group decides rather than push my view.,REVERSE,NEW
+IMAGO-061,Grace-bearing,G1,Compassion,1,I feel others' emotions.,FORWARD,BFAS_VERBATIM
+IMAGO-062,Grace-bearing,G1,Compassion,2,I sympathize with others' feelings.,FORWARD,BFAS_VERBATIM
+IMAGO-063,Grace-bearing,G1,Compassion,3,I inquire about others' well-being.,FORWARD,BFAS_VERBATIM
+IMAGO-064,Grace-bearing,G1,Compassion,4,When someone is hurting I feel it with them.,FORWARD,NEW
+IMAGO-065,Grace-bearing,G1,Compassion,5,I am genuinely interested in how other people are doing.,FORWARD,NEW
+IMAGO-066,Grace-bearing,G1,Compassion,6,I am not easily moved by others' emotional distress.,REVERSE,BFAS_ADAPTED
+IMAGO-067,Grace-bearing,G1,Compassion,7,I find it hard to get emotionally invested in other people's problems.,REVERSE,NEW
+IMAGO-068,Grace-bearing,G1,Compassion,8,I am rarely affected by what someone else is going through emotionally.,REVERSE,NEW
+IMAGO-069,Grace-bearing,G1,Compassion,9,I do not tend to feel much sympathy for strangers in difficulty.,REVERSE,NEW
+IMAGO-070,Grace-bearing,G1,Compassion,10,I tend to stay detached from others' emotional experiences.,REVERSE,NEW
+IMAGO-071,Grace-bearing,G2,Courtesy,1,I am careful not to manipulate others to get what I want.,FORWARD,NEW
+IMAGO-072,Grace-bearing,G2,Courtesy,2,I respect others' right to make their own choices even when I disagree.,FORWARD,NEW
+IMAGO-073,Grace-bearing,G2,Courtesy,3,I wait my turn rather than pushing ahead.,FORWARD,NEW
+IMAGO-074,Grace-bearing,G2,Courtesy,4,I ask rather than demand.,FORWARD,NEW
+IMAGO-075,Grace-bearing,G2,Courtesy,5,I insult people.,REVERSE,BFAS_VERBATIM
+IMAGO-076,Grace-bearing,G2,Courtesy,6,I take advantage of others.,REVERSE,BFAS_VERBATIM
+IMAGO-077,Grace-bearing,G2,Courtesy,7,I seek conflict.,REVERSE,BFAS_VERBATIM
+IMAGO-078,Grace-bearing,G2,Courtesy,8,I use people to get what I want.,REVERSE,BFAS_ADAPTED
+IMAGO-079,Grace-bearing,G2,Courtesy,9,I push my preferences on others without much thought for theirs.,REVERSE,NEW
+IMAGO-080,Grace-bearing,G2,Courtesy,10,I talk over people rather than letting them finish.,REVERSE,NEW
+IMAGO-081,Ortho-emotion,O1,Sensitivity,1,I am filled with doubts about things.,FORWARD,BFAS_VERBATIM
+IMAGO-082,Ortho-emotion,O1,Sensitivity,2,I feel threatened easily.,FORWARD,BFAS_VERBATIM
+IMAGO-083,Ortho-emotion,O1,Sensitivity,3,I worry about things.,FORWARD,BFAS_VERBATIM
+IMAGO-084,Ortho-emotion,O1,Sensitivity,4,I find myself dwelling on things that went wrong.,FORWARD,NEW
+IMAGO-085,Ortho-emotion,O1,Sensitivity,5,I get anxious in situations that feel unpredictable.,FORWARD,NEW
+IMAGO-086,Ortho-emotion,O1,Sensitivity,6,I remain calm even in uncertain situations.,REVERSE,BFAS_ADAPTED
+IMAGO-087,Ortho-emotion,O1,Sensitivity,7,I rarely worry about things that are out of my control.,REVERSE,NEW
+IMAGO-088,Ortho-emotion,O1,Sensitivity,8,I do not dwell on things that could go wrong.,REVERSE,NEW
+IMAGO-089,Ortho-emotion,O1,Sensitivity,9,I feel settled even when life is unpredictable.,REVERSE,NEW
+IMAGO-090,Ortho-emotion,O1,Sensitivity,10,I recover quickly after something upsets me emotionally.,REVERSE,NEW
+IMAGO-091,Ortho-emotion,O2,Steadiness,1,I get angry easily.,FORWARD,BFAS_VERBATIM
+IMAGO-092,Ortho-emotion,O2,Steadiness,2,I get upset easily.,FORWARD,BFAS_VERBATIM
+IMAGO-093,Ortho-emotion,O2,Steadiness,3,I change my mood a lot.,FORWARD,BFAS_VERBATIM
+IMAGO-094,Ortho-emotion,O2,Steadiness,4,I snap at people when I am stressed.,FORWARD,NEW
+IMAGO-095,Ortho-emotion,O2,Steadiness,5,I lose my temper more than I would like to.,FORWARD,NEW
+IMAGO-096,Ortho-emotion,O2,Steadiness,6,I stay calm even when someone criticizes me.,REVERSE,BFAS_ADAPTED
+IMAGO-097,Ortho-emotion,O2,Steadiness,7,I can be around difficult people without losing my composure.,REVERSE,NEW
+IMAGO-098,Ortho-emotion,O2,Steadiness,8,My mood stays even throughout the day even when things go sideways.,REVERSE,NEW
+IMAGO-099,Ortho-emotion,O2,Steadiness,9,I do not take the bait when someone tries to provoke me.,REVERSE,NEW
+IMAGO-100,Ortho-emotion,O2,Steadiness,10,I rarely feel irritated or on edge.,REVERSE,NEW
