@@ -58,12 +58,38 @@ ASPECTS = [
 # "high = steady" semantic. We do this at the aspect-aggregation step.
 ORTHO_INVERTED_ASPECTS = {"O1", "O2"}
 
-# Metatrait composition (DeYoung 2006)
-# Stability (alpha) loads on: high O, high G, high M (M weakest)
-# Plasticity (beta)  loads on: high I, high A
+# Metatrait composition
+#
+# v3 change (May 2026): Reworked from DeYoung 2006's loose Big-5 average to
+# a more pastorally-honest composition. The old formula averaged O, G, and M
+# equally for Stability, which produced false positives for people who had
+# very high O (genuinely steady) but very low G (prophetically direct) — they
+# were being mislabeled as "low Stability / The Psalmist" when their
+# emotional life is in fact rock-solid.
+#
+# New approach:
+#   STEADINESS  (formerly Stability) = primarily Ortho-emotion. The literal
+#                                       emotional steadiness of the person.
+#                                       G is a small modifier (warmth helps
+#                                       steadiness; sharpness doesn't kill it).
+#                                       M is independent (a steady person
+#                                       may or may not be disciplined).
+#
+#   REACH       (formerly Plasticity) = both Imagination and Animation must be
+#                                       elevated to qualify as high Reach.
+#                                       This honors DeYoung 2014's caution
+#                                       that Plasticity is a joint construct.
 METATRAIT_LOADINGS = {
-    "Stability":  {"O": 1.0, "G": 1.0, "M": 0.7},   # M weighted lower per DeYoung caveat
-    "Plasticity": {"I": 1.0, "A": 1.0},
+    "Steadiness": {"O": 1.0, "G": 0.25},  # O dominates; G is a small modifier
+    "Reach":      {"I": 1.0, "A": 1.0},   # requires BOTH (see _compute_metatrait_scores)
+}
+
+# User-facing display names for the two metatraits.
+# The internal computation still uses these keys; PROVISIONAL_METATRAIT_NORMS
+# below is keyed by the same names.
+METATRAIT_DISPLAY_NAMES = {
+    "Steadiness": "Steadiness",
+    "Reach":      "Reach",
 }
 
 # Letter type threshold (60th percentile; per Design Doc §3.4)
@@ -104,8 +130,8 @@ PROVISIONAL_DOMAIN_NORMS = {
 }
 
 PROVISIONAL_METATRAIT_NORMS = {
-    "Stability":  (3.30, 0.55),  # mean of high-O + high-G + 0.7*high-M
-    "Plasticity": (3.30, 0.65),
+    "Steadiness": (3.30, 0.55),  # weighted O + 0.25·G
+    "Reach":      (3.30, 0.65),  # joint I + A
 }
 
 
@@ -363,22 +389,40 @@ def _compute_domain_scores(aspect_scores: List[AspectScore]) -> List[DomainScore
 # ─────────────────────────────────────────────────────────────────────
 
 def _compute_metatrait_scores(domain_scores: List[DomainScore]) -> List[MetatraitScore]:
-    """Stability and Plasticity from the loadings dict."""
+    """Compute Steadiness and Reach from domain scores.
+
+    v3 logic:
+      - Steadiness = weighted blend of O (1.0) + G (0.25). The Ortho-emotion
+        domain dominates. G is a small modifier so that a person with high O
+        but low G is still classified as steady (their emotional life is in
+        fact stable; their directness is a separate trait, not turbulence).
+      - Reach = JOINT measure of I + A. Both must be elevated. We take the
+        MINIMUM of the two domain raw means (so the lower of the two anchors
+        the metatrait) rather than the average. This honors DeYoung 2014's
+        warning that Plasticity is not the same as 'high on either'.
+    """
     by_domain = {d.code: d for d in domain_scores}
     out: List[MetatraitScore] = []
     for meta_name, loadings in METATRAIT_LOADINGS.items():
-        weighted_sum = 0.0
-        weight_total = 0.0
-        for d_code, weight in loadings.items():
-            d = by_domain.get(d_code)
-            if d is None:
-                continue
-            weighted_sum += d.raw_mean * weight
-            weight_total += weight
-        if weight_total > 0:
-            mean = weighted_sum / weight_total
+        if meta_name == "Reach":
+            # Joint construct: take the MIN of I and A so both must elevate
+            domain_means = []
+            for d_code in loadings.keys():
+                d = by_domain.get(d_code)
+                if d is not None:
+                    domain_means.append(d.raw_mean)
+            mean = min(domain_means) if domain_means else 3.0
         else:
-            mean = 3.0
+            # Steadiness: weighted average (O dominates, G modifies)
+            weighted_sum = 0.0
+            weight_total = 0.0
+            for d_code, weight in loadings.items():
+                d = by_domain.get(d_code)
+                if d is None:
+                    continue
+                weighted_sum += d.raw_mean * weight
+                weight_total += weight
+            mean = weighted_sum / weight_total if weight_total > 0 else 3.0
 
         norm_mean, norm_sd = PROVISIONAL_METATRAIT_NORMS[meta_name]
         pct = percentile_from_score(mean, norm_mean, norm_sd)
@@ -431,30 +475,28 @@ def _derive_letter_type(domain_scores: List[DomainScore]) -> Tuple[str, List[str
 # ─────────────────────────────────────────────────────────────────────
 
 SOUL_SHAPES = {
+    # (Steadiness_pole, Reach_pole) -> Soul Shape
     ("high", "high"): "Host",
     ("high", "low"):  "Anchor",
     ("low",  "high"): "Psalmist",
     ("low",  "low"):  "Watchman",
-    # Borderline cases default to nearest neighbor based on raw means
-    # Implemented in the function below
 }
 
 
 def _derive_soul_shape(metatraits: List[MetatraitScore]) -> str:
-    """Pick the Soul Shape from the Stability × Plasticity quadrant.
+    """Pick the Soul Shape from the Steadiness × Reach quadrant.
 
     Borderline metatraits resolve to whichever side they're closer to.
     """
-    stab = next(m for m in metatraits if m.name == "Stability")
-    plas = next(m for m in metatraits if m.name == "Plasticity")
+    steady = next(m for m in metatraits if m.name == "Steadiness")
+    reach  = next(m for m in metatraits if m.name == "Reach")
 
     def quadrant(m: MetatraitScore) -> str:
-        # Borderline → resolve by raw position relative to 50th percentile
         if m.pole == "borderline":
             return "high" if m.percentile >= 60 else "low"
         return m.pole
 
-    return SOUL_SHAPES[(quadrant(stab), quadrant(plas))]
+    return SOUL_SHAPES[(quadrant(steady), quadrant(reach))]
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -513,9 +555,37 @@ ARCHETYPE_TARGETS: Dict[str, Dict[str, float]] = {
 }
 
 
+# Signature domains per archetype — the traits that DEFINE the archetype
+# rather than merely correlating with it. These get extra weight in matching
+# so that, e.g., a Reformer profile (high A, low G, high I) is recognized
+# even if M and O are average. Without this, the nearest-centroid math
+# privileges archetypes with "average" targets.
+ARCHETYPE_SIGNATURE_DOMAINS: Dict[str, List[str]] = {
+    "Shepherd":  ["G", "O"],          # high G + steady O
+    "Mason":     ["M", "I", "O"],     # high M + Intellect + steady
+    "Reformer":  ["A", "G", "I"],     # high A + low G + high I (Intellect)
+    "Herald":    ["A", "I"],          # very high A + high Artistry
+    "Faithful":  ["M", "O"],          # high M + steady O
+    "Maker":     ["I"],               # very high Artistry
+    "Attuned":   ["I", "A"],          # very high I + low A (introvert)
+    "Initiator": ["M", "A"],          # high M + high A
+    "Learner":   ["I"],               # very high I (both aspects)
+    "Servant":   ["G"],               # high G relative to rest
+}
+
+# Weight applied to signature-domain deviations. 2.0 means a 20-point miss
+# on a signature domain is treated like a 40-point miss on a non-signature.
+SIGNATURE_WEIGHT = 2.0
+
+
 def _derive_archetype(domain_scores: List[DomainScore]) -> Tuple[str, float]:
     """Find the archetype whose target profile is closest to the user's domain
-    percentiles.
+    percentiles, with extra weight on each archetype's *signature* domains.
+
+    v3 logic: a person's archetype should be determined primarily by the
+    domains that DEFINE that archetype, not by the full 5-domain Euclidean
+    centroid distance. Otherwise, archetypes with average-looking targets
+    (close to 50 across the board) win by default for anyone near the mean.
 
     Returns (archetype_name, match_score) where match_score is in (0, 1].
     Higher = closer match.
@@ -525,18 +595,19 @@ def _derive_archetype(domain_scores: List[DomainScore]) -> Tuple[str, float]:
     best_name = None
     best_dist = float("inf")
     for name, target in ARCHETYPE_TARGETS.items():
-        # Euclidean distance across the 5 domains
+        signature = set(ARCHETYPE_SIGNATURE_DOMAINS.get(name, []))
+        # Weighted Euclidean distance — signature domains count more
         sq_sum = 0.0
         for code in ["I", "M", "A", "G", "O"]:
             diff = user_profile.get(code, 50) - target.get(code, 50)
-            sq_sum += diff * diff
+            weight = SIGNATURE_WEIGHT if code in signature else 1.0
+            sq_sum += weight * diff * diff
         dist = sq_sum ** 0.5
         if dist < best_dist:
             best_dist = dist
             best_name = name
 
     # Convert distance to a 0-1 match score (closer = higher)
-    # Max possible distance ≈ sqrt(5 * 100^2) = 223.6 in worst case
     match_score = 1 / (1 + best_dist / 50.0)
     return best_name or "Servant", match_score
 

@@ -20,6 +20,7 @@ def send_results_email(
     pdf_bytes: bytes,
     pdf_filename: str,
     reply_to: Optional[str] = None,
+    extra_attachments: Optional[list] = None,
 ) -> dict:
     """Send a results email with PDF attachment.
 
@@ -39,17 +40,25 @@ def send_results_email(
 
     pdf_b64 = base64.b64encode(pdf_bytes).decode("ascii")
 
+    attachments = [
+        {
+            "filename": pdf_filename,
+            "content": pdf_b64,
+        }
+    ]
+    # Optional extra attachments: list of {filename, bytes}
+    for extra in (extra_attachments or []):
+        attachments.append({
+            "filename": extra["filename"],
+            "content": base64.b64encode(extra["bytes"]).decode("ascii"),
+        })
+
     params = {
         "from": FROM_EMAIL,
         "to": [to_email],
         "subject": subject,
         "html": html_body,
-        "attachments": [
-            {
-                "filename": pdf_filename,
-                "content": pdf_b64,
-            }
-        ],
+        "attachments": attachments,
     }
     if reply_to:
         params["reply_to"] = reply_to
@@ -64,6 +73,7 @@ def send_to_admin_and_user(
     pdf_bytes: bytes,
     pdf_filename: str,
     user_name: Optional[str] = None,
+    extra_attachments: Optional[list] = None,
 ) -> dict:
     """Send results to both admin and user (if user provided email)."""
     results = {"admin": None, "user": None}
@@ -77,6 +87,7 @@ def send_to_admin_and_user(
             html_body=html_body,
             pdf_bytes=pdf_bytes,
             pdf_filename=pdf_filename,
+            extra_attachments=extra_attachments,
         )
     except Exception as e:
         results["admin"] = {"error": str(e)}
@@ -91,6 +102,7 @@ def send_to_admin_and_user(
                 pdf_bytes=pdf_bytes,
                 pdf_filename=pdf_filename,
                 reply_to=ADMIN_EMAIL,
+                extra_attachments=extra_attachments,
             )
         except Exception as e:
             results["user"] = {"error": str(e)}

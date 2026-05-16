@@ -30,6 +30,7 @@ from email_service import send_to_admin_and_user
 from imago_items import ITEMS as IMAGO_ITEMS, get_items_for_assessment
 from imago_scoring import score_imago
 from imago_pdf_generator import generate_imago_pdf
+from imago_brief_generator import generate_imago_brief_pdf
 from jinja2 import Environment, FileSystemLoader
 
 _imago_email_env = Environment(
@@ -341,11 +342,18 @@ def imago_submit(payload: ImagoSubmissionIn, db: Session = Depends(get_db)):
     db.add(sub)
     db.commit()
 
-    # Generate PDF
+    # Generate PDF + one-page brief
     try:
         pdf_bytes = generate_imago_pdf(result, name=name, pair_code=pair_code)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PDF generation failed: {e}")
+
+    try:
+        brief_bytes = generate_imago_brief_pdf(result, name=name, pair_code=pair_code)
+    except Exception as e:
+        # Don't fail the request if the brief errors — just skip it.
+        brief_bytes = None
+        print(f"[imago_submit] brief generation failed: {e}")
 
     # Render email body
     email_html = _imago_email_template.render(
@@ -357,6 +365,13 @@ def imago_submit(payload: ImagoSubmissionIn, db: Session = Depends(get_db)):
     )
 
     # Send email to user (if email given) + always to admin
+    extra_attachments = []
+    if brief_bytes:
+        extra_attachments.append({
+            "filename": f"IMAGO-{name.replace(' ', '-')}-{pair_code}-BRIEF.pdf",
+            "bytes": brief_bytes,
+        })
+
     email_results = send_to_admin_and_user(
         user_email=payload.email,
         subject=f"Your IMAGO Hardwiring Profile — The {result.archetype}",
@@ -364,6 +379,7 @@ def imago_submit(payload: ImagoSubmissionIn, db: Session = Depends(get_db)):
         pdf_bytes=pdf_bytes,
         pdf_filename=f"IMAGO-{name.replace(' ', '-')}-{pair_code}.pdf",
         user_name=name,
+        extra_attachments=extra_attachments,
     )
 
     user_sent = (

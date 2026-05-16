@@ -59,6 +59,112 @@ def _resolve_pole(pole: str, percentile: float) -> str:
     return "high" if percentile >= 60.0 else "low"
 
 
+# ── Conditional narrative builder ─────────────────────────────────────────────
+# v3: every Soul Shape narrative is generic by design — written for the class.
+# But the same Soul Shape can contain very different people. Two Anchors with
+# the same Steadiness can be wildly different on the inside if one has high I
+# (Imagination) and the other low. This function generates a short
+# personalization paragraph that names what is distinctive about *this* person
+# within their shape, so the report stops feeling generic at the top.
+
+def _build_conditional_soul_shape_note(
+    soul_shape: str,
+    domain_by_code: dict,
+    metatraits: list,
+) -> str:
+    """Generate a 2-4 sentence note that personalizes the Soul Shape based on
+    the specific score profile within it. Returned as a single string (one
+    paragraph). Empty string if no distinctive pattern is detected.
+
+    domain_by_code: {code: DomainScore}  (with .percentile)
+    metatraits: list of MetatraitScore (with .name and .percentile)
+    """
+    if not domain_by_code:
+        return ""
+
+    def pct(code):
+        d = domain_by_code.get(code)
+        return d.percentile if d is not None else 50.0
+
+    I, M, A, G, O = pct("I"), pct("M"), pct("A"), pct("G"), pct("O"),
+    meta_pct = {m.name: m.percentile for m in metatraits}
+    steadiness = meta_pct.get("Steadiness", 50)
+    reach = meta_pct.get("Reach", 50)
+
+    notes = []
+
+    # ── Anchor-specific personalization ──
+    if soul_shape == "Anchor":
+        if I >= 75:
+            notes.append(
+                "One thing worth naming about your Anchor profile: your inner imagination is unusually active. "
+                "You are steady on the outside, but the inside is full of ideas. That combination — a settled person who still pursues new thought — is rare, and it is part of why people trust your conclusions. You did not arrive there carelessly."
+            )
+        if A >= 70 and G <= 35:
+            notes.append(
+                "Your Anchor pattern also carries a Reformer's edge. You are not the quiet, agreeable kind of steady. You are the kind who will speak — plainly, sometimes uncomfortably — because the truth matters more to you than the temperature of the room. This is a real gift, and it is also a place to watch your own heart."
+            )
+        elif G <= 25:
+            notes.append(
+                "Worth noting: your Anchor steadiness pairs with a directness that does not soften easily. You hold the line, and you say so. Read your domain sections carefully — your courtesy score asks for some honest reflection."
+            )
+        if M <= 35 and O >= 75:
+            notes.append(
+                "One more thing: your Anchor steadiness is emotional, not necessarily operational. The inside is calm. The desk may not be. That is a real version of this shape — just know which half of your steadiness is doing the heavy lifting."
+            )
+        if O >= 80 and steadiness < 70:
+            notes.append(
+                "Your emotional steadiness specifically is very high — higher than your overall Steadiness number suggests, because the metatrait blends in other factors. On the inside, you are not easily shaken."
+            )
+
+    # ── Psalmist-specific personalization ──
+    elif soul_shape == "Psalmist":
+        if O >= 70:
+            notes.append(
+                "Worth naming inside your Psalmist shape: your emotional life is actually more settled than this shape typically describes. You feel deeply, but you also recover. That mix — depth without volatility — is unusual and is part of what makes your voice trustworthy."
+            )
+        if I >= 80 and A >= 70:
+            notes.append(
+                "You are the kind of Psalmist whose feeling is fueled by both ideas and people. The artist and the host live in the same body. That is a high-output combination, and one to steward intentionally."
+            )
+        if M >= 70:
+            notes.append(
+                "And unusually for this shape, you are also disciplined. The feeling does not run away with you. You can finish what you start, even on a hard day. That makes your Psalmist gift productive, not just expressive."
+            )
+
+    # ── Host-specific personalization ──
+    elif soul_shape == "Host":
+        if G >= 75:
+            notes.append(
+                "Inside the Host shape, your grace-bearing domain is unusually strong. You are not just a steady, reaching person — you are a kind one. Watch for the temptation to absorb other people's weight as if it were your own."
+            )
+        if A >= 80:
+            notes.append(
+                "Your Host shape leans extraverted in a pronounced way. Your room-making is energetic, not contemplative. That is a real gift and a real cost — read your Animation section carefully."
+            )
+        if M <= 40:
+            notes.append(
+                "One Host-specific watch: your openness and steadiness are real, but your operational follow-through is lower. The room is warm. The promises kept may need shoring up."
+            )
+
+    # ── Watchman-specific personalization ──
+    elif soul_shape == "Watchman":
+        if I >= 75:
+            notes.append(
+                "Inside the Watchman shape, your imagination runs high. You are not a stoic guard — you are a thoughtful one. The things you see, you see in detail."
+            )
+        if G <= 30:
+            notes.append(
+                "Your Watchman calling carries a sharp edge. The line you hold, you do not soften. This is part of your strength and a place to watch — the message can be true and still be delivered in a way that closes the ear it most needed to reach."
+            )
+        if O >= 70:
+            notes.append(
+                "Worth naming: your inner weather is more settled than this shape usually implies. You watch without being shaken by what you see. That is rare and valuable."
+            )
+
+    return "\n\n".join(notes).strip()
+
+
 def _format_date(d: date) -> str:
     """Format a date as 'Month Day, Year' (e.g., 'April 25, 2026')."""
     return d.strftime("%B %-d, %Y")
@@ -243,6 +349,11 @@ def get_report_data(
 
     # ── Soul Shape ─────────────────────────────────────────────────────────
     soul_shape_content = _get_soul_shape(result.soul_shape)
+    soul_shape_conditional_note = _build_conditional_soul_shape_note(
+        result.soul_shape,
+        domain_by_code,
+        result.metatraits,
+    )
 
     # ── Archetype ──────────────────────────────────────────────────────────
     archetype_content = _get_archetype(result.archetype)
@@ -376,12 +487,14 @@ def get_report_data(
         "soul_shape_name": result.soul_shape,
         "soul_shape_tagline": soul_shape_content["tagline"],
         "soul_shape_sidebar": soul_shape_content["sidebar_meta"],
-        # Stability / Plasticity from sidebar
-        "soul_shape_stability": soul_shape_content["sidebar_meta"].get("stability", ""),
-        "soul_shape_plasticity": soul_shape_content["sidebar_meta"].get("plasticity", ""),
+        # Steadiness / Reach from sidebar (with backward-compat for legacy keys)
+        "soul_shape_steadiness": soul_shape_content["sidebar_meta"].get("steadiness", soul_shape_content["sidebar_meta"].get("stability", "")),
+        "soul_shape_reach": soul_shape_content["sidebar_meta"].get("reach", soul_shape_content["sidebar_meta"].get("plasticity", "")),
         "soul_shape_biblical_anchor": soul_shape_content["sidebar_meta"].get("biblical_anchor", ""),
         # Narrative body as list of paragraph strings
         "soul_shape_narrative": soul_shape_content["narrative_paragraphs"],
+        # v3: conditional note that personalizes the Soul Shape to *this* respondent's profile
+        "soul_shape_conditional_note": soul_shape_conditional_note,
 
         # ── Archetype ─────────────────────────────────────────────────────
         "archetype_name": result.archetype,
@@ -492,8 +605,8 @@ if __name__ == "__main__":
     print("Soul Shape")
     print(sep)
     print(f"  Tagline:          {data['soul_shape_tagline']}")
-    print(f"  Stability:        {data['soul_shape_stability']}")
-    print(f"  Plasticity:       {data['soul_shape_plasticity']}")
+    print(f"  Steadiness:       {data['soul_shape_steadiness']}")
+    print(f"  Reach:            {data['soul_shape_reach']}")
     print(f"  Biblical anchor:  {data['soul_shape_biblical_anchor']}")
     print(f"  Narrative paras:  {len(data['soul_shape_narrative'])}")
     print(f"  First para:       {data['soul_shape_narrative'][0][:100]!r}...")

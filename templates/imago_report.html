@@ -331,6 +331,32 @@
   }
 
   .section-divider { page-break-before: always; }
+  .personal-note {
+    background: #f5efe2;
+    border-left: 3pt solid #c8956c;
+    padding: 0.2in 0.3in;
+    margin: 0.3in 0;
+    page-break-inside: avoid;
+    font-family: 'Georgia', serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #2a2620;
+  }
+  .personal-note-eyebrow {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 8pt;
+    color: #c8956c;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    margin-bottom: 0.1in;
+  }
+  .personal-note-body p {
+    margin: 0 0 0.1in 0;
+  }
+  .personal-note-body p:last-child {
+    margin-bottom: 0;
+  }
   .pair-callout {
     background: #2a2620;
     color: #faf6ef;
@@ -412,9 +438,9 @@
 
   <div class="sidebar">
     <div class="sidebar-title">The {{ soul_shape_name }}</div>
-    {% if soul_shape_stability or soul_shape_plasticity %}
+    {% if soul_shape_steadiness or soul_shape_reach %}
       <div class="sidebar-line">
-        {% if soul_shape_stability %}Stability: {{ soul_shape_stability }}{% endif %}{% if soul_shape_stability and soul_shape_plasticity %} · {% endif %}{% if soul_shape_plasticity %}Plasticity: {{ soul_shape_plasticity }}{% endif %}
+        {% if soul_shape_steadiness %}Steadiness: {{ soul_shape_steadiness }}{% endif %}{% if soul_shape_steadiness and soul_shape_reach %} · {% endif %}{% if soul_shape_reach %}Reach: {{ soul_shape_reach }}{% endif %}
       </div>
     {% endif %}
     {% if soul_shape_biblical_anchor %}
@@ -427,6 +453,17 @@
   {% for paragraph in soul_shape_narrative %}
     <p>{{ paragraph|safe }}</p>
   {% endfor %}
+
+  {% if soul_shape_conditional_note %}
+    <div class="personal-note">
+      <div class="personal-note-eyebrow">Specifically for you</div>
+      <div class="personal-note-body">
+        {% for para in soul_shape_conditional_note.split('\n\n') %}
+          <p>{{ para|safe }}</p>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
 
   <!-- ═══════════ TIER 2 — LETTER TYPE ═══════════ -->
   <div class="section-divider"></div>

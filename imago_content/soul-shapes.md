@@ -2,12 +2,12 @@
 
 Your Soul Shape is the first thing your IMAGO report names. Before the domains, before the archetypes, before any of the finer detail — this is the broadest outline of how you are made to move through the world. Two things are being measured: how steady you tend to be on the inside, and how readily you reach toward the new and the unfamiliar. Those two things combine to produce four distinct shapes, and each one is a real gift to the people around you and to the body of Christ.
 
-The sidebar at the top of each section shows you the technical names (Stability and Plasticity), your pattern, and the Scripture figure who anchors it. The narrative that follows will describe what those words actually look like in a human life, in plain terms. Read your shape slowly. You are not being diagnosed. You are being named.
+The sidebar at the top of each section shows you the two plain-English names (Steadiness and Reach), your pattern, and the Scripture figure who anchors it. Steadiness is how settled your inner weather tends to be — how unflappable you are when things go sideways. Reach is how readily you move toward the new and the unfamiliar — new ideas, new people, new territory. The narrative that follows will describe what those words actually look like in a human life. Read your shape slowly. You are not being diagnosed. You are being named.
 
 ---
 
 > **The Host**
-> Stability: high · Plasticity: high
+> Steadiness: high · Reach: high
 > Biblical anchor: Priscilla & Aquila (Romans 16:3-5; Acts 18)
 
 <i>The Host — You make room, and the room becomes home.</i>
@@ -31,7 +31,7 @@ You were made for this. The God who set a table in the wilderness, who prepared 
 ---
 
 > **The Anchor**
-> Stability: high · Plasticity: low
+> Steadiness: high · Reach: low
 > Biblical anchor: Hebrews 6:19; Eleazar son of Dodai (2 Samuel 23:9-10)
 
 <i>The Anchor — You hold fast, and holding fast is a form of love.</i>
@@ -57,7 +57,7 @@ You are not made to move with every wind, and that is a mercy to everyone around
 ---
 
 > **The Psalmist**
-> Stability: low · Plasticity: high
+> Steadiness: low · Reach: high
 > Biblical anchor: David (the Psalms)
 
 <i>The Psalmist — You feel everything, and your feeling is a form of faithfulness.</i>
@@ -81,7 +81,7 @@ You were made to feel this much. The God who wept at the tomb of his friend, who
 ---
 
 > **The Watchman**
-> Stability: low · Plasticity: low
+> Steadiness: low · Reach: low
 > Biblical anchor: Ezekiel 3:17
 
 <i>The Watchman — You see what others miss, and you hold the line when others have left.</i>

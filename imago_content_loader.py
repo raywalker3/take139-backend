@@ -187,7 +187,7 @@ def _parse_blockquote_sidebar(bq_text: str) -> dict:
             if cells and cells[0]:  # non-empty
                 table_rows.append(cells)
             continue
-        # Compound lines like "Stability: high · Plasticity: high"
+        # Compound lines like "Steadiness: high · Reach: high"
         # Split on " · " first, then parse each segment
         if " · " in line:
             segments = line.split(" · ")

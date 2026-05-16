@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IMAGO Brief — {{ name }}</title>
+<style>
+  @page {
+    size: letter;
+    margin: 0.55in 0.6in 0.7in 0.6in;
+    @bottom-center {
+      content: "IMAGO · Fearfully and Wonderfully Made · Ps. 139:14";
+      font-family: 'Georgia', serif;
+      font-size: 7.5pt;
+      color: #9a8f7f;
+      font-style: italic;
+    }
+    @bottom-right {
+      content: "The full report is the long version of this page.";
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: 7.5pt;
+      color: #9a8f7f;
+    }
+  }
+
+  body {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 9pt;
+    color: #2a2620;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+  }
+  i, em { font-style: italic; }
+  b, strong { font-weight: 700; }
+
+  /* ── Top banner ── */
+  .top-banner {
+    border-bottom: 0.5pt solid #d4ccc0;
+    padding-bottom: 0.12in;
+    margin-bottom: 0.18in;
+  }
+  .brand-line {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 7.5pt;
+    letter-spacing: 0.35em;
+    color: #c8956c;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .title-line {
+    font-family: 'Georgia', serif;
+    font-size: 22pt;
+    color: #2a2620;
+    margin: 0.04in 0 0 0;
+    line-height: 1.0;
+  }
+  .for-line {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 10pt;
+    color: #6b6158;
+    margin-top: 0.06in;
+  }
+
+  /* ── Three-piece headline (Shape · Letters · Archetype) ── */
+  .headline {
+    display: table;
+    width: 100%;
+    margin: 0.18in 0;
+    border-top: 0.5pt solid #d4ccc0;
+    border-bottom: 0.5pt solid #d4ccc0;
+    padding: 0.14in 0;
+  }
+  .head-cell {
+    display: table-cell;
+    width: 33.33%;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0 0.08in;
+  }
+  .head-cell + .head-cell {
+    border-left: 0.5pt solid #e6dfd0;
+  }
+  .head-label {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 7pt;
+    letter-spacing: 0.25em;
+    color: #c8956c;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.04in;
+  }
+  .head-value {
+    font-family: 'Georgia', serif;
+    font-size: 16pt;
+    color: #2a2620;
+    line-height: 1.05;
+  }
+  .head-value-small {
+    font-size: 14pt;
+    letter-spacing: 0.04em;
+  }
+  .head-sub {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 8.5pt;
+    color: #8a7f72;
+    margin-top: 0.04in;
+  }
+
+  /* ── Soul Shape strip ── */
+  .shape-strip {
+    background: #f5efe2;
+    border-left: 3pt solid #c8956c;
+    padding: 0.14in 0.2in;
+    margin: 0.1in 0 0.2in 0;
+  }
+  .shape-strip-title {
+    font-family: 'Georgia', serif;
+    font-size: 11pt;
+    color: #2a2620;
+    font-weight: 700;
+    margin-bottom: 0.04in;
+  }
+  .shape-strip-body {
+    font-family: 'Georgia', serif;
+    font-size: 9pt;
+    line-height: 1.5;
+    color: #2a2620;
+  }
+  .shape-strip-meta {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 7pt;
+    letter-spacing: 0.18em;
+    color: #c8956c;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 0.05in;
+  }
+
+  /* ── Domain grid ── */
+  .domain-grid {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.05in;
+  }
+  .domain-row {
+    display: table-row;
+  }
+  .domain-cell {
+    display: table-cell;
+    width: 20%;
+    padding: 0.12in 0.1in 0.14in 0.1in;
+    vertical-align: top;
+    border-right: 0.5pt solid #e6dfd0;
+    border-top: 0.5pt solid #d4ccc0;
+  }
+  .domain-cell:last-child { border-right: none; }
+  .domain-letter {
+    font-family: 'Georgia', serif;
+    font-size: 26pt;
+    color: #c8956c;
+    line-height: 1.0;
+    font-weight: 400;
+  }
+  .domain-letter.dim {
+    color: #d4ccc0;
+  }
+  .domain-name {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 7pt;
+    letter-spacing: 0.2em;
+    color: #8a7f72;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 0.04in;
+  }
+  .domain-pct {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 7.5pt;
+    color: #6b6158;
+    margin-top: 0.02in;
+    margin-bottom: 0.06in;
+  }
+  .domain-bullets {
+    font-family: 'Georgia', serif;
+    font-size: 8pt;
+    line-height: 1.4;
+    color: #2a2620;
+    margin: 0;
+    padding-left: 0.12in;
+  }
+  .domain-bullets li {
+    margin-bottom: 0.04in;
+  }
+
+  /* ── Footer note ── */
+  .closing-note {
+    margin-top: 0.18in;
+    padding: 0.12in 0.16in;
+    background: #faf6ef;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 8.5pt;
+    line-height: 1.5;
+    color: #6b6158;
+    text-align: center;
+  }
+  .closing-note b {
+    color: #2a2620;
+    font-style: normal;
+  }
+
+</style>
+</head>
+<body>
+
+  <!-- ─── BANNER ─── -->
+  <div class="top-banner">
+    <div class="brand-line">IMAGO · Hardwiring Profile · The Brief</div>
+    <div class="title-line">{{ name }}</div>
+    <div class="for-line">{{ assessment_date }} &nbsp;·&nbsp; Pair code: {{ pair_code }}</div>
+  </div>
+
+  <!-- ─── HEADLINE (3 pieces) ─── -->
+  <div class="headline">
+    <div class="head-cell">
+      <div class="head-label">Soul Shape</div>
+      <div class="head-value">The {{ soul_shape_name }}</div>
+      <div class="head-sub">{{ soul_shape_steadiness_label }} Steadiness · {{ soul_shape_reach_label }} Reach</div>
+    </div>
+    <div class="head-cell">
+      <div class="head-label">Type</div>
+      <div class="head-value head-value-small">{{ letter_type_display_str }}</div>
+      <div class="head-sub">{{ letter_type_caption }}</div>
+    </div>
+    <div class="head-cell">
+      <div class="head-label">Archetype</div>
+      <div class="head-value">The {{ archetype_name }}</div>
+      <div class="head-sub">{{ archetype_caption }}</div>
+    </div>
+  </div>
+
+  <!-- ─── SOUL SHAPE STRIP ─── -->
+  <div class="shape-strip">
+    <div class="shape-strip-meta">Your shape, in one paragraph</div>
+    <div class="shape-strip-title">{{ soul_shape_tagline }}</div>
+    <div class="shape-strip-body">{{ shape_one_paragraph }}</div>
+  </div>
+
+  <!-- ─── DOMAIN GRID (5 cells across) ─── -->
+  <div class="domain-grid">
+    <div class="domain-row">
+      {% for dom in brief_domains %}
+        <div class="domain-cell">
+          <span class="domain-letter {% if not dom.is_high %}dim{% endif %}">{{ dom.code|upper if dom.is_high else dom.code|lower }}</span>
+          <div class="domain-name">{{ dom.name }}</div>
+          <div class="domain-pct">{{ dom.percentile|round|int }}{{ dom.percentile|round|int|string|ordinal_suffix }} percentile · {{ dom.pole_label }}</div>
+          <ul class="domain-bullets">
+            {% for bullet in dom.bullets %}
+              <li>{{ bullet }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ─── FOOTER NOTE ─── -->
+  <div class="closing-note">
+    This is the one-page brief. <b>The full IMAGO report</b> is the long version of this page — the same shape, the same letters, the same archetype, with the language and scripture and reflection you need to actually sit with it.
+  </div>
+
+</body>
+</html>
