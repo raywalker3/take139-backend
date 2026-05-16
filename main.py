@@ -246,6 +246,112 @@ def recent_submissions(limit: int = 20, db: Session = Depends(get_db)):
     ]
 
 
+# ═════════════════ PAIR CODE LOOKUP / CONNECT (Take 139) ════════════════
+#
+# When a couple wants to connect their two Take 139 profiles for a side-by-side
+# / synthesis view, the second person enters their partner's pair code on the
+# results page. The frontend calls:
+#
+#   GET  /pair/{code}            — fetch partner's scored summary (no free-text)
+#   POST /pair/connect           — mark two codes as paired (sets paired_with_code)
+#
+# Pair codes expire 30 days after submission. After that, /pair/{code} returns 404.
+# The full answers/intake never leave the server — only the scored summary does.
+
+PAIR_CODE_EXPIRY_DAYS = 30
+
+
+def _scored_summary(sub: Submission) -> dict:
+    """Build the partner-visible scored summary. Excludes free-text answers,
+    intake details, and any other PII beyond first name."""
+    return {
+        "pair_code": sub.pair_code,
+        "name": sub.name or "Your partner",
+        "primary_trigger": sub.primary_trigger,
+        "primary_core_question": sub.primary_core_question,
+        "primary_mechanism": sub.primary_mechanism,
+        "primary_breakdown": sub.primary_breakdown,
+        # results_json contains the structured trigger/mechanism/breakdown
+        # scores + wrap-up answers. Frontend will use this for the side-by-side
+        # view + the synthesis page.
+        "results": json.loads(sub.results_json) if sub.results_json else {},
+        "created_at": sub.created_at.isoformat() if sub.created_at else None,
+    }
+
+
+@app.get("/pair/{code}")
+def get_pair_profile(code: str, db: Session = Depends(get_db)):
+    """Fetch a partner's scored summary by pair code.
+
+    Returns 404 if the code does not exist, or if the submission is older than
+    PAIR_CODE_EXPIRY_DAYS (we treat expired codes as not-found for privacy).
+    """
+    code = (code or "").strip().upper()
+    if not code:
+        raise HTTPException(status_code=400, detail="Pair code is required")
+
+    sub = db.query(Submission).filter(Submission.pair_code == code).first()
+    if sub is None:
+        raise HTTPException(status_code=404, detail="Pair code not found")
+
+    # 30-day expiration
+    if sub.created_at:
+        age = datetime.utcnow() - sub.created_at
+        if age.days > PAIR_CODE_EXPIRY_DAYS:
+            raise HTTPException(
+                status_code=404,
+                detail=f"This pair code has expired (codes are valid for {PAIR_CODE_EXPIRY_DAYS} days)",
+            )
+
+    return _scored_summary(sub)
+
+
+class PairConnectIn(BaseModel):
+    my_code: str
+    partner_code: str
+
+
+@app.post("/pair/connect")
+def connect_pair(payload: PairConnectIn, db: Session = Depends(get_db)):
+    """Mark two pair codes as paired. Sets paired_with_code on both records.
+
+    Idempotent: if the pair is already connected, this is a no-op (returns ok).
+    Returns 404 if either code does not exist or is expired.
+    """
+    my_code = (payload.my_code or "").strip().upper()
+    partner_code = (payload.partner_code or "").strip().upper()
+    if not my_code or not partner_code:
+        raise HTTPException(status_code=400, detail="Both codes required")
+    if my_code == partner_code:
+        raise HTTPException(status_code=400, detail="You cannot pair with yourself")
+
+    me = db.query(Submission).filter(Submission.pair_code == my_code).first()
+    partner = db.query(Submission).filter(Submission.pair_code == partner_code).first()
+    if me is None or partner is None:
+        raise HTTPException(status_code=404, detail="One or both codes not found")
+
+    # Expiration check on both
+    now = datetime.utcnow()
+    for sub in (me, partner):
+        if sub.created_at and (now - sub.created_at).days > PAIR_CODE_EXPIRY_DAYS:
+            raise HTTPException(status_code=404, detail="One or both codes have expired")
+
+    # Set both sides of the pairing
+    me.paired_with_code = partner_code
+    me.paired_at = now
+    partner.paired_with_code = my_code
+    partner.paired_at = now
+    db.commit()
+
+    return {
+        "ok": True,
+        "my_code": my_code,
+        "partner_code": partner_code,
+        "partner": _scored_summary(partner),
+        "me": _scored_summary(me),
+    }
+
+
 # ═════════════════ IMAGO ENDPOINTS ══════════════════════════
 
 class ImagoSubmissionIn(BaseModel):
