@@ -352,6 +352,84 @@ def connect_pair(payload: PairConnectIn, db: Session = Depends(get_db)):
     }
 
 
+# ═════════════════ CONSULTANT INQUIRY (For Churches form) ════════════════
+#
+# When someone fills out the form on /for-churches.html, the payload posts here
+# and we email the inquiry to Chris's admin address. No data persistence — the
+# email IS the record. Keeps the database clean and avoids retention concerns.
+
+class ConsultantInquiryIn(BaseModel):
+    name: str
+    email: str
+    role: Optional[str] = None
+    organization: Optional[str] = None
+    inquiry_type: Optional[str] = None
+    message: Optional[str] = None
+
+
+@app.post("/consultant-inquiry")
+def consultant_inquiry(payload: ConsultantInquiryIn):
+    """Receive a consultant-inquiry form submission and email it to Chris."""
+    name = (payload.name or "").strip()
+    email = (payload.email or "").strip()
+    if not name or not email:
+        raise HTTPException(status_code=400, detail="Name and email are required")
+
+    # Build an HTML email body
+    rows = [
+        ("Name",           name),
+        ("Email",          email),
+        ("Role",           (payload.role or "").strip() or "—"),
+        ("Organization",   (payload.organization or "").strip() or "—"),
+        ("Inquiry type",   (payload.inquiry_type or "").strip() or "—"),
+    ]
+    rows_html = "".join(
+        f"<tr><td style='padding:4px 16px 4px 0;color:#8b8475;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;'>{k}</td>"
+        f"<td style='padding:4px 0;color:#1d1d1b;font-size:14px;'>{v}</td></tr>"
+        for k, v in rows
+    )
+    message_html = (
+        f"<div style='margin-top:24px;padding:16px;background:#f5f1e8;border-left:3px solid #8a4a2c;'>"
+        f"<div style='font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8a4a2c;font-weight:600;margin-bottom:6px;'>Message</div>"
+        f"<div style='color:#1d1d1b;font-size:14px;line-height:1.6;white-space:pre-wrap;'>{(payload.message or '').strip() or '(none)'}</div>"
+        f"</div>"
+    )
+    html_body = (
+        f"<div style='font-family:Helvetica,Arial,sans-serif;max-width:600px;'>"
+        f"<h2 style='font-family:Georgia,serif;color:#1d1d1b;margin:0 0 8px 0;'>New Consultant Inquiry</h2>"
+        f"<p style='color:#5d564b;margin:0 0 20px 0;font-size:14px;'>Take 139 · For Churches form</p>"
+        f"<table style='border-collapse:collapse;'>{rows_html}</table>"
+        f"{message_html}"
+        f"<p style='color:#8b8475;font-size:12px;margin-top:24px;'>Reply directly to this email to respond to {name}.</p>"
+        f"</div>"
+    )
+
+    subject = f"Consultant inquiry from {name}"
+    if payload.organization:
+        subject += f" ({payload.organization})"
+
+    # Send to admin only — not the inquirer (no PDF attachment needed here)
+    try:
+        from email_service import send_results_email, ADMIN_EMAIL
+        send_results_email(
+            to_email=ADMIN_EMAIL,
+            subject=subject,
+            html_body=html_body,
+            pdf_bytes=b"",  # no attachment
+            pdf_filename="",
+            reply_to=email,  # makes Chris's reply go to the inquirer
+        )
+    except Exception as e:
+        # We never expose the actual error to the user, but log it server-side
+        print(f"[consultant-inquiry] email send failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Could not deliver your inquiry right now. Please email us directly.",
+        )
+
+    return {"ok": True}
+
+
 # ═════════════════ IMAGO ENDPOINTS ══════════════════════════
 
 class ImagoSubmissionIn(BaseModel):

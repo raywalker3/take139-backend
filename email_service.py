@@ -38,14 +38,16 @@ def send_results_email(
     if not RESEND_API_KEY:
         return {"skipped": True, "reason": "no RESEND_API_KEY set"}
 
-    pdf_b64 = base64.b64encode(pdf_bytes).decode("ascii")
-
-    attachments = [
-        {
+    attachments = []
+    # Only attach a PDF if both filename and bytes are provided. This lets
+    # callers (like the consultant inquiry form) reuse this helper without
+    # forcing a fake attachment.
+    if pdf_bytes and pdf_filename:
+        pdf_b64 = base64.b64encode(pdf_bytes).decode("ascii")
+        attachments.append({
             "filename": pdf_filename,
             "content": pdf_b64,
-        }
-    ]
+        })
     # Optional extra attachments: list of {filename, bytes}
     for extra in (extra_attachments or []):
         attachments.append({
