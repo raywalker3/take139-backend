@@ -31,6 +31,7 @@ from pair_codes import generate_pair_code
 import access_codes as ac
 import admin_auth
 import code_gating
+import stripe_purchase
 
 # Feature flag: when true, /submit and /pair/connect require valid access codes.
 # Set ENFORCE_ACCESS_CODES=true on Railway when ready for paid launch.
@@ -451,6 +452,78 @@ def codes_enforcement_status():
     can hide/show the 'enter your code' UI accordingly.
     """
     return {"enforced": ENFORCE_ACCESS_CODES}
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# Stripe purchase flow — three products
+# ════════════════════════════════════════════════════════════════════════════
+
+class PurchaseCheckoutIn(BaseModel):
+    kind: str  # "single" | "couple" | "connect"
+    email: str
+
+
+@app.get("/purchase/products")
+def list_products():
+    """Public catalog — lets the frontend show prices."""
+    return {
+        "configured": stripe_purchase.is_configured(),
+        "products": stripe_purchase.PRODUCTS,
+    }
+
+
+@app.post("/purchase/checkout")
+def purchase_checkout(payload: PurchaseCheckoutIn):
+    """Create a Stripe Checkout Session for the chosen product.
+
+    Returns: {"checkout_url": "...", "session_id": "..."}
+    Frontend should redirect the user to checkout_url.
+    """
+    return stripe_purchase.create_checkout_session(
+        kind=payload.kind,
+        email=payload.email.strip().lower(),
+    )
+
+
+@app.post("/stripe/webhook")
+async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
+    """Receive Stripe webhook events.
+
+    On checkout.session.completed: generate code(s) and email them to buyer.
+    Idempotent (Stripe may deliver the same event more than once).
+    """
+    payload_bytes = await request.body()
+    sig_header = request.headers.get("stripe-signature", "")
+    event = stripe_purchase.verify_webhook(payload_bytes, sig_header)
+
+    event_type = event.get("type")
+    if event_type != "checkout.session.completed":
+        return {"ok": True, "ignored": event_type}
+
+    result = stripe_purchase.handle_checkout_completed(db, event)
+    if "error" in result:
+        print(f"[STRIPE WEBHOOK ERROR] {result}")
+        return {"ok": False, "error": result["error"]}
+
+    # Send confirmation email to buyer (only on first delivery)
+    if not result.get("idempotent"):
+        try:
+            from email_service import send_purchase_confirmation
+            frontend_url = os.environ.get("FRONTEND_URL", "https://take139.com").rstrip("/")
+            send_purchase_confirmation(
+                to_email=result["email"],
+                kind=result["kind"],
+                codes=result["codes"],
+                frontend_url=frontend_url,
+            )
+        except Exception as e:
+            print(f"[STRIPE EMAIL ERROR] Code(s) created but email failed: {e}")
+
+    return {
+        "ok": True,
+        "codes_created": len(result["codes"]),
+        "idempotent": result.get("idempotent", False),
+    }
 
 
 class ConsultantInquiryIn(BaseModel):

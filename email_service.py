@@ -110,3 +110,135 @@ def send_to_admin_and_user(
             results["user"] = {"error": str(e)}
 
     return results
+
+
+def send_purchase_confirmation(
+    to_email: str,
+    kind: str,
+    codes: list,
+    frontend_url: str = "https://take139.com",
+) -> dict:
+    """Email a buyer their access code(s) after a successful Stripe purchase.
+
+    kind: 'single' | 'couple' | 'connect'
+    codes: ['T139-XXXXXX'] or ['COUPLE-XXXXXX-A', 'COUPLE-XXXXXX-B'] or ['CONNECT-XXXXXX']
+    """
+    if not RESEND_API_KEY:
+        return {"skipped": True, "reason": "no RESEND_API_KEY set"}
+
+    # Subject + body tailored to product kind
+    if kind == "single":
+        subject = "Your Take 139 access code"
+        product_name = "Conflict Origins (Take 139)"
+        instructions = f"""
+        <p>Click the link below to begin your assessment. The link auto-fills
+        your code; you'll just enter your name and email when prompted.</p>
+        <p style="text-align:center;margin:30px 0;">
+            <a href="{frontend_url}/?code={codes[0]}"
+               style="background:#1d1d1b;color:#f5f1e8;padding:14px 28px;
+                      text-decoration:none;border-radius:999px;
+                      font-family:'Inter',sans-serif;font-weight:500;
+                      display:inline-block;">
+                Begin Your Assessment
+            </a>
+        </p>
+        <p>Or visit <a href="{frontend_url}">take139.com</a> and enter your code manually:</p>
+        <p style="font-family:ui-monospace,Menlo,monospace;font-size:18px;
+                  text-align:center;padding:14px;background:#ece4d3;
+                  border-radius:6px;">{codes[0]}</p>
+        """
+    elif kind == "couple":
+        subject = "Your Take 139 Couple Package access codes"
+        product_name = "Couple Package"
+        instructions = f"""
+        <p>You've received <strong>two codes</strong> — one for each spouse.
+        Forward the second code to your spouse so each of you can take the
+        assessment individually. After you've both completed it, you can
+        connect your profiles to see your Couples Walkthrough.</p>
+
+        <p style="text-align:center;margin:30px 0;">
+            <a href="{frontend_url}/?code={codes[0]}"
+               style="background:#1d1d1b;color:#f5f1e8;padding:14px 28px;
+                      text-decoration:none;border-radius:999px;
+                      font-family:'Inter',sans-serif;font-weight:500;
+                      display:inline-block;">
+                Take Your Assessment (using Code A)
+            </a>
+        </p>
+
+        <table style="width:100%;border-collapse:collapse;margin:24px 0;">
+            <tr>
+                <td style="padding:14px;background:#ece4d3;border-radius:6px;
+                           font-family:ui-monospace,Menlo,monospace;">
+                    <strong style="font-family:'Inter',sans-serif;font-size:12px;
+                            text-transform:uppercase;letter-spacing:0.1em;
+                            color:#8a4a2c;">Your code:</strong><br>
+                    <span style="font-size:18px;">{codes[0]}</span>
+                </td>
+            </tr>
+            <tr><td style="height:12px;"></td></tr>
+            <tr>
+                <td style="padding:14px;background:#ece4d3;border-radius:6px;
+                           font-family:ui-monospace,Menlo,monospace;">
+                    <strong style="font-family:'Inter',sans-serif;font-size:12px;
+                            text-transform:uppercase;letter-spacing:0.1em;
+                            color:#4f6b5e;">Code for your spouse:</strong><br>
+                    <span style="font-size:18px;">{codes[1]}</span>
+                </td>
+            </tr>
+        </table>
+
+        <p style="font-size:13px;color:#6b6862;">Either of you can use Code A;
+        the other uses Code B. They are otherwise identical.</p>
+        """
+    elif kind == "connect":
+        subject = "Your Take 139 Connection Add-On code"
+        product_name = "Connection Add-On"
+        instructions = f"""
+        <p>You'll use this code when connecting your two profiles on the
+        results page (you and your spouse must each have already completed
+        the Take 139 assessment).</p>
+        <p style="font-family:ui-monospace,Menlo,monospace;font-size:18px;
+                  text-align:center;padding:14px;background:#ece4d3;
+                  border-radius:6px;">{codes[0]}</p>
+        <p>This code is single-use. Once used, it cannot be re-paired.</p>
+        """
+    else:
+        instructions = "<p>" + ", ".join(codes) + "</p>"
+        subject = "Your Take 139 access code"
+        product_name = "Take 139"
+
+    html_body = f"""<!DOCTYPE html>
+<html><body style="font-family:'Inter',sans-serif;color:#1d1d1b;
+                    background:#f5f1e8;padding:40px 20px;line-height:1.6;">
+<div style="max-width:560px;margin:0 auto;background:#f9f7f0;
+            padding:40px 36px;border-radius:8px;">
+    <p style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+              color:#8a4a2c;margin:0 0 12px;">Take 139</p>
+    <h1 style="font-family:Georgia,serif;font-weight:normal;font-size:28px;
+               margin:0 0 24px;color:#1d1d1b;">Thank you for your purchase</h1>
+    <p>Your <strong>{product_name}</strong> is ready.</p>
+    {instructions}
+    <hr style="border:none;border-top:1px solid #d4c39a;margin:30px 0;">
+    <p style="font-size:13px;color:#6b6862;">
+        If you have any questions, just reply to this email and a real person
+        will read it (it's a Christian pastor; he doesn't bite).
+    </p>
+    <p style="font-size:12px;color:#6b6862;margin-top:24px;">
+        Take 139 · A counselor's framework for conflict origins<br>
+        <a href="{frontend_url}" style="color:#8a4a2c;">take139.com</a>
+    </p>
+</div>
+</body></html>"""
+
+    try:
+        params = {
+            "from": FROM_EMAIL,
+            "to": [to_email],
+            "subject": subject,
+            "html": html_body,
+            "reply_to": ADMIN_EMAIL,
+        }
+        return resend.Emails.send(params)
+    except Exception as e:
+        return {"error": str(e)}
