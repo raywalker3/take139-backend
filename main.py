@@ -20,8 +20,16 @@ from fastapi.responses import Response, JSONResponse
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy.orm import Session
 
-from database import init_db, get_db, Submission, ImagoSubmission
+from database import (
+    init_db, get_db, Submission, ImagoSubmission,
+    AccessCode, CouplePair,
+    CODE_KIND_SINGLE, CODE_KIND_COUPLE, CODE_KIND_CONNECT,
+    CODE_STATUS_ACTIVE, CODE_STATUS_REDEEMED, CODE_STATUS_EXPIRED, CODE_STATUS_REVOKED,
+    CODE_SOURCE_ADMIN, CODE_SOURCE_STRIPE, CODE_SOURCE_COMP,
+)
 from pair_codes import generate_pair_code
+import access_codes as ac
+import admin_auth
 from report_data import get_report_data
 from pdf_generator import generate_report_pdf, render_email_html
 from email_service import send_to_admin_and_user
@@ -53,8 +61,9 @@ app.add_middleware(
         "http://127.0.0.1:3000",
     ],
     allow_credentials=False,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 
@@ -632,6 +641,236 @@ def imago_recent_submissions(limit: int = 20, db: Session = Depends(get_db)):
         }
         for r in rows
     ]
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# Admin endpoints
+# All require Authorization: Bearer <token> (obtained from POST /admin/login).
+# ════════════════════════════════════════════════════════════════════════════
+
+from fastapi import Depends as _Depends
+
+
+class AdminLoginIn(BaseModel):
+    password: str
+
+
+class AdminLoginOut(BaseModel):
+    ok: bool
+    token: str
+    expires_in_hours: int
+
+
+@app.post("/admin/login", response_model=AdminLoginOut)
+def admin_login(payload: AdminLoginIn):
+    """Exchange the admin password for a session token."""
+    if not admin_auth.verify_password(payload.password):
+        raise HTTPException(status_code=401, detail="Incorrect password")
+    token = admin_auth.issue_token()
+    return AdminLoginOut(
+        ok=True,
+        token=token,
+        expires_in_hours=admin_auth.ADMIN_TOKEN_TTL_HOURS,
+    )
+
+
+@app.get("/admin/whoami")
+def admin_whoami(_: None = _Depends(admin_auth.require_admin)):
+    """Token validity check for the admin UI."""
+    return {"ok": True, "admin": True}
+
+
+class CreateCodesIn(BaseModel):
+    kind: str  # "single" | "couple" | "connect"
+    quantity: int = 1
+    source: str = CODE_SOURCE_ADMIN  # "admin" | "comp" (stripe is server-only)
+    batch_label: Optional[str] = None
+    notes: Optional[str] = None
+    expires_in_days: Optional[int] = None
+    price_cents: Optional[int] = None  # override default; useful for comp ($0)
+
+
+@app.post("/admin/codes")
+def admin_create_codes(
+    payload: CreateCodesIn,
+    db: Session = Depends(get_db),
+    _: None = _Depends(admin_auth.require_admin),
+):
+    """Generate a batch of access codes.
+
+    For couple kind: each unit of quantity produces TWO codes (A + B).
+    For single/connect kind: each unit of quantity produces ONE code.
+    """
+    if payload.kind not in (CODE_KIND_SINGLE, CODE_KIND_COUPLE, CODE_KIND_CONNECT):
+        raise HTTPException(status_code=400, detail=f"Unknown kind: {payload.kind}")
+    if payload.source not in (CODE_SOURCE_ADMIN, CODE_SOURCE_COMP):
+        raise HTTPException(status_code=400, detail="source must be 'admin' or 'comp' from this endpoint")
+    if payload.quantity < 1 or payload.quantity > 500:
+        raise HTTPException(status_code=400, detail="quantity must be between 1 and 500")
+
+    created = []
+    price_cents = payload.price_cents if payload.price_cents is not None else (0 if payload.source == CODE_SOURCE_COMP else None)
+
+    for _i in range(payload.quantity):
+        if payload.kind == CODE_KIND_SINGLE:
+            code = ac.create_single_code(
+                db,
+                source=payload.source,
+                batch_label=payload.batch_label,
+                notes=payload.notes,
+                expires_in_days=payload.expires_in_days,
+                price_cents=price_cents,
+            )
+            created.append(ac.code_to_dict(code))
+        elif payload.kind == CODE_KIND_CONNECT:
+            code = ac.create_connect_code(
+                db,
+                source=payload.source,
+                batch_label=payload.batch_label,
+                notes=payload.notes,
+                expires_in_days=payload.expires_in_days,
+                price_cents=price_cents,
+            )
+            created.append(ac.code_to_dict(code))
+        elif payload.kind == CODE_KIND_COUPLE:
+            code_a, code_b = ac.create_couple_code_pair(
+                db,
+                source=payload.source,
+                batch_label=payload.batch_label,
+                notes=payload.notes,
+                expires_in_days=payload.expires_in_days,
+            )
+            created.append(ac.code_to_dict(code_a))
+            created.append(ac.code_to_dict(code_b))
+
+    return {"ok": True, "created_count": len(created), "codes": created}
+
+
+@app.get("/admin/codes")
+def admin_list_codes(
+    kind: Optional[str] = None,
+    status_filter: Optional[str] = None,
+    source: Optional[str] = None,
+    batch_label: Optional[str] = None,
+    limit: int = 200,
+    db: Session = Depends(get_db),
+    _: None = _Depends(admin_auth.require_admin),
+):
+    """List codes with optional filters."""
+    # Auto-sweep expired codes on every list call (cheap)
+    ac.sweep_expired(db)
+
+    q = db.query(AccessCode).order_by(AccessCode.created_at.desc())
+    if kind:
+        q = q.filter(AccessCode.kind == kind)
+    if status_filter:
+        q = q.filter(AccessCode.status == status_filter)
+    if source:
+        q = q.filter(AccessCode.source == source)
+    if batch_label:
+        q = q.filter(AccessCode.batch_label == batch_label)
+    rows = q.limit(min(limit, 1000)).all()
+    return {
+        "count": len(rows),
+        "codes": [ac.code_to_dict(c) for c in rows],
+    }
+
+
+@app.get("/admin/stats")
+def admin_stats(
+    db: Session = Depends(get_db),
+    _: None = _Depends(admin_auth.require_admin),
+):
+    """Dashboard stats."""
+    ac.sweep_expired(db)
+
+    def count_by(kind, status_):
+        return db.query(AccessCode).filter(
+            AccessCode.kind == kind,
+            AccessCode.status == status_,
+        ).count()
+
+    def revenue_cents(kind, source):
+        """Sum price_cents for redeemed paid codes."""
+        rows = db.query(AccessCode).filter(
+            AccessCode.kind == kind,
+            AccessCode.source == source,
+            AccessCode.status == CODE_STATUS_REDEEMED,
+            AccessCode.price_cents != None,  # noqa: E711
+        ).all()
+        return sum((r.price_cents or 0) for r in rows)
+
+    stats = {
+        "submissions": {
+            "take139_total": db.query(Submission).count(),
+            "imago_total": db.query(ImagoSubmission).count(),
+            "couples_paired": db.query(CouplePair).count(),
+        },
+        "codes": {
+            "single": {
+                "active": count_by(CODE_KIND_SINGLE, CODE_STATUS_ACTIVE),
+                "redeemed": count_by(CODE_KIND_SINGLE, CODE_STATUS_REDEEMED),
+                "expired": count_by(CODE_KIND_SINGLE, CODE_STATUS_EXPIRED),
+                "revoked": count_by(CODE_KIND_SINGLE, CODE_STATUS_REVOKED),
+            },
+            "couple": {
+                "active": count_by(CODE_KIND_COUPLE, CODE_STATUS_ACTIVE),
+                "redeemed": count_by(CODE_KIND_COUPLE, CODE_STATUS_REDEEMED),
+                "expired": count_by(CODE_KIND_COUPLE, CODE_STATUS_EXPIRED),
+                "revoked": count_by(CODE_KIND_COUPLE, CODE_STATUS_REVOKED),
+            },
+            "connect": {
+                "active": count_by(CODE_KIND_CONNECT, CODE_STATUS_ACTIVE),
+                "redeemed": count_by(CODE_KIND_CONNECT, CODE_STATUS_REDEEMED),
+                "expired": count_by(CODE_KIND_CONNECT, CODE_STATUS_EXPIRED),
+                "revoked": count_by(CODE_KIND_CONNECT, CODE_STATUS_REVOKED),
+            },
+        },
+        "revenue_cents": {
+            "single_paid": revenue_cents(CODE_KIND_SINGLE, CODE_SOURCE_STRIPE),
+            "couple_paid": revenue_cents(CODE_KIND_COUPLE, CODE_SOURCE_STRIPE),
+            "connect_paid": revenue_cents(CODE_KIND_CONNECT, CODE_SOURCE_STRIPE),
+        },
+    }
+    return stats
+
+
+class RevokeCodeIn(BaseModel):
+    reason: Optional[str] = None
+
+
+@app.post("/admin/codes/{code_str}/revoke")
+def admin_revoke_code(
+    code_str: str,
+    payload: RevokeCodeIn,
+    db: Session = Depends(get_db),
+    _: None = _Depends(admin_auth.require_admin),
+):
+    """Manually kill a code (and its sibling if it's a couple code)."""
+    code = ac.lookup_code(db, code_str)
+    if not code:
+        raise HTTPException(status_code=404, detail="Code not found")
+    ac.revoke_code(db, code, reason=payload.reason)
+    revoked = [ac.code_to_dict(code)]
+    if code.sibling_code:
+        sibling = ac.lookup_code(db, code.sibling_code)
+        if sibling and sibling.status == CODE_STATUS_ACTIVE:
+            ac.revoke_code(db, sibling, reason=(payload.reason or "sibling revoked"))
+            revoked.append(ac.code_to_dict(sibling))
+    return {"ok": True, "revoked": revoked}
+
+
+@app.get("/admin/codes/{code_str}")
+def admin_get_code(
+    code_str: str,
+    db: Session = Depends(get_db),
+    _: None = _Depends(admin_auth.require_admin),
+):
+    """Detail view for one code."""
+    code = ac.lookup_code(db, code_str)
+    if not code:
+        raise HTTPException(status_code=404, detail="Code not found")
+    return ac.code_to_dict(code)
 
 
 # ─── Local dev entry point ───
