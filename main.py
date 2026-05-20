@@ -11,6 +11,7 @@ Future phases: counselor auth, couple reports, Stripe auto-codes.
 """
 import os
 import json
+import base64
 from datetime import datetime
 from typing import Optional
 
@@ -32,6 +33,7 @@ import access_codes as ac
 import admin_auth
 import code_gating
 import stripe_purchase
+import walkthroughs as wt
 
 # Feature flag: when true, /submit and /pair/connect require valid access codes.
 # Set ENFORCE_ACCESS_CODES=true on Railway when ready for paid launch.
@@ -217,6 +219,18 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     pdf_filename = f"Take139-Profile-{safe_name}.pdf"
     email_subject = "Take 139 Assessment Profile"
 
+    # ─── Build the personal Walkthrough PDF as a second attachment ───
+    walkthrough_attachments = []
+    try:
+        walkthrough_pdf = wt.build_personal_walkthrough(sub)
+        walkthrough_filename = f"Take139-Walkthrough-{safe_name}.pdf"
+        walkthrough_attachments = [{
+            "filename": walkthrough_filename,
+            "content": base64.b64encode(walkthrough_pdf).decode("utf-8"),
+        }]
+    except Exception as e:
+        print(f"[WALKTHROUGH GEN ERROR] {e}")
+
     try:
         send_result = send_to_admin_and_user(
             user_email=payload.email,
@@ -225,6 +239,7 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
             pdf_bytes=pdf_bytes,
             pdf_filename=pdf_filename,
             user_name=payload.name,
+            extra_attachments=walkthrough_attachments or None,
         )
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
@@ -413,6 +428,38 @@ def connect_pair(payload: PairConnectIn, db: Session = Depends(get_db)):
             db, connection_code_used, my_code, partner_code
         )
 
+    # ─── Generate the couples Walkthrough and email it to both partners ───
+    try:
+        couples_pdf = wt.build_couples_walkthrough(me, partner)
+        from email_service import send_couples_walkthrough
+        filename = f"Take139-Couples-{my_code}-{partner_code}.pdf"
+        # Send to me (if I have email on file)
+        if me.email:
+            try:
+                send_couples_walkthrough(
+                    to_email=me.email,
+                    your_name=me.name or "",
+                    partner_name=partner.name or "",
+                    pdf_bytes=couples_pdf,
+                    filename=filename,
+                )
+            except Exception as e:
+                print(f"[COUPLES EMAIL ME ERROR] {e}")
+        # Send to partner (if they have email on file)
+        if partner.email and partner.email != me.email:
+            try:
+                send_couples_walkthrough(
+                    to_email=partner.email,
+                    your_name=partner.name or "",
+                    partner_name=me.name or "",
+                    pdf_bytes=couples_pdf,
+                    filename=filename,
+                )
+            except Exception as e:
+                print(f"[COUPLES EMAIL PARTNER ERROR] {e}")
+    except Exception as e:
+        print(f"[COUPLES WALKTHROUGH GEN ERROR] {e}")
+
     return {
         "ok": True,
         "my_code": my_code,
@@ -524,6 +571,76 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         "codes_created": len(result["codes"]),
         "idempotent": result.get("idempotent", False),
     }
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# Walkthrough PDF generation — personal + couples
+#
+# Two endpoints:
+#   GET /walkthrough/personal/{pair_code}
+#     Returns the personal Walkthrough PDF for that submission.
+#     Available to anyone with the pair code (it's their own data).
+#
+#   GET /walkthrough/couples/{pair_code_a}/{pair_code_b}
+#     Returns the couples Walkthrough PDF for two paired submissions.
+#     Only succeeds if the two are already bonded in CouplePair.
+# ════════════════════════════════════════════════════════════════════════════
+
+@app.get("/walkthrough/personal/{pair_code}")
+def get_personal_walkthrough(pair_code: str, db: Session = Depends(get_db)):
+    """Generate and return the personal Walkthrough PDF for a submission."""
+    pair_code = (pair_code or "").strip().upper()
+    sub = db.query(Submission).filter(Submission.pair_code == pair_code).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Pair code not found")
+
+    pdf_bytes = wt.build_personal_walkthrough(sub)
+    filename = f"Take139-Walkthrough-{pair_code}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="{filename}"',
+            "Cache-Control": "private, max-age=300",
+        },
+    )
+
+
+@app.get("/walkthrough/couples/{pair_code_a}/{pair_code_b}")
+def get_couples_walkthrough(pair_code_a: str, pair_code_b: str, db: Session = Depends(get_db)):
+    """Generate and return the couples Walkthrough PDF.
+
+    Requires the two submissions to already be bonded in CouplePair.
+    """
+    code_a = (pair_code_a or "").strip().upper()
+    code_b = (pair_code_b or "").strip().upper()
+
+    # Verify bond exists in either order
+    bonded = db.query(CouplePair).filter(
+        ((CouplePair.pair_code_a == code_a) & (CouplePair.pair_code_b == code_b))
+        | ((CouplePair.pair_code_a == code_b) & (CouplePair.pair_code_b == code_a))
+    ).first()
+    if not bonded:
+        raise HTTPException(
+            status_code=403,
+            detail="These two profiles are not paired. Connect them first.",
+        )
+
+    sub_a = db.query(Submission).filter(Submission.pair_code == code_a).first()
+    sub_b = db.query(Submission).filter(Submission.pair_code == code_b).first()
+    if not sub_a or not sub_b:
+        raise HTTPException(status_code=404, detail="One or both pair codes not found")
+
+    pdf_bytes = wt.build_couples_walkthrough(sub_a, sub_b)
+    filename = f"Take139-Couples-{code_a}-{code_b}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="{filename}"',
+            "Cache-Control": "private, max-age=300",
+        },
+    )
 
 
 class ConsultantInquiryIn(BaseModel):

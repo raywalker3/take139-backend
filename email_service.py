@@ -242,3 +242,66 @@ def send_purchase_confirmation(
         return resend.Emails.send(params)
     except Exception as e:
         return {"error": str(e)}
+
+
+def send_couples_walkthrough(
+    to_email: str,
+    your_name: str,
+    partner_name: str,
+    pdf_bytes: bytes,
+    filename: str = "Take139-Couples-Walkthrough.pdf",
+) -> dict:
+    """Email a couples Walkthrough PDF to one partner after they connect."""
+    if not RESEND_API_KEY:
+        return {"skipped": True, "reason": "no RESEND_API_KEY set"}
+
+    your_first = (your_name or "").split()[0] or "friend"
+    partner_first = (partner_name or "").split()[0] or "your partner"
+
+    subject = f"Your Take 139 Couples Walkthrough — {your_first} & {partner_first}"
+
+    html_body = f"""<!DOCTYPE html>
+<html><body style="font-family:'Inter',sans-serif;color:#1d1d1b;
+                    background:#f5f1e8;padding:40px 20px;line-height:1.6;">
+<div style="max-width:560px;margin:0 auto;background:#f9f7f0;
+            padding:40px 36px;border-radius:8px;">
+    <p style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+              color:#8a4a2c;margin:0 0 12px;">Take 139 · A Couples Walkthrough</p>
+    <h1 style="font-family:Georgia,serif;font-weight:normal;font-size:26px;
+               margin:0 0 18px;color:#1d1d1b;">For {your_first} &amp; {partner_first}</h1>
+    <p>Your couples Walkthrough is attached as a PDF.</p>
+    <p>It's a counselor's read of your two wirings together &mdash; what each
+    of you brings the other that you could not build alone, the small
+    repeating collision your two profiles create, six commitments
+    (three from each of you), a prayer for the marriage, and a six-round
+    date-night conversation designed to be spoken across a table.</p>
+    <p style="font-size:14px;color:#6b6862;">
+        Sit with it together if you can. If not, read it separately and
+        then sit down with it. Argue with what does not fit. Stay with what does.
+    </p>
+    <hr style="border:none;border-top:1px solid #d4c39a;margin:30px 0;">
+    <p style="font-size:13px;color:#6b6862;">
+        Reply to this email if you have any questions \u2014 a real person
+        (a pastor) will read it.
+    </p>
+    <p style="font-size:12px;color:#6b6862;margin-top:24px;">
+        Take 139 \u00b7 A counselor's framework for conflict origins
+    </p>
+</div>
+</body></html>"""
+
+    try:
+        params = {
+            "from": FROM_EMAIL,
+            "to": [to_email],
+            "subject": subject,
+            "html": html_body,
+            "reply_to": ADMIN_EMAIL,
+            "attachments": [{
+                "filename": filename,
+                "content": base64.b64encode(pdf_bytes).decode("utf-8"),
+            }],
+        }
+        return resend.Emails.send(params)
+    except Exception as e:
+        return {"error": str(e)}
