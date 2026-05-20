@@ -30,6 +30,11 @@ from database import (
 from pair_codes import generate_pair_code
 import access_codes as ac
 import admin_auth
+import code_gating
+
+# Feature flag: when true, /submit and /pair/connect require valid access codes.
+# Set ENFORCE_ACCESS_CODES=true on Railway when ready for paid launch.
+ENFORCE_ACCESS_CODES = os.environ.get("ENFORCE_ACCESS_CODES", "false").lower() in ("1", "true", "yes")
 from report_data import get_report_data
 from pdf_generator import generate_report_pdf, render_email_html
 from email_service import send_to_admin_and_user
@@ -141,6 +146,13 @@ def health():
 def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     """Receive a completed assessment, store it, email the results."""
 
+    # ─── Code gate (only when ENFORCE_ACCESS_CODES=true) ───
+    consumed_code = None
+    if ENFORCE_ACCESS_CODES:
+        consumed_code = code_gating.enforce_assessment_code(
+            db, payload.access_code_used, user_email=payload.email
+        )
+
     # Generate unique pair code
     existing = {row[0] for row in db.query(Submission.pair_code).all()}
     pair_code = generate_pair_code(existing_codes=existing)
@@ -223,6 +235,18 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     sub.emailed_to_user = user_sent
     sub.emailed_to_admin = admin_sent
     db.commit()
+
+    # ─── Consume the access code ONLY AFTER the submission committed ───
+    if consumed_code is not None:
+        try:
+            code_gating.mark_assessment_code_consumed(
+                db, consumed_code,
+                submission_pair_code=pair_code,
+                user_email=payload.email,
+            )
+        except Exception as e:
+            # Code marking failed but submission succeeded — log, don't fail user.
+            print(f"[CODE CONSUME ERROR] {e}")
 
     return SubmissionOut(
         pair_code=pair_code,
@@ -318,14 +342,23 @@ def get_pair_profile(code: str, db: Session = Depends(get_db)):
 class PairConnectIn(BaseModel):
     my_code: str
     partner_code: str
+    # Connection access code — ignored unless ENFORCE_ACCESS_CODES=true.
+    # Either a CONNECT-XXXXX ($10 add-on, single-use) or a COUPLE-XXXXX-A/B
+    # (whose sibling has also been used by the other spouse).
+    connection_code: Optional[str] = None
 
 
 @app.post("/pair/connect")
 def connect_pair(payload: PairConnectIn, db: Session = Depends(get_db)):
     """Mark two pair codes as paired. Sets paired_with_code on both records.
 
-    Idempotent: if the pair is already connected, this is a no-op (returns ok).
-    Returns 404 if either code does not exist or is expired.
+    When ENFORCE_ACCESS_CODES is true, also requires a `connection_code`
+    in the payload — either a 'connect' kind code (single-use, $10 add-on)
+    or a 'couple' kind code whose sibling has also been redeemed.
+
+    Idempotent: pairing the same two codes again is a no-op.
+    Re-pair lock: pairing a profile that's already in a different CouplePair
+    is rejected with 409 (must purchase a new Connect code).
     """
     my_code = (payload.my_code or "").strip().upper()
     partner_code = (payload.partner_code or "").strip().upper()
@@ -345,12 +378,39 @@ def connect_pair(payload: PairConnectIn, db: Session = Depends(get_db)):
         if sub.created_at and (now - sub.created_at).days > PAIR_CODE_EXPIRY_DAYS:
             raise HTTPException(status_code=404, detail="One or both codes have expired")
 
-    # Set both sides of the pairing
+    # ─── Re-pair lock (enforced regardless of feature flag) ───
+    code_gating.check_repair_lock(db, my_code, partner_code)
+
+    # ─── Connection code gate ───
+    connection_code_used = None
+    if ENFORCE_ACCESS_CODES:
+        connection_code_used = code_gating.enforce_connection_code(
+            db,
+            connection_code=getattr(payload, "connection_code", None),
+            me_pair_code=my_code,
+            partner_pair_code=partner_code,
+        )
+
+    # Set both sides of the pairing on the Submission rows (legacy field)
     me.paired_with_code = partner_code
     me.paired_at = now
     partner.paired_with_code = my_code
     partner.paired_at = now
     db.commit()
+
+    # ─── Record the bond in CouplePair (the locked record) ───
+    code_gating.record_couple_pair(
+        db,
+        me_pair_code=my_code,
+        partner_pair_code=partner_code,
+        authorised_by_code=connection_code_used.code if connection_code_used else None,
+    )
+
+    # Consume the connection code if it was a single-use connect
+    if connection_code_used is not None:
+        code_gating.mark_connection_code_consumed(
+            db, connection_code_used, my_code, partner_code
+        )
 
     return {
         "ok": True,
@@ -366,6 +426,32 @@ def connect_pair(payload: PairConnectIn, db: Session = Depends(get_db)):
 # When someone fills out the form on /for-churches.html, the payload posts here
 # and we email the inquiry to Chris's admin address. No data persistence — the
 # email IS the record. Keeps the database clean and avoids retention concerns.
+
+# ════════════════════════════════════════════════════════════════════════════
+# Public code preflight — frontend validates a typed code BEFORE the user
+# spends 15 min on the assessment. No side effects.
+# ════════════════════════════════════════════════════════════════════════════
+
+@app.get("/codes/check/{code_str}")
+def check_code(code_str: str, db: Session = Depends(get_db)):
+    """Preflight: is this code valid for use right now?
+
+    Returns shape: {valid: bool, kind: str, status: str, reason: str, ...}
+    The frontend can call this when the user types a code on the landing page
+    and show ✓ / ✗ in real time before they start the assessment.
+    """
+    return code_gating.check_code_preflight(db, code_str)
+
+
+@app.get("/codes/enforcement")
+def codes_enforcement_status():
+    """Lets the frontend know whether access-code gating is currently enforced.
+
+    Public endpoint — returns just the feature flag value so the frontend
+    can hide/show the 'enter your code' UI accordingly.
+    """
+    return {"enforced": ENFORCE_ACCESS_CODES}
+
 
 class ConsultantInquiryIn(BaseModel):
     name: str
