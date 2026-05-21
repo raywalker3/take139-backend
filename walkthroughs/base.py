@@ -53,7 +53,8 @@ MARGIN_B = 0.95 * inch
 # Downloaded once, cached in /tmp.
 # ────────────────────────────────────────────────────────────────────────
 FONT_DIR = Path("/tmp/take139_walkthrough_fonts")
-FONT_DIR.mkdir(exist_ok=True)
+# NOTE: do not mkdir at import time — defer to ensure_fonts() so a /tmp
+# permission issue can never prevent the FastAPI app from booting.
 
 GOOGLE_CSS_URL = (
     "https://fonts.googleapis.com/css2"
@@ -100,6 +101,7 @@ def ensure_fonts():
     if _FONTS_REGISTERED:
         return
 
+    FONT_DIR.mkdir(parents=True, exist_ok=True)
     needed = [(k, FONT_DIR / fname) for k, fname in FONT_KEYS.items()
               if not (FONT_DIR / fname).exists() or (FONT_DIR / fname).stat().st_size < 10000]
     if needed:
