@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 
 from database import (
     init_db, get_db, Submission, ImagoSubmission,
-    AccessCode, CouplePair,
+    AccessCode, CouplePair, AuthToken,
     CODE_KIND_SINGLE, CODE_KIND_COUPLE, CODE_KIND_CONNECT,
     CODE_STATUS_ACTIVE, CODE_STATUS_REDEEMED, CODE_STATUS_EXPIRED, CODE_STATUS_REVOKED,
     CODE_SOURCE_ADMIN, CODE_SOURCE_STRIPE, CODE_SOURCE_COMP,
@@ -863,7 +863,7 @@ def verify_magic_link(
     return VerifyOut(session_token=sess.session_token, email=sess.email)
 
 
-@app.get("/auth/me", response_model=MeOut)
+@app.get("/auth/me")  # response model relaxed to dict to allow partner field
 def auth_me(
     sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
     db: Session = Depends(get_db),
@@ -899,14 +899,29 @@ def auth_me(
         .filter(ImagoSubmission.email == email)
         .count()
     )
-    return MeOut(
-        email=email,
-        name=name,
-        submissions=sub_list,
-        imago_count=imago_count,
-        has_password=bool(user and user.password_hash),
-        email_verified=bool(user and user.email_verified_at),
-    )
+    # Enrich the most-recent submission with partner details if paired.
+    partner_info = None
+    if sub_list and sub_list[0].get("paired_with_code"):
+        partner_pc = sub_list[0]["paired_with_code"]
+        partner_sub = db.query(Submission).filter(Submission.pair_code == partner_pc).first()
+        if partner_sub:
+            partner_info = {
+                "pair_code": partner_sub.pair_code,
+                "name": partner_sub.name,
+                "primary_mechanism": partner_sub.primary_mechanism,
+                "primary_trigger": partner_sub.primary_trigger,
+                "primary_core_question": partner_sub.primary_core_question,
+            }
+
+    return {
+        "email": email,
+        "name": name,
+        "submissions": sub_list,
+        "imago_count": imago_count,
+        "has_password": bool(user and user.password_hash),
+        "email_verified": bool(user and user.email_verified_at),
+        "partner": partner_info,
+    }
 
 
 @app.post("/auth/signout")
@@ -1048,6 +1063,295 @@ def auth_set_password(
             raise HTTPException(status_code=401, detail="Current password is incorrect.")
     user_auth.set_user_password(db, user, payload.new_password)
     return {"ok": True, "message": "Password updated."}
+
+
+# ----- Signed-in convenience endpoints (/me/*) ---------------------------
+
+def _require_user_owns_pair(
+    db: Session,
+    sess: "user_auth.AuthSession",
+    pair_code: str,
+) -> Submission:
+    """Look up a submission and verify the signed-in user owns it (by email)."""
+    pc = (pair_code or "").strip().upper()
+    sub = db.query(Submission).filter(Submission.pair_code == pc).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Submission not found.")
+    if (sub.email or "").strip().lower() != sess.email:
+        raise HTTPException(status_code=403, detail="You don't have access to this submission.")
+    return sub
+
+
+def _user_default_submission(db: Session, email: str) -> Optional[Submission]:
+    """Most-recent submission for this email — used when caller doesn't pass
+    a specific pair_code."""
+    return (
+        db.query(Submission)
+        .filter(Submission.email == email)
+        .order_by(Submission.created_at.desc())
+        .first()
+    )
+
+
+@app.get("/me/pdf/personal")
+def me_personal_pdf(
+    pair_code: Optional[str] = None,
+    sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Download the user's personal report PDF (the 10-page profile)."""
+    if pair_code:
+        sub = _require_user_owns_pair(db, sess, pair_code)
+    else:
+        sub = _user_default_submission(db, sess.email)
+        if sub is None:
+            raise HTTPException(status_code=404, detail="No assessment found for this account yet.")
+    # Rebuild data dict and regenerate the PDF on demand.
+    try:
+        results = json.loads(sub.results_json or "{}")
+        intake = json.loads(sub.intake_json or "{}")
+    except Exception:
+        results, intake = {}, {}
+    home_atmos = (intake.get("atmosphere") or [])
+    home_family = intake.get("family_type") or ""
+    home_desc = (", ".join(home_atmos) + (" " if home_atmos else "") + str(home_family or "")).strip()
+    data = get_report_data(
+        primary_trigger=sub.primary_trigger or "",
+        core_question=sub.primary_core_question or "",
+        mechanism=sub.primary_mechanism or "",
+        breakdown=sub.primary_breakdown or "",
+        trigger_scores=(results.get("trigger_scores") or {}),
+        home_desc=home_desc,
+        name=sub.name or "",
+        pair_code=sub.pair_code,
+        wrapup_answers=results.get("wrapup_answers"),
+    )
+    try:
+        pdf_bytes = generate_report_pdf(data)
+    except Exception as e:
+        print(f"[ME PDF ERROR] personal: {e}")
+        raise HTTPException(status_code=500, detail="Could not generate your PDF. Please try again in a moment.")
+    safe_name = (sub.name or "profile").replace(" ", "-")
+    fname = f"Take139-Profile-{safe_name}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{fname}"',
+            "Cache-Control": "private, no-cache",
+        },
+    )
+
+
+@app.get("/me/pdf/walkthrough")
+def me_walkthrough_pdf(
+    pair_code: Optional[str] = None,
+    sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Download the user's personal Walkthrough PDF (the deep-dive companion)."""
+    if pair_code:
+        sub = _require_user_owns_pair(db, sess, pair_code)
+    else:
+        sub = _user_default_submission(db, sess.email)
+        if sub is None:
+            raise HTTPException(status_code=404, detail="No assessment found for this account yet.")
+    try:
+        pdf_bytes = wt.build_personal_walkthrough(sub)
+    except Exception as e:
+        print(f"[ME PDF ERROR] walkthrough: {e}")
+        raise HTTPException(status_code=500, detail="Could not generate your walkthrough. Please try again.")
+    safe_name = (sub.name or "profile").replace(" ", "-")
+    fname = f"Take139-Walkthrough-{safe_name}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{fname}"',
+            "Cache-Control": "private, no-cache",
+        },
+    )
+
+
+@app.get("/me/pdf/couples")
+def me_couples_pdf(
+    pair_code: Optional[str] = None,
+    sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Download the Couples Report PDF.
+
+    400 if the user's submission isn't bonded to a partner yet.
+    """
+    if pair_code:
+        sub = _require_user_owns_pair(db, sess, pair_code)
+    else:
+        sub = _user_default_submission(db, sess.email)
+        if sub is None:
+            raise HTTPException(status_code=404, detail="No assessment found for this account yet.")
+    partner_code = (sub.paired_with_code or "").strip().upper()
+    if not partner_code:
+        raise HTTPException(
+            status_code=400,
+            detail="Your profile is not connected to a partner yet. Use the Connect button on your results page first.",
+        )
+    partner = db.query(Submission).filter(Submission.pair_code == partner_code).first()
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner's submission not found.")
+    try:
+        pdf_bytes = wt.build_couples_walkthrough(sub, partner)
+    except Exception as e:
+        print(f"[ME PDF ERROR] couples: {e}")
+        raise HTTPException(status_code=500, detail="Could not generate the couples report. Please try again.")
+    fname = f"Take139-Couples-{sub.pair_code}-{partner_code}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{fname}"',
+            "Cache-Control": "private, no-cache",
+        },
+    )
+
+
+# Track last resend per email so we can rate-limit
+_resend_cooldown_seconds = 60
+
+
+@app.post("/me/resend-report")
+def me_resend_report(
+    sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Email the user's most recent personal report (PDF + walkthrough) to
+    the signed-in account's email.
+    """
+    sub = _user_default_submission(db, sess.email)
+    if sub is None:
+        raise HTTPException(status_code=404, detail="No assessment found for this account yet.")
+
+    # Rate limit: only one resend per minute per user.
+    from datetime import datetime as _dt, timedelta as _td
+    last = (
+        db.query(AuthToken)  # piggy-back on AuthToken table to track last action
+        .filter(AuthToken.email == sess.email, AuthToken.purpose == "resend")
+        .filter(AuthToken.created_at > _dt.utcnow() - _td(seconds=_resend_cooldown_seconds))
+        .first()
+    )
+    if last is not None:
+        raise HTTPException(
+            status_code=429,
+            detail="You just requested a resend — please wait a minute before trying again.",
+        )
+
+    # Build report and walkthrough fresh.
+    try:
+        results = json.loads(sub.results_json or "{}")
+        intake = json.loads(sub.intake_json or "{}")
+    except Exception:
+        results, intake = {}, {}
+    home_atmos = (intake.get("atmosphere") or [])
+    home_family = intake.get("family_type") or ""
+    home_desc = (", ".join(home_atmos) + (" " if home_atmos else "") + str(home_family or "")).strip()
+    data = get_report_data(
+        primary_trigger=sub.primary_trigger or "",
+        core_question=sub.primary_core_question or "",
+        mechanism=sub.primary_mechanism or "",
+        breakdown=sub.primary_breakdown or "",
+        trigger_scores=(results.get("trigger_scores") or {}),
+        home_desc=home_desc,
+        name=sub.name or "",
+        pair_code=sub.pair_code,
+        wrapup_answers=results.get("wrapup_answers"),
+    )
+    try:
+        pdf_bytes = generate_report_pdf(data)
+    except Exception as e:
+        print(f"[ME RESEND] pdf gen failed: {e}")
+        raise HTTPException(status_code=500, detail="Could not generate the report just now. Please try again in a moment.")
+
+    email_html = render_email_html(data)
+    safe_name = (sub.name or "profile").replace(" ", "-")
+    pdf_filename = f"Take139-Profile-{safe_name}.pdf"
+
+    walkthrough_attachments = []
+    try:
+        wt_bytes = wt.build_personal_walkthrough(sub)
+        walkthrough_attachments = [{
+            "filename": f"Take139-Walkthrough-{safe_name}.pdf",
+            "content": base64.b64encode(wt_bytes).decode("utf-8"),
+        }]
+    except Exception as e:
+        print(f"[ME RESEND] walkthrough gen failed (continuing without): {e}")
+
+    from email_service import send_results_email
+    try:
+        send_results_email(
+            to_email=sess.email,
+            subject="Take 139 Assessment Profile",
+            html_body=email_html,
+            pdf_bytes=pdf_bytes,
+            pdf_filename=pdf_filename,
+            extra_attachments=walkthrough_attachments or None,
+        )
+    except Exception as e:
+        print(f"[ME RESEND] send failed: {e}")
+        raise HTTPException(status_code=500, detail="Email service is unavailable. Please try again shortly.")
+
+    # Stamp the resend so the rate limit holds.
+    stamp = AuthToken(
+        token=user_auth._new_token(16),
+        email=sess.email,
+        purpose="resend",
+        created_at=_dt.utcnow(),
+        expires_at=_dt.utcnow() + _td(seconds=_resend_cooldown_seconds),
+    )
+    db.add(stamp); db.commit()
+
+    return {"ok": True, "message": f"Your report is on the way to {sess.email}."}
+
+
+class MyCodeOut(BaseModel):
+    code: str
+    kind: str
+    status: str
+    sibling_code: Optional[str] = None
+    price_cents: Optional[int] = None
+    created_at: Optional[str] = None
+    redeemed_at: Optional[str] = None
+    redeemed_by_email: Optional[str] = None
+
+
+@app.get("/me/codes")
+def me_codes(
+    sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Return access codes the signed-in user purchased.
+
+    A code is considered the user's if the Stripe customer email matches the
+    signed-in email. Magic-link sessions still expose this since auth verifies
+    they own the email.
+    """
+    rows = (
+        db.query(AccessCode)
+        .filter(AccessCode.stripe_customer_email == sess.email)
+        .order_by(AccessCode.created_at.desc())
+        .all()
+    )
+    out = []
+    for c in rows:
+        out.append(MyCodeOut(
+            code=c.code,
+            kind=c.kind,
+            status=c.status,
+            sibling_code=c.sibling_code,
+            price_cents=c.price_cents,
+            created_at=c.created_at.isoformat() if c.created_at else None,
+            redeemed_at=c.redeemed_at.isoformat() if c.redeemed_at else None,
+            redeemed_by_email=c.redeemed_by_email,
+        ))
+    return {"codes": [c.dict() for c in out], "count": len(out)}
 
 
 @app.post("/auth/update-name")

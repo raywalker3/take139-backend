@@ -56,7 +56,11 @@ def build_personal_fallback(submission) -> bytes:
     mech_name = _name_or_code(MECH_NAMES, submission.primary_mechanism, "your mechanism")
     bd_name = _name_or_code(BD_NAMES, submission.primary_breakdown, "your breakdown")
     trig_name = _name_or_code(TRIG_NAMES, submission.primary_trigger, "your trigger")
-    cq_name = _name_or_code(CORE_Q_NAMES, submission.core_question, "your core question")
+    # Submission stores the core question as `primary_core_question`. Older
+    # docstrings called this `core_question`; both names are accepted here
+    # so we never crash on a missing attribute.
+    _cq_key = getattr(submission, "primary_core_question", None) or getattr(submission, "core_question", None)
+    cq_name = _name_or_code(CORE_Q_NAMES, _cq_key, "your core question")
 
     doc, buf = make_doc(
         brand_text="Take 139  ·  Walkthrough in Preparation",
