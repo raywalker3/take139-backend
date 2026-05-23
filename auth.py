@@ -27,8 +27,90 @@ from typing import Optional
 
 from fastapi import Depends, HTTPException, Request, Header
 from sqlalchemy.orm import Session
+import bcrypt
 
-from database import get_db, AuthToken, AuthSession
+from database import get_db, AuthToken, AuthSession, User
+
+
+# ---- Password hashing ------------------------------------------------------
+# Use bcrypt directly — simpler than passlib and avoids the passlib/bcrypt
+# 4.x compatibility issue (passlib parses bcrypt.__about__ which moved).
+# bcrypt has a hard 72-byte input limit; we truncate after that.
+MIN_PASSWORD_LEN = 8
+_BCRYPT_ROUNDS = 12  # ~250ms on a modern CPU, industry sweet spot for 2026
+_BCRYPT_MAX_BYTES = 72
+
+
+def _truncate(plain: str) -> bytes:
+    """Encode + safely truncate to bcrypt's 72-byte limit."""
+    b = plain.encode("utf-8", errors="ignore")
+    return b[:_BCRYPT_MAX_BYTES]
+
+
+def hash_password(plain: str) -> str:
+    """Return a bcrypt hash string suitable for DB storage."""
+    salt = bcrypt.gensalt(rounds=_BCRYPT_ROUNDS)
+    hashed = bcrypt.hashpw(_truncate(plain), salt)
+    return hashed.decode("utf-8")
+
+
+def verify_password(plain: str, hashed: Optional[str]) -> bool:
+    if not hashed or not plain:
+        return False
+    try:
+        return bcrypt.checkpw(_truncate(plain), hashed.encode("utf-8"))
+    except Exception:
+        return False
+
+
+def validate_password_strength(plain: str) -> Optional[str]:
+    """Return None if password is OK, otherwise a user-friendly error message."""
+    if not plain or len(plain) < MIN_PASSWORD_LEN:
+        return f"Password must be at least {MIN_PASSWORD_LEN} characters long."
+    if plain.strip() != plain:
+        return "Password cannot start or end with a space."
+    return None
+
+
+# ---- User upsert helpers ---------------------------------------------------
+def get_or_create_user(
+    db: Session,
+    email: str,
+    name: Optional[str] = None,
+) -> User:
+    """Look up a User by email; if not present, create one. Updates name if
+    we have one and the existing row doesn't.
+    """
+    email_norm = (email or "").strip().lower()
+    user = db.query(User).filter(User.email == email_norm).first()
+    if user is None:
+        user = User(email=email_norm, name=(name or None))
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    elif name and not user.name:
+        user.name = name
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    return user
+
+
+def get_user_by_email(db: Session, email: str) -> Optional[User]:
+    return db.query(User).filter(User.email == (email or "").strip().lower()).first()
+
+
+def mark_email_verified(db: Session, user: User) -> None:
+    if user.email_verified_at is None:
+        user.email_verified_at = datetime.utcnow()
+        db.add(user)
+        db.commit()
+
+
+def set_user_password(db: Session, user: User, new_plain: str) -> None:
+    user.password_hash = hash_password(new_plain)
+    db.add(user)
+    db.commit()
 
 
 # ---- Configuration ----------------------------------------------------------

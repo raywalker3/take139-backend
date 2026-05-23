@@ -192,6 +192,29 @@ class CouplePair(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 
 
+class User(Base):
+    """A signed-in account. Keyed by email (canonical, lowercased).
+
+    A User row is created lazily:
+    - When someone takes the assessment (auto-created in /submit)
+    - When someone explicitly signs up via /auth/signup
+    - When someone magic-links in for the first time with a fresh email
+
+    Password is optional. Magic-link-only users have password_hash = None;
+    they can sign in via magic-link forever, or set a password on the
+    account-settings page.
+    """
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(200), unique=True, index=True, nullable=False)
+    name = Column(String(200), nullable=True)
+    password_hash = Column(String(255), nullable=True)
+    email_verified_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    last_signin_at = Column(DateTime, nullable=True)
+
+
 class AuthToken(Base):
     """A single-use magic-link token sent by email.
 

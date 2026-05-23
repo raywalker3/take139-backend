@@ -187,6 +187,14 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(sub)
 
+    # Auto-create (or update) the User row tied to this email so the
+    # submission shows up in the user's dashboard the next time they sign in.
+    if payload.email:
+        try:
+            user_auth.get_or_create_user(db, email=str(payload.email), name=payload.name)
+        except Exception as e:
+            print(f"[AUTH] get_or_create_user failed for {payload.email}: {e}")
+
     # Build report data
     data = get_report_data(
         primary_trigger=payload.primary_trigger,
@@ -777,6 +785,8 @@ class MeOut(BaseModel):
     name: Optional[str] = None
     submissions: list  # list[MeSubmissionOut]
     imago_count: int = 0
+    has_password: bool = False
+    email_verified: bool = False
 
 
 @app.post("/auth/request-magic-link", response_model=MagicLinkRequestOut)
@@ -825,7 +835,13 @@ def verify_magic_link(
     request: Request,
     db: Session = Depends(get_db),
 ):
-    """Validate a magic-link token and mint a session."""
+    """Validate a magic-link token and mint a session.
+
+    Side effects:
+    - Creates a User row if one doesn't exist yet for this email
+    - Marks email_verified_at on the User
+    - Records last_signin_at
+    """
     row = user_auth.consume_token(db, token)
     if row is None:
         raise HTTPException(
@@ -834,6 +850,16 @@ def verify_magic_link(
         )
     ip = user_auth.get_client_ip(request)
     sess = user_auth.create_session(db, email=row.email, requester_ip=ip)
+
+    # Ensure a User row exists and mark email verified.
+    try:
+        user = user_auth.get_or_create_user(db, email=row.email)
+        user_auth.mark_email_verified(db, user)
+        user.last_signin_at = datetime.utcnow()
+        db.add(user); db.commit()
+    except Exception as e:
+        print(f"[AUTH] user upsert in /auth/verify failed: {e}")
+
     return VerifyOut(session_token=sess.session_token, email=sess.email)
 
 
@@ -844,17 +870,19 @@ def auth_me(
 ):
     """Return everything we know about the signed-in user."""
     email = sess.email
+    user = user_auth.get_user_by_email(db, email)
     subs = (
         db.query(Submission)
         .filter(Submission.email == email)
         .order_by(Submission.created_at.desc())
         .all()
     )
-    name = None
-    for s in subs:
-        if s.name:
-            name = s.name
-            break
+    name = (user.name if user and user.name else None)
+    if not name:
+        for s in subs:
+            if s.name:
+                name = s.name
+                break
     sub_list = []
     for s in subs:
         sub_list.append({
@@ -871,7 +899,14 @@ def auth_me(
         .filter(ImagoSubmission.email == email)
         .count()
     )
-    return MeOut(email=email, name=name, submissions=sub_list, imago_count=imago_count)
+    return MeOut(
+        email=email,
+        name=name,
+        submissions=sub_list,
+        imago_count=imago_count,
+        has_password=bool(user and user.password_hash),
+        email_verified=bool(user and user.email_verified_at),
+    )
 
 
 @app.post("/auth/signout")
@@ -882,6 +917,155 @@ def auth_signout(
     """Sign the user out by revoking their session."""
     user_auth.revoke_session(db, sess.session_token)
     return {"ok": True}
+
+
+# ----- Password endpoints -------------------------------------------------
+
+class SignupIn(BaseModel):
+    email: EmailStr
+    password: str
+    name: Optional[str] = None
+
+
+class SignupOut(BaseModel):
+    ok: bool
+    message: str
+    needs_verification: bool = True
+
+
+class SigninPasswordIn(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class SetPasswordIn(BaseModel):
+    new_password: str
+    current_password: Optional[str] = None  # required only if user already has one
+
+
+class UpdateNameIn(BaseModel):
+    name: str
+
+
+@app.post("/auth/signup", response_model=SignupOut)
+def auth_signup(
+    payload: SignupIn,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    """Create an account with a password.
+
+    Flow:
+    1. Validate password strength.
+    2. Upsert User; set password_hash.
+    3. If email_verified_at is None, send a magic-link to verify the email.
+       (The user can then click the link to verify + sign in. We do NOT
+       immediately sign them in here — verifying email first is safer.)
+    """
+    email = str(payload.email).strip().lower()
+    err = user_auth.validate_password_strength(payload.password)
+    if err:
+        raise HTTPException(status_code=400, detail=err)
+
+    user = user_auth.get_or_create_user(db, email=email, name=payload.name)
+    if user.password_hash:
+        # Account exists with a password. Do NOT overwrite; treat as a hint
+        # that this person already has an account.
+        return SignupOut(
+            ok=True,
+            message="An account with this email already exists. Try signing in, or use \"forgot password\" if needed.",
+            needs_verification=user.email_verified_at is None,
+        )
+
+    user_auth.set_user_password(db, user, payload.password)
+    if payload.name and not user.name:
+        user.name = payload.name
+        db.add(user); db.commit()
+
+    # Always send a magic link to verify email + offer instant sign-in.
+    try:
+        ip = user_auth.get_client_ip(request)
+        tk = user_auth.create_magic_link_token(db, email=email, purpose="signin", requester_ip=ip)
+        from email_service import send_magic_link as _sml
+        _sml(email, user_auth.build_magic_link_url(tk.token), ttl_minutes=user_auth.MAGIC_LINK_TTL_MIN)
+    except Exception as e:
+        print(f"[AUTH] signup magic-link send failed: {e}")
+
+    return SignupOut(
+        ok=True,
+        message="Account created. Check your email for a verification link to finish setting up your account.",
+        needs_verification=user.email_verified_at is None,
+    )
+
+
+@app.post("/auth/signin-password", response_model=VerifyOut)
+def auth_signin_password(
+    payload: SigninPasswordIn,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    """Sign in with email + password. Returns a session token.
+
+    Generic error message on any failure so attackers can't enumerate users.
+    """
+    email = str(payload.email).strip().lower()
+    user = user_auth.get_user_by_email(db, email)
+    if user is None or not user.password_hash or not user_auth.verify_password(payload.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Email or password is incorrect.")
+    if user.email_verified_at is None:
+        raise HTTPException(
+            status_code=403,
+            detail="Please verify your email first. Check your inbox for the verification link, or use \"Forgot password\" to request a fresh one.",
+        )
+    ip = user_auth.get_client_ip(request)
+    sess = user_auth.create_session(db, email=email, requester_ip=ip)
+    user.last_signin_at = datetime.utcnow()
+    db.add(user); db.commit()
+    return VerifyOut(session_token=sess.session_token, email=email)
+
+
+@app.post("/auth/set-password")
+def auth_set_password(
+    payload: SetPasswordIn,
+    sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Set or change the signed-in user's password.
+
+    If the user already has a password, current_password is required.
+    If they don't (magic-link only account), current_password is ignored.
+    """
+    err = user_auth.validate_password_strength(payload.new_password)
+    if err:
+        raise HTTPException(status_code=400, detail=err)
+    user = user_auth.get_user_by_email(db, sess.email)
+    if user is None:
+        raise HTTPException(status_code=404, detail="Account not found.")
+    if user.password_hash:
+        if not payload.current_password or not user_auth.verify_password(
+            payload.current_password, user.password_hash
+        ):
+            raise HTTPException(status_code=401, detail="Current password is incorrect.")
+    user_auth.set_user_password(db, user, payload.new_password)
+    return {"ok": True, "message": "Password updated."}
+
+
+@app.post("/auth/update-name")
+def auth_update_name(
+    payload: UpdateNameIn,
+    sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Update the signed-in user's display name."""
+    new_name = (payload.name or "").strip()
+    if len(new_name) < 1 or len(new_name) > 200:
+        raise HTTPException(status_code=400, detail="Name must be 1–200 characters.")
+    user = user_auth.get_user_by_email(db, sess.email)
+    if user is None:
+        raise HTTPException(status_code=404, detail="Account not found.")
+    user.name = new_name
+    db.add(user); db.commit()
+    return {"ok": True, "name": new_name}
 
 
 # =========================================================
