@@ -11,7 +11,7 @@
     color: #2a2620;
   }
   .container {
-    max-width: 560px;
+    max-width: 580px;
     margin: 0 auto;
     padding: 40px 24px;
   }
@@ -25,108 +25,219 @@
   }
   h1 {
     font-family: Georgia, serif;
-    font-size: 32px;
+    font-size: 30px;
     line-height: 1.15;
     color: #2a2620;
-    margin: 0 0 12px 0;
+    margin: 0 0 10px 0;
     font-weight: 400;
   }
-  .verse {
+  .verse-top {
     font-family: Georgia, serif;
     font-style: italic;
     font-size: 14px;
     color: #c8956c;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
-  .card {
+  p {
+    line-height: 1.65;
+    font-size: 15px;
+    color: #3a342d;
+    margin: 0 0 14px 0;
+  }
+  .salutation {
+    font-size: 16px;
+    margin-bottom: 18px;
+  }
+  .profile-card {
     background: #ffffff;
     border: 1px solid #e0d6c5;
     border-radius: 6px;
-    padding: 28px 24px;
-    margin-bottom: 20px;
+    padding: 24px 22px;
+    margin: 22px 0;
   }
-  .label {
+  .profile-card .label {
     font-size: 10px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #8a7f72;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .profile-card .name {
+    font-family: Georgia, serif;
+    font-size: 26px;
+    color: #2a2620;
+    margin-bottom: 18px;
+    font-weight: 400;
+  }
+  .row {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #f1e9da;
+  }
+  .row:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .row .label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: #8a7f72;
     margin-bottom: 6px;
     font-weight: 600;
   }
-  .value {
+  .row .value {
+    font-family: Georgia, serif;
+    font-size: 16px;
+    line-height: 1.45;
+    color: #2a2620;
+    font-style: italic;
+  }
+  .row .value-plain {
+    font-family: Georgia, serif;
+    font-size: 16px;
+    line-height: 1.45;
+    color: #2a2620;
+  }
+  .pair-section {
+    margin-top: 28px;
+  }
+  .pair-section h2 {
     font-family: Georgia, serif;
     font-size: 18px;
     color: #2a2620;
-    margin-bottom: 4px;
-  }
-  p {
-    line-height: 1.6;
-    font-size: 15px;
-    color: #4a433a;
+    margin: 0 0 8px 0;
+    font-weight: 400;
   }
   .pair-code {
-    background: #faf6ef;
-    border: 1px solid #e0d6c5;
-    border-radius: 4px;
-    padding: 16px 20px;
+    background: #ffffff;
+    border: 1px solid #c8956c;
+    border-radius: 6px;
+    padding: 18px 20px;
     font-family: 'Courier New', monospace;
-    letter-spacing: 0.15em;
-    font-size: 16px;
+    letter-spacing: 0.2em;
+    font-size: 20px;
     color: #c8956c;
     text-align: center;
+    font-weight: 700;
+    margin: 12px 0 14px 0;
+  }
+  .cta-wrap {
+    text-align: center;
+    margin: 24px 0 8px 0;
+  }
+  .cta {
+    display: inline-block;
+    background: #2a2620;
+    color: #faf6ef !important;
+    padding: 12px 26px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 0.08em;
     font-weight: 600;
-    margin: 16px 0;
   }
   .footer {
-    margin-top: 32px;
-    padding-top: 20px;
+    margin-top: 36px;
+    padding-top: 22px;
     border-top: 1px solid #e0d6c5;
-    font-size: 12px;
-    color: #8a7f72;
+    font-size: 13px;
+    color: #6b6158;
     line-height: 1.6;
   }
-  .footer em {
+  .footer .closing-verse {
+    font-family: Georgia, serif;
     font-style: italic;
     color: #6b6158;
+    margin-bottom: 18px;
+    font-size: 13px;
+  }
+  .footer .sig {
+    margin-top: 14px;
+    color: #2a2620;
+    font-weight: 600;
+    font-family: Georgia, serif;
+    font-style: normal;
+    font-size: 15px;
+  }
+  .footer .meta {
+    margin-top: 14px;
+    font-size: 12px;
+    color: #8a7f72;
   }
   a { color: #c8956c; text-decoration: none; }
+  a.cta:link, a.cta:visited { color: #faf6ef; }
 </style>
 </head>
 <body>
 <div class="container">
+
   <div class="brand">Take 139</div>
   <h1>Your Assessment Profile</h1>
-  <div class="verse">Psalm 139 · Search Me and Know Me</div>
+  <div class="verse-top">Psalm 139 &middot; Search Me and Know Me</div>
 
-  <p>{{ greeting }},</p>
+  <p class="salutation">Dear {{ name or "Friend" }},</p>
 
-  <p>Thank you for taking the Take 139 assessment. Your complete profile is attached as a PDF — a ten-page document with your conflict origin story, full behavioral markers, reflection questions, and the specific gospel truth your profile points to.</p>
+  <p>Thank you for trusting Take 139 with something honest. Your complete profile is attached as a PDF &mdash; a ten-page walkthrough of your conflict-origin story, your behavioral markers, the specific gospel truth your profile points to, reflection questions, and a closing prayer written for someone shaped like you.</p>
 
-  <div class="card">
-    <div class="label">Your Primary Profile</div>
-    <div class="value">{{ mechanism_article|title }} {{ mechanism_name }}</div>
-    <p style="font-size: 14px; margin-top: 10px; margin-bottom: 0;">{{ mechanism_short }}</p>
+  <p>Here is the heart of what your assessment surfaced:</p>
+
+  <div class="profile-card">
+
+    <div class="row">
+      <div class="label">Your Primary Profile</div>
+      <div class="name">The {{ mechanism_name or "Architect" }}</div>
+    </div>
+
+    {% if trigger_name %}
+    <div class="row">
+      <div class="label">Your Primary Trigger</div>
+      <div class="value-plain">{{ trigger_name }}{% if trigger_short %} &mdash; <span style="font-style:italic;color:#6b6158;">{{ trigger_short }}</span>{% endif %}</div>
+    </div>
+    {% endif %}
+
+    {% if core_question_name %}
+    <div class="row">
+      <div class="label">Your Core Question</div>
+      <div class="value">&ldquo;{{ core_question_name }}&rdquo;</div>
+    </div>
+    {% endif %}
+
+    {% if mechanism_gospel_need %}
+    <div class="row">
+      <div class="label">The Gospel Truth You Most Need</div>
+      <div class="value-plain">{{ mechanism_gospel_need }}</div>
+    </div>
+    {% endif %}
+
   </div>
 
-  <div class="card">
-    <div class="label">Your Core Question</div>
-    <div class="value">"{{ core_question }}"</div>
+  <p style="margin-top: 8px;">Take time with the PDF. Read it slowly. Take it before the Lord and, if you can, talk it through with someone who loves you. This is a starting line, not a verdict.</p>
+
+  <div class="pair-section">
+    <h2>Your Pair Code</h2>
+    <div class="pair-code">{{ pair_code }}</div>
+    <p style="font-size: 14px;"><strong>Save this code.</strong> If you&rsquo;re married or in a serious relationship, have your partner take Take 139 as well. When you&rsquo;re both ready, enter each other&rsquo;s pair codes to unlock a <strong>Couples Report</strong> &mdash; a detailed look at how your two profiles interact in marriage, where you&rsquo;ll most likely clash, and how to lead each other well.</p>
   </div>
 
-  <p style="margin-top: 28px;">Your assessment also generated a unique pair code:</p>
-
-  <div class="pair-code">{{ pair_code }}</div>
-
-  <p style="font-size: 14px;">
-    <strong>Save this code.</strong> If you're engaged or in a serious relationship, have your partner take Take 139 as well. When you're both ready, you can use your pair codes to unlock a combined Couple's Report — a detailed look at how your two profiles will interact in marriage, where you'll clash, and how to lead each other well. Visit <a href="https://take139.com">take139.com</a> to learn more.
-  </p>
+  <div class="cta-wrap">
+    <a href="https://take139.com" class="cta">Open my dashboard &rarr;</a>
+  </div>
 
   <div class="footer">
-    <em>"Search me, God, and know my heart; test me and know my anxious thoughts. See if there is any offensive way in me, and lead me in the way everlasting." — Psalm 139:23-24</em>
-    <br><br>
-    Take 139 · An assessment created by Dr. Christopher Hilken<br>
-    <a href="https://take139.com">take139.com</a>
+    <div class="closing-verse">&ldquo;Search me, O God, and know my heart; try me, and know my thoughts: and see if there be any wicked way in me, and lead me in the way everlasting.&rdquo; &mdash; Psalm 139:23&ndash;24</div>
+
+    Grace and peace,
+    <div class="sig">&mdash; Dr. Chris Hilken</div>
+
+    <div class="meta">
+      Questions? Just reply to this email.<br>
+      <a href="https://take139.com">take139.com</a>
+    </div>
   </div>
+
 </div>
 </body>
 </html>
