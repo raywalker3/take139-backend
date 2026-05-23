@@ -138,8 +138,9 @@ def enforce_connection_code(
             detail={
                 "error": "connection_code_required",
                 "message": (
-                    "Connecting two profiles requires a Connection Add-On ($10) "
-                    "or a Couple Package code. Visit https://take139.com to purchase."
+                    "To connect with your partner we need to know how you\u2019re paying for the connection. "
+                    "If you bought the Couple Package ($40), paste your COUPLE-XXXXXX-A or -B code in the access-code field \u2014 the connection is included free. "
+                    "If you only bought a Single ($20), purchase a Connection Add-On ($10) at https://take139.com."
                 ),
             },
         )
@@ -150,7 +151,11 @@ def enforce_connection_code(
             status_code=404,
             detail={
                 "error": "code_not_found",
-                "message": "We don't recognize that connection code.",
+                "message": (
+                    f"We don\u2019t recognize the code \u201c{connection_code}.\u201d "
+                    "Double-check it for typos. Couple codes look like COUPLE-XXXXXX-A or -B; "
+                    "Connect codes look like CONNECT-XXXXXX."
+                ),
             },
         )
 
@@ -168,14 +173,16 @@ def enforce_connection_code(
     # AND its sibling must ALSO be already-redeemed (used by the other spouse).
     # That's the proof that the $40 package authorises this specific bonding.
     if code.kind == CODE_KIND_COUPLE:
+        half_label = code.code
         if code.status != CODE_STATUS_REDEEMED:
             raise HTTPException(
                 status_code=400,
                 detail={
                     "error": "couple_code_not_yet_used",
                     "message": (
-                        "Both spouses must first complete their own assessment "
-                        "using their half of the couple code before you can connect."
+                        f"You haven\u2019t taken the assessment yet using {half_label}. "
+                        "Both spouses need to complete the assessment with their own half "
+                        "of the couple code before you can connect."
                     ),
                 },
             )
@@ -184,7 +191,10 @@ def enforce_connection_code(
                 status_code=400,
                 detail={
                     "error": "couple_code_missing_sibling",
-                    "message": "This couple code has no sibling on file. Contact support.",
+                    "message": (
+                        f"This couple code ({half_label}) has no sibling on file. "
+                        "Email christopher.hilken@gmail.com and we\u2019ll fix it."
+                    ),
                 },
             )
         sibling = ac.lookup_code(db, code.sibling_code)
@@ -193,7 +203,10 @@ def enforce_connection_code(
                 status_code=400,
                 detail={
                     "error": "couple_code_missing_sibling",
-                    "message": "Could not find the sibling of this couple code.",
+                    "message": (
+                        f"We couldn\u2019t find the sibling of {half_label}. "
+                        "Email christopher.hilken@gmail.com and we\u2019ll fix it."
+                    ),
                 },
             )
         if sibling.status != CODE_STATUS_REDEEMED:
@@ -202,9 +215,9 @@ def enforce_connection_code(
                 detail={
                     "error": "couple_code_sibling_not_used",
                     "message": (
-                        "Your spouse hasn't completed their assessment yet. "
-                        "They need to take Take 139 using their half of your "
-                        "couple code first; then you can connect."
+                        f"Your spouse hasn\u2019t completed their assessment yet. "
+                        f"Their code is {sibling.code}. They need to take Take 139 "
+                        "using that code first; then come back and connect."
                     ),
                 },
             )
@@ -216,13 +229,18 @@ def enforce_connection_code(
         used_pair = {a_paircode, b_paircode}
         wanted_pair = {me_pair_code, partner_pair_code}
         if used_pair != wanted_pair:
+            expected_str = " + ".join(p for p in sorted(used_pair) if p) or "(none on file)"
+            wanted_str = " + ".join(sorted(wanted_pair))
             raise HTTPException(
                 status_code=403,
                 detail={
                     "error": "couple_code_not_authorised_for_these_profiles",
                     "message": (
-                        "This couple code was used by a different pair of profiles. "
-                        "To connect THIS profile with that one, purchase a Connection Add-On."
+                        f"The couple code {half_label} was used to redeem profiles "
+                        f"{expected_str}, but you\u2019re trying to connect {wanted_str}. "
+                        "This usually means one of you took the assessment without "
+                        "entering your couple code. Email christopher.hilken@gmail.com with "
+                        "both pair codes and we can repair it."
                     ),
                 },
             )
@@ -234,8 +252,11 @@ def enforce_connection_code(
         detail={
             "error": "wrong_code_kind_for_connection",
             "message": (
-                f"That's a {code.kind} code — connection requires a Connect "
-                "Add-On ($10) or a Couple Package code."
+                f"\u201c{code.code}\u201d is a Single Assessment code, which doesn\u2019t "
+                "include connection. To connect with your partner you need either "
+                "a Couple Package code (the $40 option, comes with two halves and "
+                "free connection) or a Connection Add-On ($10). "
+                "Both available at https://take139.com."
             ),
         },
     )
