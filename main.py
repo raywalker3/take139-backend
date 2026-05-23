@@ -32,6 +32,7 @@ from pair_codes import generate_pair_code
 import access_codes as ac
 import admin_auth
 import auth as user_auth
+import quick_pdf
 import code_gating
 import stripe_purchase
 import walkthroughs as wt
@@ -1370,6 +1371,258 @@ def auth_update_name(
     user.name = new_name
     db.add(user); db.commit()
     return {"ok": True, "name": new_name}
+
+
+# =========================================================
+# Admin Quick-PDF — generate Personal/Walkthrough/Couples PDFs
+# from a hand-selected profile without taking the assessment.
+# =========================================================
+
+class QuickPdfProfile(BaseModel):
+    name: str = Field(..., min_length=1, max_length=200)
+    trigger: str       # DIS / DISC / INJ / CTRL / SHM / SIG
+    core_question: str # COMP / LOV / PROT / FREE / ACC / REM
+    mechanism: str     # ARCH / ISLE / AMB / VAULT / ADPT / CAMP
+    breakdown: str     # ATTY / GHOST / FLOOD / MASK / VERD / PLEA
+    email: Optional[str] = None
+
+
+class QuickPdfPersonalIn(BaseModel):
+    profile: QuickPdfProfile
+    include_walkthrough: bool = True
+
+
+class QuickPdfCouplesIn(BaseModel):
+    person_a: QuickPdfProfile
+    person_b: QuickPdfProfile
+
+
+class QuickPdfEmailIn(BaseModel):
+    profile: QuickPdfProfile  # "to" is profile.email
+    partner: Optional[QuickPdfProfile] = None  # if set, send Couples Report instead
+
+
+@app.get("/admin/quick-pdf/options")
+def admin_quick_pdf_options(_: None = Depends(admin_auth.require_admin)):
+    """Return the dropdown option lists for the quick-PDF page."""
+    return {
+        "triggers": quick_pdf.TRIGGERS,
+        "core_questions": quick_pdf.CORE_QUESTIONS,
+        "mechanisms": quick_pdf.MECHANISMS,
+        "breakdowns": quick_pdf.BREAKDOWNS,
+    }
+
+
+def _build_personal_pdf_bytes(p: QuickPdfProfile) -> bytes:
+    """Build the 10-page Personal Report PDF from a ghost profile."""
+    try:
+        gs = quick_pdf.build_ghost_submission(
+            name=p.name, trigger=p.trigger, core_question=p.core_question,
+            mechanism=p.mechanism, breakdown=p.breakdown, email=p.email,
+        )
+    except quick_pdf.ValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    results = json.loads(gs.results_json)
+    data = get_report_data(
+        primary_trigger=gs.primary_trigger,
+        core_question=gs.primary_core_question,
+        mechanism=gs.primary_mechanism,
+        breakdown=gs.primary_breakdown,
+        trigger_scores=results.get("trigger_scores") or {},
+        home_desc="",
+        name=gs.name,
+        pair_code=gs.pair_code,
+        wrapup_answers=None,
+    )
+    return generate_report_pdf(data), gs
+
+
+@app.post("/admin/quick-pdf/personal")
+def admin_quick_pdf_personal(
+    payload: QuickPdfPersonalIn,
+    _: None = Depends(admin_auth.require_admin),
+):
+    """Generate the Personal Report PDF (the 10-page profile)."""
+    pdf_bytes, gs = _build_personal_pdf_bytes(payload.profile)
+    safe_name = (gs.name or "profile").replace(" ", "-")
+    fname = f"Take139-Profile-{safe_name}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{fname}"',
+            "Cache-Control": "private, no-cache",
+        },
+    )
+
+
+@app.post("/admin/quick-pdf/walkthrough")
+def admin_quick_pdf_walkthrough(
+    payload: QuickPdfPersonalIn,
+    _: None = Depends(admin_auth.require_admin),
+):
+    """Generate the Personal Walkthrough PDF for a profile."""
+    try:
+        gs = quick_pdf.build_ghost_submission(
+            name=payload.profile.name, trigger=payload.profile.trigger,
+            core_question=payload.profile.core_question,
+            mechanism=payload.profile.mechanism, breakdown=payload.profile.breakdown,
+            email=payload.profile.email,
+        )
+    except quick_pdf.ValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    try:
+        pdf_bytes = wt.build_personal_walkthrough(gs)
+    except Exception as e:
+        print(f"[QUICK-PDF] walkthrough gen failed: {e}")
+        raise HTTPException(status_code=500, detail="Walkthrough generation failed. The (mechanism, breakdown) combination may not have a builder yet \u2014 the system fell back but errored. Check server logs.")
+    safe_name = (gs.name or "profile").replace(" ", "-")
+    fname = f"Take139-Walkthrough-{safe_name}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{fname}"',
+            "Cache-Control": "private, no-cache",
+        },
+    )
+
+
+@app.post("/admin/quick-pdf/couples")
+def admin_quick_pdf_couples(
+    payload: QuickPdfCouplesIn,
+    _: None = Depends(admin_auth.require_admin),
+):
+    """Generate the Couples Walkthrough PDF for two hand-picked profiles."""
+    try:
+        gs_a = quick_pdf.build_ghost_submission(
+            name=payload.person_a.name, trigger=payload.person_a.trigger,
+            core_question=payload.person_a.core_question,
+            mechanism=payload.person_a.mechanism, breakdown=payload.person_a.breakdown,
+            email=payload.person_a.email,
+        )
+        gs_b = quick_pdf.build_ghost_submission(
+            name=payload.person_b.name, trigger=payload.person_b.trigger,
+            core_question=payload.person_b.core_question,
+            mechanism=payload.person_b.mechanism, breakdown=payload.person_b.breakdown,
+            email=payload.person_b.email,
+        )
+    except quick_pdf.ValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    try:
+        pdf_bytes = wt.build_couples_walkthrough(gs_a, gs_b)
+    except Exception as e:
+        print(f"[QUICK-PDF] couples gen failed: {e}")
+        raise HTTPException(status_code=500, detail="Couples report generation failed. Check server logs for the specific error.")
+    safe_a = (gs_a.name or "a").replace(" ", "-")
+    safe_b = (gs_b.name or "b").replace(" ", "-")
+    fname = f"Take139-Couples-{safe_a}-{safe_b}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{fname}"',
+            "Cache-Control": "private, no-cache",
+        },
+    )
+
+
+@app.post("/admin/quick-pdf/email")
+def admin_quick_pdf_email(
+    payload: QuickPdfEmailIn,
+    _: None = Depends(admin_auth.require_admin),
+):
+    """Email the generated PDFs to the recipient. Uses the polished email
+    template + Resend service. For couples, the report goes to person A's
+    email (and partner's email if set).
+    """
+    to_email = (payload.profile.email or "").strip()
+    if not to_email or "@" not in to_email:
+        raise HTTPException(status_code=400, detail="A valid email address is required to send the PDF.")
+
+    # Build the personal report + walkthrough as attachments.
+    pdf_bytes, gs = _build_personal_pdf_bytes(payload.profile)
+    data_for_email = get_report_data(
+        primary_trigger=gs.primary_trigger,
+        core_question=gs.primary_core_question,
+        mechanism=gs.primary_mechanism,
+        breakdown=gs.primary_breakdown,
+        trigger_scores=json.loads(gs.results_json).get("trigger_scores") or {},
+        home_desc="", name=gs.name, pair_code=gs.pair_code,
+        wrapup_answers=None,
+    )
+    email_html = render_email_html(data_for_email)
+    safe_name = (gs.name or "profile").replace(" ", "-")
+    profile_filename = f"Take139-Profile-{safe_name}.pdf"
+
+    attachments = []
+    try:
+        wt_bytes = wt.build_personal_walkthrough(gs)
+        attachments = [{
+            "filename": f"Take139-Walkthrough-{safe_name}.pdf",
+            "bytes": wt_bytes,
+        }]
+    except Exception as e:
+        print(f"[QUICK-PDF EMAIL] walkthrough gen skipped: {e}")
+
+    # Couples report attached if partner is provided.
+    couples_recipients = []
+    if payload.partner is not None:
+        try:
+            gs_b = quick_pdf.build_ghost_submission(
+                name=payload.partner.name, trigger=payload.partner.trigger,
+                core_question=payload.partner.core_question,
+                mechanism=payload.partner.mechanism, breakdown=payload.partner.breakdown,
+                email=payload.partner.email,
+            )
+        except quick_pdf.ValidationError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        try:
+            couples_pdf = wt.build_couples_walkthrough(gs, gs_b)
+            safe_b = (gs_b.name or "b").replace(" ", "-")
+            attachments.append({
+                "filename": f"Take139-Couples-{safe_name}-{safe_b}.pdf",
+                "bytes": couples_pdf,
+            })
+        except Exception as e:
+            print(f"[QUICK-PDF EMAIL] couples gen failed: {e}")
+        if payload.partner.email and "@" in (payload.partner.email or ""):
+            couples_recipients.append(payload.partner.email)
+
+    from email_service import send_results_email
+    sent = {"primary": None, "partner": None}
+    try:
+        sent["primary"] = send_results_email(
+            to_email=to_email,
+            subject="Take 139 Assessment Profile",
+            html_body=email_html,
+            pdf_bytes=pdf_bytes,
+            pdf_filename=profile_filename,
+            extra_attachments=attachments or None,
+        )
+    except Exception as e:
+        print(f"[QUICK-PDF EMAIL] primary send failed: {e}")
+        raise HTTPException(status_code=500, detail="Email service is unavailable. Please try again shortly.")
+
+    # Also send to partner (if their email was provided and we have couples PDF).
+    for partner_email in couples_recipients:
+        try:
+            sent["partner"] = send_results_email(
+                to_email=partner_email,
+                subject="Take 139 Assessment Profile",
+                html_body=email_html,
+                pdf_bytes=pdf_bytes,
+                pdf_filename=profile_filename,
+                extra_attachments=attachments or None,
+            )
+        except Exception as e:
+            print(f"[QUICK-PDF EMAIL] partner send failed: {e}")
+
+    return {
+        "ok": True,
+        "sent_to": [to_email] + couples_recipients,
+        "message": f"Sent to {to_email}" + (f" and {couples_recipients[0]}" if couples_recipients else ""),
+    }
 
 
 # =========================================================
