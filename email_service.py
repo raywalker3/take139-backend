@@ -13,6 +13,64 @@ if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
 
 
+def send_magic_link(to_email: str, magic_url: str, ttl_minutes: int = 15) -> dict:
+    """Email a sign-in magic link to the user.
+
+    Always returns gracefully — missing API key returns a 'skipped' dict
+    rather than raising, so /auth/request-magic-link can still respond 200.
+    """
+    if not RESEND_API_KEY:
+        return {"skipped": True, "reason": "no RESEND_API_KEY set"}
+
+    safe_email = (to_email or "").strip()
+    if not safe_email:
+        return {"skipped": True, "reason": "no recipient"}
+
+    subject = "Your Take 139 sign-in link"
+    html_body = f"""<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><style>
+  body {{ font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; margin:0; padding:0; background:#faf6ef; color:#2a2620; }}
+  .container {{ max-width:520px; margin:0 auto; padding:40px 24px; }}
+  .brand {{ font-size:11px; letter-spacing:0.35em; color:#c8956c; text-transform:uppercase; font-weight:600; margin-bottom:14px; }}
+  h1 {{ font-family:Georgia,serif; font-size:26px; line-height:1.2; color:#2a2620; margin:0 0 16px 0; font-weight:400; }}
+  p {{ line-height:1.65; font-size:15px; color:#3a342d; margin:0 0 14px 0; }}
+  .cta-wrap {{ text-align:center; margin:28px 0; }}
+  .cta {{ display:inline-block; background:#2a2620; color:#faf6ef !important; padding:14px 28px; border-radius:4px; text-decoration:none; font-size:14px; letter-spacing:0.08em; font-weight:600; }}
+  .fallback {{ font-size:12px; color:#8a7f72; word-break:break-all; background:#fff; border:1px solid #e0d6c5; border-radius:4px; padding:12px; }}
+  .footer {{ margin-top:32px; padding-top:20px; border-top:1px solid #e0d6c5; font-size:12px; color:#8a7f72; line-height:1.6; }}
+  .footer .sig {{ margin-top:10px; color:#2a2620; font-weight:600; font-family:Georgia,serif; font-size:14px; }}
+  a {{ color:#c8956c; text-decoration:none; }}
+  a.cta:link, a.cta:visited {{ color:#faf6ef; }}
+</style></head><body>
+<div class="container">
+  <div class="brand">Take 139</div>
+  <h1>Your sign-in link</h1>
+  <p>Click the button below to sign in to your Take 139 dashboard. The link is good for the next {ttl_minutes} minutes and can only be used once.</p>
+  <div class="cta-wrap"><a href="{magic_url}" class="cta">Sign me in &rarr;</a></div>
+  <p style="font-size:13px;color:#6b6158;">If the button doesn't work, copy and paste this URL into your browser:</p>
+  <div class="fallback">{magic_url}</div>
+  <p style="font-size:13px;color:#6b6158;margin-top:18px;">Didn&rsquo;t request this? You can safely ignore this email &mdash; no one can sign in without clicking the link above.</p>
+  <div class="footer">
+    Grace and peace,
+    <div class="sig">&mdash; Dr. Chris Hilken</div>
+    <div style="margin-top:14px;"><a href="https://take139.com">take139.com</a></div>
+  </div>
+</div>
+</body></html>"""
+
+    params = {
+        "from": FROM_EMAIL,
+        "to": [safe_email],
+        "subject": subject,
+        "html": html_body,
+        "reply_to": ADMIN_EMAIL,
+    }
+    try:
+        return resend.Emails.send(params)
+    except Exception as e:
+        return {"error": str(e)}
+
+
 def send_results_email(
     to_email: str,
     subject: str,

@@ -192,6 +192,46 @@ class CouplePair(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 
 
+class AuthToken(Base):
+    """A single-use magic-link token sent by email.
+
+    Tokens are short-lived (15 min default) and consumed on first valid
+    verification. They are tied to an email and a purpose; we keep purpose
+    flexible so we can reuse the table later for things like email-change
+    confirmation, password reset, etc.
+    """
+    __tablename__ = "auth_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    token = Column(String(80), unique=True, index=True, nullable=False)
+    email = Column(String(200), index=True, nullable=False)
+    purpose = Column(String(40), default="signin", nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    expires_at = Column(DateTime, nullable=False, index=True)
+    consumed_at = Column(DateTime, nullable=True)
+    requester_ip = Column(String(64), nullable=True)
+
+
+class AuthSession(Base):
+    """A signed-in session token. Stored in localStorage on the client,
+    sent on each authenticated request as the X-Session-Token header.
+
+    Sessions live for 30 days from issue and roll forward on each use
+    (`last_seen_at`). We do not currently expire them server-side on a
+    schedule — we simply check `expires_at` on every request.
+    """
+    __tablename__ = "auth_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    session_token = Column(String(120), unique=True, index=True, nullable=False)
+    email = Column(String(200), index=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    expires_at = Column(DateTime, nullable=False, index=True)
+    last_seen_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    revoked = Column(Boolean, default=False, nullable=False)
+    requester_ip = Column(String(64), nullable=True)
+
+
 def init_db():
     """Create tables if they don't exist."""
     Base.metadata.create_all(bind=engine)

@@ -31,6 +31,7 @@ from database import (
 from pair_codes import generate_pair_code
 import access_codes as ac
 import admin_auth
+import auth as user_auth
 import code_gating
 import stripe_purchase
 import walkthroughs as wt
@@ -742,6 +743,150 @@ class ImagoSubmissionOut(BaseModel):
     letter_breakdown: list = []   # [{letter, case, borderline}]
     summary: Optional[str] = None
 
+
+# =========================================================
+# Magic-link sign-in (Phase 2)
+# =========================================================
+
+class MagicLinkRequestIn(BaseModel):
+    email: EmailStr
+
+
+class MagicLinkRequestOut(BaseModel):
+    ok: bool
+    message: str
+
+
+class VerifyOut(BaseModel):
+    session_token: str
+    email: str
+
+
+class MeSubmissionOut(BaseModel):
+    pair_code: str
+    name: Optional[str] = None
+    primary_mechanism: Optional[str] = None
+    primary_trigger: Optional[str] = None
+    primary_core_question: Optional[str] = None
+    paired_with_code: Optional[str] = None
+    created_at: Optional[str] = None
+
+
+class MeOut(BaseModel):
+    email: str
+    name: Optional[str] = None
+    submissions: list  # list[MeSubmissionOut]
+    imago_count: int = 0
+
+
+@app.post("/auth/request-magic-link", response_model=MagicLinkRequestOut)
+def request_magic_link(
+    payload: MagicLinkRequestIn,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    """Issue a single-use magic-link email.
+
+    We ALWAYS return ok=true regardless of whether the email is registered,
+    so an attacker cannot enumerate users by probing this endpoint.
+    """
+    email = str(payload.email).strip().lower()
+    ip = user_auth.get_client_ip(request)
+
+    # Rate-limit per email: only issue if no token has been issued in the
+    # last 30 seconds. Quietly drop further requests.
+    from datetime import datetime as _dt, timedelta as _td
+    recent = (
+        db.query(user_auth.AuthToken)
+        .filter(user_auth.AuthToken.email == email)
+        .filter(user_auth.AuthToken.created_at > _dt.utcnow() - _td(seconds=30))
+        .first()
+    )
+    if recent is None:
+        try:
+            token_row = user_auth.create_magic_link_token(
+                db, email=email, purpose="signin", requester_ip=ip
+            )
+            magic_url = user_auth.build_magic_link_url(token_row.token)
+            from email_service import send_magic_link as _send_ml
+            _send_ml(email, magic_url, ttl_minutes=user_auth.MAGIC_LINK_TTL_MIN)
+        except Exception as e:
+            print(f"[AUTH] magic-link issue failed for {email}: {e}")
+
+    return MagicLinkRequestOut(
+        ok=True,
+        message="If that email is valid, a sign-in link is on its way. Check your inbox (and spam folder) within the next minute.",
+    )
+
+
+@app.get("/auth/verify", response_model=VerifyOut)
+def verify_magic_link(
+    token: str,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    """Validate a magic-link token and mint a session."""
+    row = user_auth.consume_token(db, token)
+    if row is None:
+        raise HTTPException(
+            status_code=400,
+            detail="This sign-in link is invalid, expired, or already used. Please request a fresh link.",
+        )
+    ip = user_auth.get_client_ip(request)
+    sess = user_auth.create_session(db, email=row.email, requester_ip=ip)
+    return VerifyOut(session_token=sess.session_token, email=sess.email)
+
+
+@app.get("/auth/me", response_model=MeOut)
+def auth_me(
+    sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Return everything we know about the signed-in user."""
+    email = sess.email
+    subs = (
+        db.query(Submission)
+        .filter(Submission.email == email)
+        .order_by(Submission.created_at.desc())
+        .all()
+    )
+    name = None
+    for s in subs:
+        if s.name:
+            name = s.name
+            break
+    sub_list = []
+    for s in subs:
+        sub_list.append({
+            "pair_code": s.pair_code,
+            "name": s.name,
+            "primary_mechanism": s.primary_mechanism,
+            "primary_trigger": s.primary_trigger,
+            "primary_core_question": s.primary_core_question,
+            "paired_with_code": s.paired_with_code,
+            "created_at": s.created_at.isoformat() if s.created_at else None,
+        })
+    imago_count = (
+        db.query(ImagoSubmission)
+        .filter(ImagoSubmission.email == email)
+        .count()
+    )
+    return MeOut(email=email, name=name, submissions=sub_list, imago_count=imago_count)
+
+
+@app.post("/auth/signout")
+def auth_signout(
+    sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Sign the user out by revoking their session."""
+    user_auth.revoke_session(db, sess.session_token)
+    return {"ok": True}
+
+
+# =========================================================
+# IMAGO endpoints
+# =========================================================
 
 @app.get("/imago/items")
 def get_imago_items(shuffle: bool = False):
