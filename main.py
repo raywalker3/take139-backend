@@ -439,36 +439,11 @@ def connect_pair(payload: PairConnectIn, db: Session = Depends(get_db)):
         )
 
     # ─── Generate the couples Walkthrough and email it to both partners ───
-    try:
-        couples_pdf = wt.build_couples_walkthrough(me, partner)
-        from email_service import send_couples_walkthrough
-        filename = f"Take139-Couples-{my_code}-{partner_code}.pdf"
-        # Send to me (if I have email on file)
-        if me.email:
-            try:
-                send_couples_walkthrough(
-                    to_email=me.email,
-                    your_name=me.name or "",
-                    partner_name=partner.name or "",
-                    pdf_bytes=couples_pdf,
-                    filename=filename,
-                )
-            except Exception as e:
-                print(f"[COUPLES EMAIL ME ERROR] {e}")
-        # Send to partner (if they have email on file)
-        if partner.email and partner.email != me.email:
-            try:
-                send_couples_walkthrough(
-                    to_email=partner.email,
-                    your_name=partner.name or "",
-                    partner_name=me.name or "",
-                    pdf_bytes=couples_pdf,
-                    filename=filename,
-                )
-            except Exception as e:
-                print(f"[COUPLES EMAIL PARTNER ERROR] {e}")
-    except Exception as e:
-        print(f"[COUPLES WALKTHROUGH GEN ERROR] {e}")
+    # Refactored 2026-05-27: send_status surfaces precisely what happened.
+    # The original flow swallowed all exceptions silently and returned ok,
+    # which is how the Hilkens didn't get their email and only found out by
+    # noticing it never arrived.
+    email_status = _send_couples_email_pair(db, me, partner)
 
     return {
         "ok": True,
@@ -476,7 +451,129 @@ def connect_pair(payload: PairConnectIn, db: Session = Depends(get_db)):
         "partner_code": partner_code,
         "partner": _scored_summary(partner),
         "me": _scored_summary(me),
+        "email_status": email_status,
     }
+
+
+def _submissions_for_email(db: Session, email: str) -> list:
+    """Return all Submissions owned by this email, looking up via BOTH
+    Submission.email AND AccessCode.redeemed_by_email so signed-in users
+    who never clicked "Email My Report" still see their results.
+
+    This is the cornerstone bug-fix for the "my couples report never
+    arrived" bug: the original lookup missed every submission whose
+    Submission.email was NULL even though the user owned it.
+    """
+    e = (email or "").strip().lower()
+    if not e:
+        return []
+    direct = (
+        db.query(Submission)
+        .filter(Submission.email == e)
+        .order_by(Submission.created_at.desc())
+        .all()
+    )
+    # Plus anything attached to an access code redeemed by this email.
+    via_codes = (
+        db.query(AccessCode)
+        .filter(AccessCode.redeemed_by_email == e)
+        .filter(AccessCode.redeemed_by_submission_pair_code.isnot(None))
+        .all()
+    )
+    pair_codes = {a.redeemed_by_submission_pair_code for a in via_codes}
+    extra = []
+    if pair_codes:
+        existing_ids = {s.id for s in direct}
+        for s in (
+            db.query(Submission)
+            .filter(Submission.pair_code.in_(pair_codes))
+            .order_by(Submission.created_at.desc())
+            .all()
+        ):
+            if s.id not in existing_ids:
+                extra.append(s)
+    combined = direct + extra
+    combined.sort(key=lambda s: s.created_at or datetime.min, reverse=True)
+    return combined
+
+
+def _resolve_email_for_submission(db: Session, sub: Submission) -> Optional[str]:
+    """Return the best email to deliver this submission's report to.
+
+    Submission.email is set when the user clicks "Email My Report" on the
+    results page. But signed-in users who skipped that step won't have it,
+    and the AccessCode.redeemed_by_email carries the email of the user who
+    redeemed the code. Falling back closes that gap.
+    """
+    if sub.email and sub.email.strip():
+        return sub.email.strip().lower()
+    if sub.access_code_used:
+        ac = db.query(AccessCode).filter(AccessCode.code == sub.access_code_used).first()
+        if ac and ac.redeemed_by_email and ac.redeemed_by_email.strip():
+            return ac.redeemed_by_email.strip().lower()
+    return None
+
+
+def _send_couples_email_pair(db: Session, me: Submission, partner: Submission) -> dict:
+    """Build the Couples PDF and email it to both partners. Returns a
+    structured status dict so callers (frontend) can show precise messaging
+    instead of pretending it succeeded.
+    """
+    status = {
+        "pdf_generated": False,
+        "me":      {"email": None, "sent": False, "reason": None},
+        "partner": {"email": None, "sent": False, "reason": None},
+    }
+
+    try:
+        couples_pdf = wt.build_couples_walkthrough(me, partner)
+        status["pdf_generated"] = True
+    except Exception as e:
+        msg = f"PDF generation failed: {type(e).__name__}: {e}"
+        print(f"[COUPLES WALKTHROUGH GEN ERROR] {msg}")
+        status["me"]["reason"] = msg
+        status["partner"]["reason"] = msg
+        return status
+
+    from email_service import send_couples_walkthrough
+    filename = f"Take139-Couples-{me.pair_code}-{partner.pair_code}.pdf"
+
+    me_email = _resolve_email_for_submission(db, me)
+    partner_email = _resolve_email_for_submission(db, partner)
+    status["me"]["email"] = me_email
+    status["partner"]["email"] = partner_email
+
+    def _attempt(side_key: str, to_email: Optional[str], your_name: str,
+                 partner_name: str) -> None:
+        if not to_email:
+            status[side_key]["reason"] = "No email on file for this submission."
+            return
+        try:
+            r = send_couples_walkthrough(
+                to_email=to_email,
+                your_name=your_name,
+                partner_name=partner_name,
+                pdf_bytes=couples_pdf,
+                filename=filename,
+            )
+            if isinstance(r, dict) and r.get("skipped"):
+                status[side_key]["reason"] = f"Skipped: {r.get('reason') or 'unknown'}"
+            elif isinstance(r, dict) and r.get("error"):
+                status[side_key]["reason"] = f"Resend error: {r['error']}"
+            else:
+                status[side_key]["sent"] = True
+        except Exception as e:
+            msg = f"{type(e).__name__}: {e}"
+            print(f"[COUPLES EMAIL {side_key.upper()} ERROR] {msg}")
+            status[side_key]["reason"] = msg
+
+    _attempt("me", me_email, me.name or "", partner.name or "")
+    if partner_email and partner_email == me_email:
+        status["partner"]["reason"] = "Same email as Person A; not sending twice."
+    else:
+        _attempt("partner", partner_email, partner.name or "", me.name or "")
+
+    return status
 
 
 # ═════════════════ CONSULTANT INQUIRY (For Churches form) ════════════════
@@ -872,12 +969,10 @@ def auth_me(
     """Return everything we know about the signed-in user."""
     email = sess.email
     user = user_auth.get_user_by_email(db, email)
-    subs = (
-        db.query(Submission)
-        .filter(Submission.email == email)
-        .order_by(Submission.created_at.desc())
-        .all()
-    )
+    # Bug-fix 2026-05-27: use the unified lookup so submissions whose
+    # Submission.email is NULL (signed-in users who skipped Email My Report)
+    # still show on the dashboard.
+    subs = _submissions_for_email(db, email)
     name = (user.name if user and user.name else None)
     if not name:
         for s in subs:
@@ -923,6 +1018,70 @@ def auth_me(
         "email_verified": bool(user and user.email_verified_at),
         "partner": partner_info,
     }
+
+
+class ResendCouplesIn(BaseModel):
+    my_pair_code: Optional[str] = None
+
+
+@app.post("/pair/resend-couples")
+def pair_resend_couples(
+    payload: ResendCouplesIn,
+    sess: "user_auth.AuthSession" = Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Re-send the Couples Walkthrough email to both partners.
+
+    Useful when the original send from /pair/connect failed silently, or
+    when the user lost the original email. Sign-in required; rate-limited
+    to one resend per minute per signed-in user.
+    """
+    pc = (payload.my_pair_code or "").strip().upper() or None
+    if pc:
+        me = db.query(Submission).filter(Submission.pair_code == pc).first()
+        if not me:
+            raise HTTPException(status_code=404, detail="Submission not found.")
+        owner_email = (_resolve_email_for_submission(db, me) or "").lower()
+        if owner_email != sess.email:
+            raise HTTPException(status_code=403, detail="You don't own that pair code.")
+    else:
+        subs = _submissions_for_email(db, sess.email)
+        me = subs[0] if subs else None
+    if not me:
+        raise HTTPException(status_code=404, detail="No submission found for your account.")
+    if not me.paired_with_code:
+        raise HTTPException(status_code=400, detail="You're not paired with a partner yet.")
+    partner = db.query(Submission).filter(Submission.pair_code == me.paired_with_code).first()
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner's submission could not be found.")
+
+    # Rate-limit reuse of AuthToken with a dedicated purpose
+    from datetime import datetime as _dt, timedelta as _td
+    cooldown = 60
+    recent = (
+        db.query(AuthToken)
+        .filter(AuthToken.email == sess.email, AuthToken.purpose == "resend_couples")
+        .filter(AuthToken.created_at > _dt.utcnow() - _td(seconds=cooldown))
+        .first()
+    )
+    if recent is not None:
+        raise HTTPException(
+            status_code=429,
+            detail="You just requested a resend — please wait a minute before trying again.",
+        )
+
+    email_status = _send_couples_email_pair(db, me, partner)
+
+    db.add(AuthToken(
+        token=user_auth._new_token(16),
+        email=sess.email,
+        purpose="resend_couples",
+        created_at=_dt.utcnow(),
+        expires_at=_dt.utcnow() + _td(seconds=cooldown),
+    ))
+    db.commit()
+
+    return {"ok": True, "email_status": email_status}
 
 
 @app.post("/auth/signout")
@@ -1073,25 +1232,27 @@ def _require_user_owns_pair(
     sess: "user_auth.AuthSession",
     pair_code: str,
 ) -> Submission:
-    """Look up a submission and verify the signed-in user owns it (by email)."""
+    """Look up a submission and verify the signed-in user owns it.
+    Uses _resolve_email_for_submission so submissions with blank email
+    still resolve correctly via the redeemed AccessCode owner.
+    """
     pc = (pair_code or "").strip().upper()
     sub = db.query(Submission).filter(Submission.pair_code == pc).first()
     if not sub:
         raise HTTPException(status_code=404, detail="Submission not found.")
-    if (sub.email or "").strip().lower() != sess.email:
+    resolved = (_resolve_email_for_submission(db, sub) or "").lower()
+    if resolved != sess.email:
         raise HTTPException(status_code=403, detail="You don't have access to this submission.")
     return sub
 
 
 def _user_default_submission(db: Session, email: str) -> Optional[Submission]:
     """Most-recent submission for this email — used when caller doesn't pass
-    a specific pair_code."""
-    return (
-        db.query(Submission)
-        .filter(Submission.email == email)
-        .order_by(Submission.created_at.desc())
-        .first()
-    )
+    a specific pair_code. Uses the unified lookup so blank-email subs still
+    resolve.
+    """
+    subs = _submissions_for_email(db, email)
+    return subs[0] if subs else None
 
 
 @app.get("/me/pdf/personal")
