@@ -94,9 +94,20 @@ class TriggerScores(BaseModel):
 
 
 class SubmissionIn(BaseModel):
-    """Payload the frontend sends when someone finishes the assessment."""
+    """Payload the frontend sends when someone finishes the assessment.
+
+    name and email are now REQUIRED — captured by the finalize gate that
+    runs after the last assessment question and before results render.
+    The server still treats them as Optional in the schema (so legacy
+    frontends and the admin Quick PDF flow don't 400), but enforces
+    non-empty values in the route handler when ENFORCE_FINALIZE_GATE is on.
+    """
     name: Optional[str] = Field(None, max_length=200)
     email: Optional[EmailStr] = None
+    # Partner's email — collected at the finalize gate ONLY when the
+    # access code is a Couple code. Stored in intake_json under the key
+    # 'partner_email' so we can later match a future signup to this pair.
+    partner_email: Optional[EmailStr] = None
     access_code_used: Optional[str] = None
 
     # Intake — home description, family structure, etc.
@@ -162,13 +173,32 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     existing = {row[0] for row in db.query(Submission.pair_code).all()}
     pair_code = generate_pair_code(existing_codes=existing)
 
+    # ─── Finalize gate: require name + email ───
+    # The frontend now captures these on a dedicated 'finalize' screen
+    # AFTER the last question. If either is missing here, the gate was
+    # bypassed or a stale client is calling /submit. Refuse to render
+    # the report so we never produce another walkthrough that calls
+    # someone by their archetype instead of their actual name.
+    finalize_name = (payload.name or "").strip()
+    finalize_email = (payload.email or "").strip().lower() if payload.email else ""
+    if not finalize_name or not finalize_email:
+        raise HTTPException(
+            status_code=400,
+            detail="Please tell us your name and email so we can write your report to you.",
+        )
+
+    # Merge partner_email into intake so it persists with the submission.
+    intake_with_partner = dict(payload.intake) if payload.intake else {}
+    if payload.partner_email:
+        intake_with_partner["partner_email"] = str(payload.partner_email).strip().lower()
+
     # Store
     sub = Submission(
         pair_code=pair_code,
-        name=payload.name,
-        email=payload.email,
+        name=finalize_name,
+        email=finalize_email,
         access_code_used=payload.access_code_used,
-        intake_json=json.dumps(payload.intake),
+        intake_json=json.dumps(intake_with_partner),
         answers_json=json.dumps(payload.answers),
         results_json=json.dumps({
             "primary_trigger": payload.primary_trigger,
@@ -232,7 +262,7 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     # ─── Build the personal Walkthrough PDF as a second attachment ───
     walkthrough_attachments = []
     try:
-        walkthrough_pdf = wt.build_personal_walkthrough(sub)
+        walkthrough_pdf = wt.build_personal_walkthrough(sub, db=db)
         walkthrough_filename = f"Take139-Walkthrough-{safe_name}.pdf"
         walkthrough_attachments = [{
             "filename": walkthrough_filename,
@@ -526,7 +556,7 @@ def _send_couples_email_pair(db: Session, me: Submission, partner: Submission) -
     }
 
     try:
-        couples_pdf = wt.build_couples_walkthrough(me, partner)
+        couples_pdf = wt.build_couples_walkthrough(me, partner, db=db)
         status["pdf_generated"] = True
     except Exception as e:
         msg = f"PDF generation failed: {type(e).__name__}: {e}"
@@ -701,7 +731,7 @@ def get_personal_walkthrough(pair_code: str, db: Session = Depends(get_db)):
     if not sub:
         raise HTTPException(status_code=404, detail="Pair code not found")
 
-    pdf_bytes = wt.build_personal_walkthrough(sub)
+    pdf_bytes = wt.build_personal_walkthrough(sub, db=db)
     filename = f"Take139-Walkthrough-{pair_code}.pdf"
     return Response(
         content=pdf_bytes,
@@ -738,7 +768,7 @@ def get_couples_walkthrough(pair_code_a: str, pair_code_b: str, db: Session = De
     if not sub_a or not sub_b:
         raise HTTPException(status_code=404, detail="One or both pair codes not found")
 
-    pdf_bytes = wt.build_couples_walkthrough(sub_a, sub_b)
+    pdf_bytes = wt.build_couples_walkthrough(sub_a, sub_b, db=db)
     filename = f"Take139-Couples-{code_a}-{code_b}.pdf"
     return Response(
         content=pdf_bytes,
@@ -1319,7 +1349,7 @@ def me_walkthrough_pdf(
         if sub is None:
             raise HTTPException(status_code=404, detail="No assessment found for this account yet.")
     try:
-        pdf_bytes = wt.build_personal_walkthrough(sub)
+        pdf_bytes = wt.build_personal_walkthrough(sub, db=db)
     except Exception as e:
         print(f"[ME PDF ERROR] walkthrough: {e}")
         raise HTTPException(status_code=500, detail="Could not generate your walkthrough. Please try again.")
@@ -1361,7 +1391,7 @@ def me_couples_pdf(
     if not partner:
         raise HTTPException(status_code=404, detail="Partner's submission not found.")
     try:
-        pdf_bytes = wt.build_couples_walkthrough(sub, partner)
+        pdf_bytes = wt.build_couples_walkthrough(sub, partner, db=db)
     except Exception as e:
         print(f"[ME PDF ERROR] couples: {e}")
         raise HTTPException(status_code=500, detail="Could not generate the couples report. Please try again.")
@@ -1438,7 +1468,7 @@ def me_resend_report(
 
     walkthrough_attachments = []
     try:
-        wt_bytes = wt.build_personal_walkthrough(sub)
+        wt_bytes = wt.build_personal_walkthrough(sub, db=db)
         walkthrough_attachments = [{
             "filename": f"Take139-Walkthrough-{safe_name}.pdf",
             "content": base64.b64encode(wt_bytes).decode("utf-8"),
@@ -1620,6 +1650,7 @@ def admin_quick_pdf_personal(
 @app.post("/admin/quick-pdf/walkthrough")
 def admin_quick_pdf_walkthrough(
     payload: QuickPdfPersonalIn,
+    db: Session = Depends(get_db),
     _: None = Depends(admin_auth.require_admin),
 ):
     """Generate the Personal Walkthrough PDF for a profile."""
@@ -1633,7 +1664,7 @@ def admin_quick_pdf_walkthrough(
     except quick_pdf.ValidationError as e:
         raise HTTPException(status_code=400, detail=str(e))
     try:
-        pdf_bytes = wt.build_personal_walkthrough(gs)
+        pdf_bytes = wt.build_personal_walkthrough(gs, db=db)
     except Exception as e:
         print(f"[QUICK-PDF] walkthrough gen failed: {e}")
         raise HTTPException(status_code=500, detail="Walkthrough generation failed. The (mechanism, breakdown) combination may not have a builder yet \u2014 the system fell back but errored. Check server logs.")
@@ -1652,6 +1683,7 @@ def admin_quick_pdf_walkthrough(
 @app.post("/admin/quick-pdf/couples")
 def admin_quick_pdf_couples(
     payload: QuickPdfCouplesIn,
+    db: Session = Depends(get_db),
     _: None = Depends(admin_auth.require_admin),
 ):
     """Generate the Couples Walkthrough PDF for two hand-picked profiles."""
@@ -1671,7 +1703,7 @@ def admin_quick_pdf_couples(
     except quick_pdf.ValidationError as e:
         raise HTTPException(status_code=400, detail=str(e))
     try:
-        pdf_bytes = wt.build_couples_walkthrough(gs_a, gs_b)
+        pdf_bytes = wt.build_couples_walkthrough(gs_a, gs_b, db=db)
     except Exception as e:
         print(f"[QUICK-PDF] couples gen failed: {e}")
         raise HTTPException(status_code=500, detail="Couples report generation failed. Check server logs for the specific error.")
@@ -1691,6 +1723,7 @@ def admin_quick_pdf_couples(
 @app.post("/admin/quick-pdf/email")
 def admin_quick_pdf_email(
     payload: QuickPdfEmailIn,
+    db: Session = Depends(get_db),
     _: None = Depends(admin_auth.require_admin),
 ):
     """Email the generated PDFs to the recipient. Uses the polished email
@@ -1718,7 +1751,7 @@ def admin_quick_pdf_email(
 
     attachments = []
     try:
-        wt_bytes = wt.build_personal_walkthrough(gs)
+        wt_bytes = wt.build_personal_walkthrough(gs, db=db)
         attachments = [{
             "filename": f"Take139-Walkthrough-{safe_name}.pdf",
             "bytes": wt_bytes,
@@ -1739,7 +1772,7 @@ def admin_quick_pdf_email(
         except quick_pdf.ValidationError as e:
             raise HTTPException(status_code=400, detail=str(e))
         try:
-            couples_pdf = wt.build_couples_walkthrough(gs, gs_b)
+            couples_pdf = wt.build_couples_walkthrough(gs, gs_b, db=db)
             safe_b = (gs_b.name or "b").replace(" ", "-")
             attachments.append({
                 "filename": f"Take139-Couples-{safe_name}-{safe_b}.pdf",
@@ -2194,6 +2227,82 @@ def admin_get_code(
     if not code:
         raise HTTPException(status_code=404, detail="Code not found")
     return ac.code_to_dict(code)
+
+
+# ─── Admin: one-time backfill for blank submission names ───
+@app.post("/admin/backfill-submission-names")
+def admin_backfill_submission_names(
+    db: Session = Depends(get_db),
+    _: None = _Depends(admin_auth.require_admin),
+):
+    """Backfill Submission.name for rows where it is currently NULL/blank.
+
+    Looks up the user who redeemed each submission's access code (via
+    AccessCode.redeemed_by_email → User) and copies User.name onto the
+    Submission. This patches submissions completed by signed-in users
+    whose intake skipped re-asking for a name.
+
+    Safe to run multiple times — only touches rows where name is blank.
+    Returns a report of what changed.
+    """
+    candidates = (
+        db.query(Submission)
+          .filter((Submission.name.is_(None)) | (Submission.name == ""))
+          .all()
+    )
+
+    fixed = []
+    skipped = []
+
+    for sub in candidates:
+        candidate_email = None
+        if sub.access_code_used:
+            access = (
+                db.query(AccessCode)
+                  .filter(AccessCode.code == sub.access_code_used)
+                  .first()
+            )
+            if access and access.redeemed_by_email:
+                candidate_email = access.redeemed_by_email.strip().lower()
+        if not candidate_email and sub.email:
+            candidate_email = sub.email.strip().lower()
+
+        resolved_name = None
+        if candidate_email:
+            user = db.query(User).filter(User.email == candidate_email).first()
+            if user and user.name and user.name.strip():
+                resolved_name = user.name.strip()
+            else:
+                # Humanizing fallback: capitalize the email local-part.
+                local = candidate_email.split("@", 1)[0]
+                for sep in (".", "_", "+", "-"):
+                    local = local.split(sep, 1)[0]
+                if local and local.isalpha():
+                    resolved_name = local.capitalize()
+
+        if resolved_name:
+            sub.name = resolved_name
+            fixed.append({
+                "pair_code": sub.pair_code,
+                "email": candidate_email,
+                "resolved_name": resolved_name,
+            })
+        else:
+            skipped.append({
+                "pair_code": sub.pair_code,
+                "reason": "no User row and no usable email local-part",
+            })
+
+    if fixed:
+        db.commit()
+
+    return {
+        "total_candidates": len(candidates),
+        "fixed_count": len(fixed),
+        "skipped_count": len(skipped),
+        "fixed": fixed,
+        "skipped": skipped,
+    }
 
 
 # ─── Local dev entry point ───
