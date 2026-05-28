@@ -89,7 +89,9 @@ def create_checkout_session(
     try:
         session = stripe.checkout.Session.create(
             mode="payment",
-            payment_method_types=["card"],
+            # Omit payment_method_types so Stripe picks the right set
+            # automatically. When a 100%-off coupon zeros the total,
+            # Stripe needs to be free to skip card collection entirely.
             customer_email=email,
             line_items=[{
                 "quantity": 1,
@@ -102,6 +104,12 @@ def create_checkout_session(
                     },
                 },
             }],
+            # Promo codes: shows a "Have a promo code?" field at Stripe checkout.
+            # Coupons (and their underlying promotion codes) are managed in the
+            # Stripe Dashboard under Products → Coupons. A 100%-off coupon
+            # brings the order to $0 and Stripe still fires checkout.session.
+            # completed — so the webhook still issues an access code as normal.
+            allow_promotion_codes=True,
             metadata={
                 "kind": kind,
                 "buyer_email": email,
