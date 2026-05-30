@@ -279,8 +279,8 @@ def send_purchase_confirmation(
     {instructions}
     <hr style="border:none;border-top:1px solid #d4c39a;margin:30px 0;">
     <p style="font-size:13px;color:#6b6862;">
-        If you have any questions, just reply to this email and a real person
-        will read it (it's a Christian pastor; he doesn't bite).
+        If you have any questions or need support, email us at
+        <a href="mailto:hello@take139.com" style="color:#8a4a2c;">hello@take139.com</a>.
     </p>
     <p style="font-size:12px;color:#6b6862;margin-top:24px;">
         Take 139 · A counselor's framework for conflict origins<br>
