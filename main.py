@@ -163,8 +163,14 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     """Receive a completed assessment, store it, email the results."""
 
     # ─── Code gate (only when ENFORCE_ACCESS_CODES=true) ───
+    # Admin test codes (TEST-DEBUG-*) always bypass the gate regardless of
+    # the ENFORCE_ACCESS_CODES setting — they're reusable debug-only codes
+    # used by /admin/test-submit so we can verify the /submit pipeline
+    # without burning real customer codes.
     consumed_code = None
-    if ENFORCE_ACCESS_CODES:
+    if code_gating.is_test_code(payload.access_code_used):
+        consumed_code = None
+    elif ENFORCE_ACCESS_CODES:
         consumed_code = code_gating.enforce_assessment_code(
             db, payload.access_code_used, user_email=payload.email
         )
@@ -314,6 +320,7 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     db.commit()
 
     # ─── Consume the access code ONLY AFTER the submission committed ───
+    # Skips entirely for admin test codes (consumed_code is None).
     if consumed_code is not None:
         try:
             code_gating.mark_assessment_code_consumed(
@@ -2370,6 +2377,64 @@ def admin_get_code(
     if not code:
         raise HTTPException(status_code=404, detail="Code not found")
     return ac.code_to_dict(code)
+
+
+# ─── Admin: synthetic /submit for debugging (reusable test code) ───
+class AdminTestSubmitIn(BaseModel):
+    name: str = Field("Chris (debug)", max_length=200)
+    email: EmailStr
+    partner_email: Optional[EmailStr] = None
+    primary_trigger: str = "DIS"
+    core_question: str = "PROT"
+    mechanism: str = "ISLE"
+    breakdown: str = "ATTY"
+    test_code_suffix: str = "CHRIS"  # so multiple admins can have their own
+
+
+@app.post("/admin/test-submit")
+def admin_test_submit(
+    payload: AdminTestSubmitIn,
+    db: Session = Depends(get_db),
+    _: None = _Depends(admin_auth.require_admin),
+):
+    """Fire a synthetic /submit using a reusable TEST-DEBUG-* code.
+
+    Lets the admin verify the full /submit → PDF → email pipeline without
+    taking the 10-minute assessment or burning a real customer code. The
+    TEST-DEBUG-* code bypasses the access-code consume lock so this
+    endpoint can be called as many times as needed.
+
+    Returns the SubmissionOut payload from /submit (pair_code,
+    email_sent_to_user, email_sent_to_admin) so the admin can immediately
+    see whether the email actually shipped.
+    """
+    test_code = f"TEST-DEBUG-{(payload.test_code_suffix or 'ADMIN').upper()}"
+
+    # Build a SubmissionIn payload that mirrors what the frontend sends.
+    # Trigger scores: dummy but non-zero so the report has something to render.
+    sub_in = SubmissionIn(
+        name=payload.name,
+        email=payload.email,
+        partner_email=payload.partner_email,
+        access_code_used=test_code,
+        intake={
+            "family_type": "two-parent",
+            "atmosphere": ["warm", "structured"],
+            "partner_email": (str(payload.partner_email).lower()
+                              if payload.partner_email else None),
+        },
+        answers={},
+        primary_trigger=payload.primary_trigger,
+        core_question=payload.core_question,
+        mechanism=payload.mechanism,
+        breakdown=payload.breakdown,
+        trigger_scores=TriggerScoresIn(DIS=70, DISC=50, INJ=40, CTRL=30, SHAM=25, SIG=20),
+        home_desc="warm and structured two-parent home",
+        wrapup_answers=None,
+    )
+
+    # Reuse the real /submit handler so we test the production code path.
+    return submit_assessment(sub_in, db=db)
 
 
 # ─── Admin: one-time backfill for blank submission names ───

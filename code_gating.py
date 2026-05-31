@@ -32,6 +32,17 @@ from database import (
 import access_codes as ac
 
 
+# Reusable admin test code that never gets consumed. Used by the
+# /admin/test-submit endpoint to fire synthetic submissions for debugging
+# the /submit pipeline without burning real customer codes.
+TEST_CODE_PREFIX = "TEST-DEBUG-"
+
+
+def is_test_code(code_str: Optional[str]) -> bool:
+    """True if code_str looks like a reusable admin test code (never consumed)."""
+    return bool(code_str and code_str.strip().upper().startswith(TEST_CODE_PREFIX))
+
+
 # ────────────────────────────────────────────────────────────────────────
 # Assessment gate — used by /submit
 # ────────────────────────────────────────────────────────────────────────
@@ -40,14 +51,23 @@ def enforce_assessment_code(
     db: Session,
     code_str: Optional[str],
     user_email: Optional[str] = None,
-) -> AccessCode:
+) -> Optional[AccessCode]:
     """Verify a code can be used to take the Take 139 assessment.
 
     Raises HTTPException if not. Returns the AccessCode row on success
     (NOT YET REDEEMED — call mark_assessment_code_consumed() after the
     submission is committed, so we never charge a code against a
     failed submission).
+
+    Special-case: codes starting with TEST_CODE_PREFIX bypass the lookup
+    entirely and return None. These are reusable admin debug codes used
+    by the /admin/test-submit endpoint; they never touch the AccessCode
+    table and never get consumed.
     """
+    # Admin debug test code — bypass entirely
+    if is_test_code(code_str):
+        return None
+
     if not code_str:
         raise HTTPException(
             status_code=402,
@@ -91,6 +111,13 @@ def enforce_assessment_code(
         )
 
     return code
+
+
+def mark_assessment_code_consumed_or_skip(code, *args, **kwargs):
+    """Wrapper that no-ops when code is None (the admin TEST code path)."""
+    if code is None:
+        return
+    return mark_assessment_code_consumed(code, *args, **kwargs)
 
 
 def mark_assessment_code_consumed(
