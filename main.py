@@ -1054,6 +1054,128 @@ class ResendCouplesIn(BaseModel):
     my_pair_code: Optional[str] = None
 
 
+# ─── Auto-detect partner pair code (Couple Package convenience) ───
+@app.get("/pair/auto-detect/{my_pair_code}")
+def pair_auto_detect(my_pair_code: str, db: Session = Depends(get_db)):
+    """Look up the predicted/actual partner pair code for a Couple Package user.
+
+    For a Couple Package buyer (access code like 'COUPLE-XXXXXX-A'), the
+    sibling code 'COUPLE-XXXXXX-B' is known. This endpoint reports:
+
+      - kind: 'couple_package' | 'connection_add_on' | 'single' | 'unknown'
+      - sibling_access_code: e.g. 'COUPLE-EEUF2S-B' (only for couple_package)
+      - partner_status: 'awaiting_signup' | 'awaiting_assessment' | 'ready' | 'paired' | None
+      - partner_pair_code: the partner's actual pair code IF they have a
+        completed submission (status == 'ready' or 'paired')
+      - partner_name: their first name if completed
+      - auto_pair_eligible: bool — true when both partners have submitted and
+        neither is already in a different CouplePair, so the frontend can
+        offer a one-click 'Connect now' button.
+
+    This powers the simplified Connect card: pair code always visible, and
+    when both Couple Package partners have finished, no typing required.
+    """
+    my_pair_code = (my_pair_code or "").strip().upper()
+    if not my_pair_code:
+        raise HTTPException(status_code=400, detail="pair code required")
+
+    me = db.query(Submission).filter(Submission.pair_code == my_pair_code).first()
+    if me is None:
+        raise HTTPException(status_code=404, detail="submission not found")
+
+    access_code = (me.access_code_used or "").strip().upper()
+    result = {
+        "my_pair_code": my_pair_code,
+        "kind": "unknown",
+        "sibling_access_code": None,
+        "partner_status": None,
+        "partner_pair_code": None,
+        "partner_name": None,
+        "auto_pair_eligible": False,
+        "already_paired": bool(me.paired_with_code),
+    }
+
+    # If this user is already paired, just report it so the UI can render
+    # the post-pair state without re-pairing.
+    if me.paired_with_code:
+        partner_sub = (
+            db.query(Submission)
+              .filter(Submission.pair_code == me.paired_with_code)
+              .first()
+        )
+        result["partner_pair_code"] = me.paired_with_code
+        result["partner_status"] = "paired"
+        if partner_sub:
+            result["partner_name"] = (partner_sub.name or "").strip() or None
+        # Set kind for context even when already paired
+        if access_code.startswith("COUPLE-") and access_code.endswith(("-A", "-B")):
+            result["kind"] = "couple_package"
+        elif access_code.startswith("CONNECT-"):
+            result["kind"] = "connection_add_on"
+        elif access_code.startswith("T139-") or access_code.startswith("SINGLE-"):
+            result["kind"] = "single"
+        return result
+
+    # Couple Package case: access code looks like COUPLE-XXXXXX-A or -B.
+    if access_code.startswith("COUPLE-") and access_code.endswith(("-A", "-B")):
+        result["kind"] = "couple_package"
+        # Compute sibling by flipping the last letter
+        sibling_letter = "B" if access_code.endswith("-A") else "A"
+        sibling_access_code = access_code[:-1] + sibling_letter
+        result["sibling_access_code"] = sibling_access_code
+
+        # Has the sibling code been redeemed (i.e. did the partner sign up)?
+        sibling_record = (
+            db.query(AccessCode)
+              .filter(AccessCode.code == sibling_access_code)
+              .first()
+        )
+        if sibling_record is None or not sibling_record.redeemed_by_email:
+            result["partner_status"] = "awaiting_signup"
+            return result
+
+        # Sibling was redeemed — has the partner completed an assessment?
+        partner_sub = (
+            db.query(Submission)
+              .filter(Submission.access_code_used == sibling_access_code)
+              .order_by(Submission.created_at.desc())
+              .first()
+        )
+        if partner_sub is None:
+            result["partner_status"] = "awaiting_assessment"
+            return result
+
+        # Partner has finished. We have their pair code.
+        result["partner_pair_code"] = partner_sub.pair_code
+        result["partner_name"] = (partner_sub.name or "").strip() or None
+
+        # Check the re-pair lock. If either side is already in a CouplePair
+        # with a third party, auto-pair is not eligible — they'd need a
+        # Connection Add-On to re-pair.
+        try:
+            code_gating.check_repair_lock(db, my_pair_code, partner_sub.pair_code)
+            result["partner_status"] = "ready"
+            result["auto_pair_eligible"] = True
+        except HTTPException:
+            result["partner_status"] = "locked_to_other"
+            result["auto_pair_eligible"] = False
+        return result
+
+    # Connection Add-On case: they bought CONNECT-XXX after a single purchase.
+    # We cannot auto-detect partner because the connection code is generic —
+    # they still need to manually enter their partner's pair code.
+    if access_code.startswith("CONNECT-"):
+        result["kind"] = "connection_add_on"
+        return result
+
+    # Single tier (no connection capability without a separate purchase)
+    if access_code.startswith("T139-") or access_code.startswith("SINGLE-"):
+        result["kind"] = "single"
+        return result
+
+    return result
+
+
 @app.post("/pair/resend-couples")
 def pair_resend_couples(
     payload: ResendCouplesIn,
