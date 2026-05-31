@@ -140,6 +140,14 @@ class SubmissionOut(BaseModel):
     pair_code: str
     email_sent_to_user: bool
     email_sent_to_admin: bool
+    # Auto-issued user session token. The /submit handler creates (or
+    # refreshes) a User row for the buyer and mints a session, so the
+    # frontend can drop them straight into their dashboard without making
+    # them go through a sign-in flow first. This is the highest-engagement
+    # moment of their journey — we should not put a password prompt in front
+    # of it. They can always set a password later from /account.html.
+    session_token: Optional[str] = None
+    user_email: Optional[str] = None
 
 
 # ─── Routes ───
@@ -332,10 +340,32 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
             # Code marking failed but submission succeeded — log, don't fail user.
             print(f"[CODE CONSUME ERROR] {e}")
 
+    # ─── Auto-issue a session so the user is signed in to their dashboard ───
+    # The User row was already get_or_create'd higher up in the handler.
+    # Mint a fresh session token so the frontend can drop the user straight
+    # into their dashboard without making them go through magic-link or
+    # password sign-in. They can always set a password later from /account.html.
+    # Skip for the synthetic admin TEST-DEBUG path so admin tests don't
+    # pollute the user_sessions table.
+    session_token = None
+    session_email = None
+    if payload.email and not code_gating.is_test_code(payload.access_code_used):
+        try:
+            session = user_auth.create_session(
+                db, email=str(payload.email).lower().strip()
+            )
+            session_token = session.session_token
+            session_email = session.email
+        except Exception as e:
+            # Non-fatal — user can still sign in via magic link later.
+            print(f"[AUTO-SESSION ERROR] {e}")
+
     return SubmissionOut(
         pair_code=pair_code,
         email_sent_to_user=user_sent,
         email_sent_to_admin=admin_sent,
+        session_token=session_token,
+        user_email=session_email,
     )
 
 
@@ -2410,31 +2440,38 @@ def admin_test_submit(
     """
     test_code = f"TEST-DEBUG-{(payload.test_code_suffix or 'ADMIN').upper()}"
 
-    # Build a SubmissionIn payload that mirrors what the frontend sends.
-    # Trigger scores: dummy but non-zero so the report has something to render.
-    sub_in = SubmissionIn(
-        name=payload.name,
-        email=payload.email,
-        partner_email=payload.partner_email,
-        access_code_used=test_code,
-        intake={
+    # Build the same JSON payload the frontend sends. We then forward it to
+    # /submit using the FastAPI test client — calling the handler function
+    # directly fails because it relies on FastAPI's request lifecycle for
+    # Depends() resolution. This approach exercises the real production code
+    # path identically to a frontend submission.
+    from fastapi.testclient import TestClient
+    client = TestClient(app)
+    body = {
+        "name": payload.name,
+        "email": str(payload.email),
+        "partner_email": str(payload.partner_email) if payload.partner_email else None,
+        "access_code_used": test_code,
+        "intake": {
             "family_type": "two-parent",
             "atmosphere": ["warm", "structured"],
             "partner_email": (str(payload.partner_email).lower()
                               if payload.partner_email else None),
         },
-        answers={},
-        primary_trigger=payload.primary_trigger,
-        core_question=payload.core_question,
-        mechanism=payload.mechanism,
-        breakdown=payload.breakdown,
-        trigger_scores=TriggerScoresIn(DIS=70, DISC=50, INJ=40, CTRL=30, SHAM=25, SIG=20),
-        home_desc="warm and structured two-parent home",
-        wrapup_answers=None,
-    )
-
-    # Reuse the real /submit handler so we test the production code path.
-    return submit_assessment(sub_in, db=db)
+        "answers": {},
+        "primary_trigger": payload.primary_trigger,
+        "core_question": payload.core_question,
+        "mechanism": payload.mechanism,
+        "breakdown": payload.breakdown,
+        "trigger_scores": {"DIS": 70, "DISC": 50, "INJ": 40, "CTRL": 30, "SHAM": 25, "SIG": 20},
+        "home_desc": "warm and structured two-parent home",
+        "wrapup_answers": None,
+    }
+    resp = client.post("/submit", json=body)
+    try:
+        return resp.json()
+    except Exception:
+        return {"status_code": resp.status_code, "text": resp.text}
 
 
 # ─── Admin: one-time backfill for blank submission names ───

@@ -295,6 +295,12 @@ def send_purchase_confirmation(
     {instructions}
     <hr style="border:none;border-top:1px solid #d4c39a;margin:30px 0;">
     <p style="font-size:13px;color:#6b6862;">
+      <strong style="color:#1d1d1b;">Your personal dashboard.</strong><br>
+      Once you finish your assessment, your full report, walkthrough, and partner pairing live at
+      <a href="{frontend_url}/dashboard.html" style="color:#8a4a2c;">take139.com/dashboard</a>.
+      You'll be signed in automatically the first time. Bookmark it for easy access later.
+    </p>
+    <p style="font-size:13px;color:#6b6862;">
         If you have any questions or need support, email us at
         <a href="mailto:hello@take139.com" style="color:#8a4a2c;">hello@take139.com</a>.
     </p>
