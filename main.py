@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 
 from database import (
     init_db, get_db, Submission, ImagoSubmission,
-    AccessCode, CouplePair, AuthToken,
+    AccessCode, CouplePair, AuthToken, RepairHistory,
     CODE_KIND_SINGLE, CODE_KIND_COUPLE, CODE_KIND_CONNECT,
     CODE_STATUS_ACTIVE, CODE_STATUS_REDEEMED, CODE_STATUS_EXPIRED, CODE_STATUS_REVOKED,
     CODE_SOURCE_ADMIN, CODE_SOURCE_STRIPE, CODE_SOURCE_COMP,
@@ -2500,16 +2500,27 @@ def admin_backfill_submission_names(
     Safe to run multiple times — only touches rows where name is blank.
     Returns a report of what changed.
     """
-    candidates = (
-        db.query(Submission)
-          .filter((Submission.name.is_(None)) | (Submission.name == ""))
-          .all()
-    )
+    import traceback as _tb
+    try:
+        candidates = (
+            db.query(Submission)
+              .filter((Submission.name.is_(None)) | (Submission.name == ""))
+              .all()
+        )
+    except Exception as _exc:
+        return {
+            "ok": False,
+            "stage": "query_candidates",
+            "error": str(_exc),
+            "trace": _tb.format_exc().splitlines()[-6:],
+        }
 
     fixed = []
     skipped = []
+    errors = []
 
     for sub in candidates:
+      try:
         candidate_email = None
         if sub.access_code_used:
             access = (
@@ -2547,16 +2558,332 @@ def admin_backfill_submission_names(
                 "pair_code": sub.pair_code,
                 "reason": "no User row and no usable email local-part",
             })
+      except Exception as _row_exc:
+        errors.append({
+            "pair_code": getattr(sub, 'pair_code', None),
+            "error": str(_row_exc),
+        })
 
     if fixed:
-        db.commit()
+        try:
+            db.commit()
+        except Exception as _commit_exc:
+            db.rollback()
+            return {
+                "ok": False,
+                "stage": "commit",
+                "error": str(_commit_exc),
+                "trace": _tb.format_exc().splitlines()[-6:],
+            }
 
     return {
+        "ok": True,
         "total_candidates": len(candidates),
         "fixed_count": len(fixed),
         "skipped_count": len(skipped),
+        "errors": errors,
         "fixed": fixed,
         "skipped": skipped,
+    }
+
+
+# ─── Free re-pair flow (POST /me/repair-with-new-partner) ─────────────
+#
+# A signed-in user can break their current Couples bond and pair with
+# someone new, subject to three safeguards:
+#
+#   1. 30-day cooldown between re-pairs
+#   2. Lifetime cap of 5 free re-pairs (then $10 Connection Add-On)
+#   3. The new partner must have an already-completed, paid submission
+#      (so no one can fabricate fake profiles to game the system)
+#
+# Side effects:
+#   - Archives the previous CouplePair (soft delete via archived_at)
+#   - Updates Submission.paired_with_code on both involved profiles
+#   - Creates a new CouplePair for the new bond
+#   - Records the event in RepairHistory
+#   - Generates and emails the new Couples Walkthrough to both partners
+#   - Sends a pastoral orphan-notification email to the previous partner
+# ───────────────────────────────────────────────────────────────────────
+
+REPAIR_COOLDOWN_DAYS = 30
+REPAIR_LIFETIME_CAP = 5
+
+
+class RepairWithNewPartnerIn(BaseModel):
+    new_partner_pair_code: str
+    confirm: bool = False  # Frontend must set true after pastoral modal
+
+
+@app.get("/me/repair-eligibility")
+def me_repair_eligibility(
+    sess: "user_auth.AuthSession" = _Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Tell the dashboard whether re-pair is currently allowed for this user,
+    and how many of the lifetime free re-pairs they've used so far.
+    """
+    email = (sess.email or "").strip().lower()
+    history = (
+        db.query(RepairHistory)
+          .filter(RepairHistory.user_email == email)
+          .order_by(RepairHistory.created_at.desc())
+          .all()
+    )
+    used = len(history)
+    remaining = max(0, REPAIR_LIFETIME_CAP - used)
+    last_at = history[0].created_at if history else None
+    cooldown_until = None
+    cooldown_active = False
+    if last_at is not None:
+        from datetime import timedelta as _td
+        cooldown_until = last_at + _td(days=REPAIR_COOLDOWN_DAYS)
+        cooldown_active = datetime.utcnow() < cooldown_until
+
+    return {
+        "used": used,
+        "remaining": remaining,
+        "lifetime_cap": REPAIR_LIFETIME_CAP,
+        "cooldown_days": REPAIR_COOLDOWN_DAYS,
+        "last_repair_at": last_at.isoformat() if last_at else None,
+        "cooldown_until": cooldown_until.isoformat() if cooldown_until else None,
+        "cooldown_active": cooldown_active,
+        "history": [
+            {
+                "old_partner_pair_code": h.old_partner_pair_code,
+                "new_partner_pair_code": h.new_partner_pair_code,
+                "created_at": h.created_at.isoformat() if h.created_at else None,
+            } for h in history
+        ],
+    }
+
+
+@app.post("/me/repair-with-new-partner")
+def me_repair_with_new_partner(
+    payload: RepairWithNewPartnerIn,
+    sess: "user_auth.AuthSession" = _Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Break the user's current Couples bond and re-pair with a new partner.
+
+    Requires explicit `confirm: true` from the frontend (after the pastoral
+    confirmation modal). Enforces 30-day cooldown and lifetime cap of 5.
+    """
+    if not payload.confirm:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "confirmation_required",
+                    "message": "Re-pairing requires explicit confirmation."},
+        )
+
+    email = (sess.email or "").strip().lower()
+    if not email:
+        raise HTTPException(status_code=401, detail="Not signed in.")
+
+    new_partner_code = (payload.new_partner_pair_code or "").strip().upper()
+    if not new_partner_code:
+        raise HTTPException(status_code=400, detail="new_partner_pair_code is required.")
+
+    # ─── Locate the signed-in user's primary (most recent) submission ───
+    subs = _submissions_for_email(db, email)
+    if not subs:
+        raise HTTPException(
+            status_code=404,
+            detail={"error": "no_submission",
+                    "message": "You don't have a completed Take 139 profile yet."},
+        )
+    me_sub = subs[0]  # most-recent
+    my_code = me_sub.pair_code
+
+    if new_partner_code == my_code:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "self_pair",
+                    "message": "You can't pair with your own pair code."},
+        )
+
+    # ─── Validate the new partner exists AND came from a paid intake ───
+    new_partner_sub = (
+        db.query(Submission)
+          .filter(Submission.pair_code == new_partner_code)
+          .first()
+    )
+    if not new_partner_sub:
+        raise HTTPException(
+            status_code=404,
+            detail={"error": "partner_not_found",
+                    "message": "That pair code doesn't match any completed Take 139 profile."},
+        )
+
+    # The new partner MUST have an access_code_used (i.e. a real paid intake)
+    # OR be from a TEST-DEBUG-* code (admin testing). This is what blocks the
+    # "reconnect with a bunch of fake people" attack: a fake profile cannot
+    # exist without someone first paying for an access code.
+    used_code = (new_partner_sub.access_code_used or "").strip().upper()
+    if not used_code:
+        raise HTTPException(
+            status_code=403,
+            detail={"error": "partner_not_verified",
+                    "message": "That partner's profile isn't verified as a paid intake."},
+        )
+
+    # ─── Cooldown + lifetime cap checks ───
+    history = (
+        db.query(RepairHistory)
+          .filter(RepairHistory.user_email == email)
+          .order_by(RepairHistory.created_at.desc())
+          .all()
+    )
+    used_count = len(history)
+    if used_count >= REPAIR_LIFETIME_CAP:
+        raise HTTPException(
+            status_code=403,
+            detail={"error": "lifetime_cap_reached",
+                    "used": used_count,
+                    "lifetime_cap": REPAIR_LIFETIME_CAP,
+                    "message": (
+                        f"You've used all {REPAIR_LIFETIME_CAP} of your free re-pairs. "
+                        "To continue, purchase a Connection Add-On ($10) at https://take139.com."
+                    )},
+        )
+
+    if history:
+        from datetime import timedelta as _td
+        last_at = history[0].created_at
+        if last_at is not None:
+            cooldown_until = last_at + _td(days=REPAIR_COOLDOWN_DAYS)
+            if datetime.utcnow() < cooldown_until:
+                days_left = (cooldown_until - datetime.utcnow()).days + 1
+                raise HTTPException(
+                    status_code=429,
+                    detail={"error": "cooldown_active",
+                            "cooldown_until": cooldown_until.isoformat(),
+                            "days_remaining": days_left,
+                            "message": (
+                                f"Re-pairing is on a {REPAIR_COOLDOWN_DAYS}-day cooldown so the "
+                                f"Lord can do his work between transitions. You can re-pair again "
+                                f"in about {days_left} day{'s' if days_left != 1 else ''}."
+                            )},
+                )
+
+    # ─── Locate the current (old) partner, if any, and archive the CouplePair ───
+    old_partner_code = (me_sub.paired_with_code or "").strip().upper() or None
+    old_partner_sub = None
+    old_partner_email = None
+    if old_partner_code:
+        old_partner_sub = (
+            db.query(Submission)
+              .filter(Submission.pair_code == old_partner_code)
+              .first()
+        )
+        if old_partner_sub:
+            old_partner_email = _resolve_email_for_submission(db, old_partner_sub)
+
+        # Soft-archive every active CouplePair this user belongs to
+        active_pairs = (
+            db.query(CouplePair)
+              .filter(
+                  (CouplePair.pair_code_a == my_code) | (CouplePair.pair_code_b == my_code)
+              )
+              .filter(CouplePair.archived_at.is_(None))
+              .all()
+        )
+        for cp in active_pairs:
+            cp.archived_at = datetime.utcnow()
+            cp.archived_reason = "superseded_by_free_repair"
+
+        # Mirror-clear the old partner's paired_with_code so their dashboard
+        # also reflects the breakup. They can pair anew themselves any time.
+        if old_partner_sub and (old_partner_sub.paired_with_code or "").upper() == my_code:
+            old_partner_sub.paired_with_code = None
+            old_partner_sub.paired_at = None
+
+    # ─── Refuse if new partner is already locked into someone else ───
+    new_partner_active = (
+        db.query(CouplePair)
+          .filter(
+              (CouplePair.pair_code_a == new_partner_code) | (CouplePair.pair_code_b == new_partner_code)
+          )
+          .filter(CouplePair.archived_at.is_(None))
+          .first()
+    )
+    if new_partner_active is not None:
+        # Check it's not the user themselves (already handled above) — this is
+        # the new partner being bonded to someone ELSE.
+        ab = {new_partner_active.pair_code_a, new_partner_active.pair_code_b}
+        if my_code not in ab:
+            raise HTTPException(
+                status_code=409,
+                detail={"error": "new_partner_already_paired",
+                        "message": (
+                            "That partner is currently paired with someone else. "
+                            "They'll need to unpair on their own dashboard first."
+                        )},
+            )
+
+    # ─── Set the new bond ───
+    now = datetime.utcnow()
+    me_sub.paired_with_code = new_partner_code
+    me_sub.paired_at = now
+    new_partner_sub.paired_with_code = my_code
+    new_partner_sub.paired_at = now
+    db.commit()
+
+    code_gating.record_couple_pair(
+        db,
+        me_pair_code=my_code,
+        partner_pair_code=new_partner_code,
+        authorised_by_code=f"free_repair:{email}",
+    )
+
+    # ─── Record in RepairHistory ───
+    new_partner_email = _resolve_email_for_submission(db, new_partner_sub)
+    rh = RepairHistory(
+        user_email=email,
+        user_pair_code=my_code,
+        old_partner_pair_code=old_partner_code,
+        old_partner_email=old_partner_email,
+        new_partner_pair_code=new_partner_code,
+        new_partner_email=new_partner_email,
+        created_at=now,
+    )
+    db.add(rh)
+    db.commit()
+
+    # ─── Generate + send new Couples Walkthrough ───
+    email_status = {"skipped": True, "reason": "no_email_sent"}
+    try:
+        email_status = _send_couples_email_pair(db, me_sub, new_partner_sub)
+    except Exception as _exc:
+        email_status = {"error": str(_exc)}
+
+    # ─── Send orphan-notification email to previous partner ───
+    orphan_status = {"skipped": True, "reason": "no_previous_partner"}
+    if old_partner_email:
+        try:
+            from email_service import send_orphan_notification
+            orphan_status = send_orphan_notification(
+                to_email=old_partner_email,
+                to_name=(old_partner_sub.name if old_partner_sub else None),
+                former_partner_name=(me_sub.name or "Your former partner"),
+            )
+            rh.orphan_email_sent = bool(orphan_status and not orphan_status.get("error") and not orphan_status.get("skipped"))
+            if rh.orphan_email_sent:
+                rh.orphan_email_sent_at = datetime.utcnow()
+            db.commit()
+        except Exception as _exc:
+            orphan_status = {"error": str(_exc)}
+
+    return {
+        "ok": True,
+        "my_pair_code": my_code,
+        "new_partner_pair_code": new_partner_code,
+        "old_partner_pair_code": old_partner_code,
+        "repairs_used": used_count + 1,
+        "repairs_remaining": max(0, REPAIR_LIFETIME_CAP - (used_count + 1)),
+        "next_repair_available_at": (now + __import__("datetime").timedelta(days=REPAIR_COOLDOWN_DAYS)).isoformat(),
+        "couples_email_status": email_status,
+        "orphan_email_status": orphan_status,
     }
 
 

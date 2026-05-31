@@ -385,3 +385,74 @@ def send_couples_walkthrough(
         return resend.Emails.send(params)
     except Exception as e:
         return {"error": str(e)}
+
+
+
+def send_orphan_notification(
+    to_email: str,
+    to_name,
+    former_partner_name: str,
+    dashboard_url: str = "https://take139.com/dashboard.html",
+) -> dict:
+    """Notify a user that their former partner has re-paired with someone else.
+
+    A short, pastoral note. No alarm. No extra prose. Says exactly what
+    happened, where their own materials still live, and offers a quiet path
+    to reach out if it lands hard.
+    """
+    if not RESEND_API_KEY:
+        return {"skipped": True, "reason": "no RESEND_API_KEY set"}
+    safe_email = (to_email or "").strip()
+    if not safe_email:
+        return {"skipped": True, "reason": "no recipient"}
+
+    salutation = f"Hi {to_name}," if (to_name and str(to_name).strip()) else "Hi there,"
+    former = (former_partner_name or "your former partner").strip() or "your former partner"
+
+    subject = f"A note about your Take 139 pairing with {former}"
+
+    css = (
+        "body { font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; margin:0; padding:0; background:#faf6ef; color:#2a2620; }"
+        ".container { max-width:560px; margin:0 auto; padding:40px 24px; }"
+        ".brand { font-size:11px; letter-spacing:0.35em; color:#c8956c; text-transform:uppercase; font-weight:600; margin-bottom:14px; }"
+        "h1 { font-family:Georgia,serif; font-size:24px; line-height:1.3; color:#2a2620; margin:0 0 16px 0; font-weight:400; }"
+        "p { line-height:1.7; font-size:15px; color:#3a342d; margin:0 0 14px 0; }"
+        ".cta-wrap { text-align:center; margin:26px 0; }"
+        ".cta { display:inline-block; background:#2a2620; color:#faf6ef !important; padding:13px 26px; border-radius:4px; text-decoration:none; font-size:14px; letter-spacing:0.07em; font-weight:600; }"
+        ".note { background:#fff; border-left:3px solid #c8956c; padding:14px 18px; margin:18px 0; font-size:14px; color:#3a342d; line-height:1.65; }"
+        ".footer { margin-top:34px; padding-top:20px; border-top:1px solid #e0d6c5; font-size:12px; color:#8a7f72; line-height:1.6; }"
+        ".footer .sig { margin-top:10px; color:#2a2620; font-weight:600; font-family:Georgia,serif; font-size:14px; }"
+        "a { color:#c8956c; text-decoration:none; }"
+        "a.cta:link, a.cta:visited { color:#faf6ef; }"
+    )
+
+    html_body = (
+        '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
+        + css
+        + '</style></head><body>'
+        + '<div class="container">'
+        + '  <div class="brand">Take 139 &middot; A pastoral note</div>'
+        + f'  <h1>{salutation}</h1>'
+        + f'  <p>{former} has updated their Take 139 pairing and is now connected with a different partner. Because of that, the Couples Report the two of you generated together has been moved to the archive on your dashboard.</p>'
+        + '  <div class="note"><strong>What this means for you:</strong> Your own profile, your full personal Walkthrough, and the original Couples Report are all still available in your dashboard. Nothing of yours has been deleted.</div>'
+        + f'  <div class="cta-wrap"><a href="{dashboard_url}" class="cta">Open my dashboard &rarr;</a></div>'
+        + '  <p style="font-size:13px;color:#6b6158;">If this update lands hard, please reach out &mdash; <a href="mailto:hello@take139.com">hello@take139.com</a>.</p>'
+        + '  <div class="footer">'
+        + '    Grace and peace,'
+        + '    <div class="sig">&mdash; Dr. Chris Hilken</div>'
+        + '    <div style="margin-top:14px;"><a href="https://take139.com">take139.com</a></div>'
+        + '  </div>'
+        + '</div></body></html>'
+    )
+
+    params = {
+        "from": FROM_EMAIL,
+        "to": [safe_email],
+        "subject": subject,
+        "html": html_body,
+        "reply_to": ADMIN_EMAIL,
+    }
+    try:
+        return resend.Emails.send(params)
+    except Exception as e:
+        return {"error": str(e)}

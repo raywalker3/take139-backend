@@ -178,7 +178,9 @@ class CouplePair(Base):
 
     Once two submissions are paired via /pair/connect, that bond is permanent
     for the purposes of the couples walkthrough. To re-pair with someone
-    else, the user needs a fresh CONNECT code.
+    else, the user needs a fresh CONNECT code OR uses the free re-pair flow
+    (POST /me/repair-with-new-partner) which archives this row and creates
+    a new one.
     """
     __tablename__ = "couple_pairs"
 
@@ -190,6 +192,10 @@ class CouplePair(Base):
     authorised_by_code = Column(String(64), nullable=True, index=True)
 
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+    # Soft-delete: set when superseded by a re-pair. Active pairs have NULL.
+    archived_at = Column(DateTime, nullable=True, index=True)
+    archived_reason = Column(String(80), nullable=True)
 
 
 class User(Base):
@@ -255,9 +261,52 @@ class AuthSession(Base):
     requester_ip = Column(String(64), nullable=True)
 
 
+class RepairHistory(Base):
+    """A historical record of a re-pair event.
+
+    Each time a signed-in user breaks their current Couples bond and
+    re-pairs with someone new (via /me/repair-with-new-partner), we
+    record one row here. This drives:
+      - The 30-day cooldown between re-pairs (per user)
+      - The lifetime cap of 5 free re-pairs (per user)
+      - The 'past partners' history shown on the Couples Report
+      - The orphan-notification audit trail
+    """
+    __tablename__ = "repair_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_email = Column(String(200), index=True, nullable=False)
+    user_pair_code = Column(String(32), index=True, nullable=False)
+    old_partner_pair_code = Column(String(32), nullable=True, index=True)
+    old_partner_email = Column(String(200), nullable=True)
+    new_partner_pair_code = Column(String(32), nullable=False, index=True)
+    new_partner_email = Column(String(200), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    orphan_email_sent = Column(Boolean, default=False, nullable=False)
+    orphan_email_sent_at = Column(DateTime, nullable=True)
+
+
+def _safe_add_column(table: str, col_def: str) -> None:
+    """Tiny SQLite migration helper — adds a column if it doesn't exist."""
+    try:
+        from sqlalchemy import text as _text
+        with engine.begin() as conn:
+            cols = conn.execute(_text(f"PRAGMA table_info({table})")).fetchall()
+            existing = {row[1] for row in cols}
+            new_col_name = col_def.split()[0]
+            if new_col_name not in existing:
+                conn.execute(_text(f"ALTER TABLE {table} ADD COLUMN {col_def}"))
+                print(f"[migration] Added {table}.{new_col_name}")
+    except Exception as _exc:
+        print(f"[migration] Could not add {table} column: {_exc}")
+
+
 def init_db():
     """Create tables if they don't exist."""
     Base.metadata.create_all(bind=engine)
+    # Soft migrations for existing prod DBs
+    _safe_add_column("couple_pairs", "archived_at DATETIME")
+    _safe_add_column("couple_pairs", "archived_reason VARCHAR(80)")
 
 
 def get_db():
