@@ -682,7 +682,17 @@ def check_code(code_str: str, db: Session = Depends(get_db)):
     Returns shape: {valid: bool, kind: str, status: str, reason: str, ...}
     The frontend can call this when the user types a code on the landing page
     and show ✓ / ✗ in real time before they start the assessment.
+
+    Admin TEST-DEBUG-* codes always pass preflight — they bypass the AccessCode
+    table entirely and are recognized as a 'single' kind for UI purposes.
     """
+    if code_gating.is_test_code(code_str):
+        return {
+            "valid": True,
+            "kind": "single",
+            "status": "active",
+            "reason": "admin test code",
+        }
     return code_gating.check_code_preflight(db, code_str)
 
 
