@@ -239,20 +239,35 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
         wrapup_answers=payload.wrapup_answers,
     )
 
-    # Generate PDF
+    # ─── Generate the Personal Profile PDF (PRIMARY attachment) ───
+    # Critical: even if this fails, we MUST still send the email so the user
+    # knows their submission was received. Previously this block returned
+    # early on exception, which meant a failed Profile PDF silently swallowed
+    # the entire email send — the user got nothing in their inbox and we had
+    # no signal anything was wrong. Now we send the email either way.
+    pdf_bytes = None
     try:
         pdf_bytes = generate_report_pdf(data)
     except Exception as e:
-        # Log but don't fail the submission — they still have their results on-screen
-        print(f"[PDF ERROR] {e}")
-        return SubmissionOut(
-            pair_code=pair_code,
-            email_sent_to_user=False,
-            email_sent_to_admin=False,
-        )
+        import traceback
+        print(f"[PROFILE PDF ERROR] {e}")
+        traceback.print_exc()
 
     # Render email body
-    email_html = render_email_html(data)
+    try:
+        email_html = render_email_html(data)
+    except Exception as e:
+        print(f"[EMAIL HTML RENDER ERROR] {e}")
+        # Bare-bones fallback so the email still ships.
+        safe_first = (payload.name or "friend").split()[0]
+        email_html = (
+            f"<p>Hi {safe_first},</p>"
+            f"<p>Your Take 139 assessment was received. We hit a snag generating "
+            f"the formatted PDF on the server, but your results are saved and "
+            f"viewable on the site. Please reply to this email and we'll send "
+            f"your PDF manually within 24 hours.</p>"
+            f"<p>Your pair code: <strong>{pair_code}</strong></p>"
+        )
 
     # Send emails
     safe_name = (payload.name or "friend").replace(" ", "-")
@@ -271,18 +286,24 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     except Exception as e:
         print(f"[WALKTHROUGH GEN ERROR] {e}")
 
+    # Even if the Profile PDF generation failed (pdf_bytes is None), still
+    # send the email so the user gets confirmation — they can reply for the
+    # PDF if it's missing. The email service handles None pdf_bytes by sending
+    # without an attachment.
     try:
         send_result = send_to_admin_and_user(
             user_email=payload.email,
             subject=email_subject,
             html_body=email_html,
-            pdf_bytes=pdf_bytes,
+            pdf_bytes=pdf_bytes,  # may be None if Profile PDF errored
             pdf_filename=pdf_filename,
             user_name=payload.name,
             extra_attachments=walkthrough_attachments or None,
         )
     except Exception as e:
+        import traceback
         print(f"[EMAIL ERROR] {e}")
+        traceback.print_exc()
         send_result = {"admin": None, "user": None}
 
     user_sent = bool(send_result.get("user") and not send_result["user"].get("error"))

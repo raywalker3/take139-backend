@@ -106,11 +106,21 @@ def send_results_email(
             "filename": pdf_filename,
             "content": pdf_b64,
         })
-    # Optional extra attachments: list of {filename, bytes}
+    # Optional extra attachments. Accepts either format:
+    #   {filename, bytes}   — raw bytes that we'll base64-encode here
+    #   {filename, content} — pre-encoded base64 string (used by /submit)
     for extra in (extra_attachments or []):
+        if "content" in extra and extra["content"]:
+            content_b64 = extra["content"]
+            if isinstance(content_b64, bytes):
+                content_b64 = content_b64.decode("ascii")
+        elif "bytes" in extra and extra["bytes"]:
+            content_b64 = base64.b64encode(extra["bytes"]).decode("ascii")
+        else:
+            continue
         attachments.append({
             "filename": extra["filename"],
-            "content": base64.b64encode(extra["bytes"]).decode("ascii"),
+            "content": content_b64,
         })
 
     params = {
@@ -184,15 +194,21 @@ def send_purchase_confirmation(
     if not RESEND_API_KEY:
         return {"skipped": True, "reason": "no RESEND_API_KEY set"}
 
+    # Encode the buyer's email into the access-code link so the assessment's
+    # finalize gate can pre-fill it. Saves the user from typing their email
+    # twice (once at Stripe, again at the gate) and removes the cold-ask feel.
+    from urllib.parse import quote as _qs
+    buyer_param = f"&buyer={_qs(to_email or '')}" if to_email else ""
+
     # Subject + body tailored to product kind
     if kind == "single":
         subject = "Your Take 139 access code"
         product_name = "Conflict Origins (Take 139)"
         instructions = f"""
         <p>Click the link below to begin your assessment. The link auto-fills
-        your code; you'll just enter your name and email when prompted.</p>
+        your code and email; you'll just enter your name when prompted.</p>
         <p style="text-align:center;margin:30px 0;">
-            <a href="{frontend_url}/?code={codes[0]}"
+            <a href="{frontend_url}/?code={codes[0]}{buyer_param}"
                style="background:#1d1d1b;color:#f5f1e8;padding:14px 28px;
                       text-decoration:none;border-radius:999px;
                       font-family:'Inter',sans-serif;font-weight:500;
@@ -215,7 +231,7 @@ def send_purchase_confirmation(
         connect your profiles to see your Couples Walkthrough.</p>
 
         <p style="text-align:center;margin:30px 0;">
-            <a href="{frontend_url}/?code={codes[0]}"
+            <a href="{frontend_url}/?code={codes[0]}{buyer_param}"
                style="background:#1d1d1b;color:#f5f1e8;padding:14px 28px;
                       text-decoration:none;border-radius:999px;
                       font-family:'Inter',sans-serif;font-weight:500;

@@ -85,6 +85,34 @@ def _hydrate_submission_name(submission, db=None) -> None:
     # 5. Leave None; the builder's default ("Spouse", archetype name) will kick in.
 
 
+# Normalization tables so frontend code-name drift never breaks the dispatch.
+# The frontend assessment emits codes like COURT/DISAP/REM for breakdowns the
+# backend registry was originally keyed under ATTY/GHOST/VERD. Mismatches
+# silently fall through to the friendly fallback, which means a user with a
+# perfectly valid combination (e.g. ISLE+COURT) gets a generic stub instead of
+# their real walkthrough — AND the email never sends, because PDF generation
+# is upstream of the email send block in /submit.
+_BREAKDOWN_ALIAS = {
+    "COURT": "ATTY",   # Courtroom → Attorney (canonical registry key)
+    "DISAP": "GHOST",  # Disappear → Ghost
+    "REM":   "VERD",   # Remember-everything → Verdict-rendering
+}
+_MECHANISM_ALIAS = {
+    "CAMP":  "ADPT",   # Campsite → Adapter (legacy code, just in case)
+    "PERF":  "AMB",    # Performance → Ambassador (legacy code, just in case)
+}
+
+
+def _normalize_mechanism(m: str) -> str:
+    m = (m or "").upper()
+    return _MECHANISM_ALIAS.get(m, m)
+
+
+def _normalize_breakdown(b: str) -> str:
+    b = (b or "").upper()
+    return _BREAKDOWN_ALIAS.get(b, b)
+
+
 def build_personal_walkthrough(submission, db=None) -> bytes:
     """Generate the personal walkthrough PDF for one submission.
 
@@ -99,11 +127,17 @@ def build_personal_walkthrough(submission, db=None) -> bytes:
     ensure_fonts()
     _hydrate_submission_name(submission, db)
     key = (
-        (submission.primary_mechanism or "").upper(),
-        (submission.primary_breakdown or "").upper(),
+        _normalize_mechanism(submission.primary_mechanism),
+        _normalize_breakdown(submission.primary_breakdown),
     )
     builder = PERSONAL_REGISTRY.get(key)
     if builder is None:
+        # Helpful diagnostic in Railway logs for future drift detection.
+        print(
+            f"[WALKTHROUGH] No personal builder for {key} "
+            f"(original: mech={submission.primary_mechanism!r}, "
+            f"breakdown={submission.primary_breakdown!r}). Falling back."
+        )
         return build_personal_fallback(submission)
     return builder(submission)
 
@@ -121,8 +155,8 @@ def build_couples_walkthrough(sub_a, sub_b, db=None) -> bytes:
     ensure_fonts()
     _hydrate_submission_name(sub_a, db)
     _hydrate_submission_name(sub_b, db)
-    mech_a = (sub_a.primary_mechanism or "").upper()
-    mech_b = (sub_b.primary_mechanism or "").upper()
+    mech_a = _normalize_mechanism(sub_a.primary_mechanism)
+    mech_b = _normalize_mechanism(sub_b.primary_mechanism)
 
     # Try both orderings — the writer who composed the pair PDF made a choice
     # about which partner gets which color/voice; we preserve it.
