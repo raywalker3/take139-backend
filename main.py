@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 
 from database import (
     init_db, get_db, Submission, ImagoSubmission,
-    AccessCode, CouplePair, AuthToken, RepairHistory,
+    AccessCode, CouplePair, AuthToken, RepairHistory, User,
     CODE_KIND_SINGLE, CODE_KIND_COUPLE, CODE_KIND_CONNECT,
     CODE_STATUS_ACTIVE, CODE_STATUS_REDEEMED, CODE_STATUS_EXPIRED, CODE_STATUS_REVOKED,
     CODE_SOURCE_ADMIN, CODE_SOURCE_STRIPE, CODE_SOURCE_COMP,
@@ -2539,12 +2539,29 @@ def admin_backfill_submission_names(
             if user and user.name and user.name.strip():
                 resolved_name = user.name.strip()
             else:
-                # Humanizing fallback: capitalize the email local-part.
+                # Fallback 1: borrow a name from any sibling submission this
+                # same email already filled in (e.g. they took the assessment
+                # twice and only one entry has a name).
+                sibling = (
+                    db.query(Submission)
+                      .filter(Submission.email == candidate_email)
+                      .filter(Submission.name.isnot(None))
+                      .filter(Submission.name != "")
+                      .first()
+                )
+                if sibling and sibling.name:
+                    resolved_name = sibling.name.strip()
+
+            if not resolved_name:
+                # Fallback 2: humanize the email local-part. Take the FIRST
+                # alphabetic chunk before any separator and capitalize it.
                 local = candidate_email.split("@", 1)[0]
                 for sep in (".", "_", "+", "-"):
                     local = local.split(sep, 1)[0]
-                if local and local.isalpha():
-                    resolved_name = local.capitalize()
+                # Strip trailing digits (e.g. 'chris139' -> 'chris')
+                stripped = "".join(ch for ch in local if ch.isalpha())
+                if stripped:
+                    resolved_name = stripped.capitalize()
 
         if resolved_name:
             sub.name = resolved_name
