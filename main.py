@@ -94,10 +94,12 @@ class TriggerScores(BaseModel):
 
 
 def _normalize_gender(g) -> Optional[str]:
-    """Map any frontend gender value to canonical 'M' | 'F' | 'X' | None.
+    """Map any frontend gender value to canonical 'M' | 'F' | None.
 
-    Accepts: 'M', 'F', 'X', 'male', 'female', 'man', 'woman', 'other',
-    'non-binary', 'nb', 'prefer not to say', etc. Returns None on empty input.
+    Accepts: 'M', 'F', 'male', 'female', 'man', 'woman'. Returns None for
+    empty/unknown input. As of 2026-06-02, ONLY M and F are accepted because
+    the original walkthroughs are written with gendered pronouns that need
+    a clear M/F to resolve correctly.
     """
     if g is None:
         return None
@@ -108,8 +110,8 @@ def _normalize_gender(g) -> Optional[str]:
         return "M"
     if s in ("f", "female", "woman", "wife", "girl"):
         return "F"
-    # Anything else → unspecified (we'll route to gender-neutral fallback)
-    return "X"
+    # Anything else → None (validator upstream will reject)
+    return None
 
 
 class SubmissionIn(BaseModel):
@@ -246,6 +248,26 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     # Normalize gender input from a variety of frontend shapes.
     normalized_gender = _normalize_gender(payload.gender)
     normalized_partner_gender = _normalize_gender(payload.partner_gender)
+
+    # Strict gender check (2026-06-02): the assessment requires M or F so
+    # the original walkthroughs render with correct pronouns. Anything else
+    # is rejected here rather than silently coerced.
+    if normalized_gender not in ("M", "F"):
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "gender_required",
+                "message": "Please select Male or Female so we can write your report with the right pronouns.",
+            },
+        )
+    if payload.partner_email and normalized_partner_gender not in ("M", "F"):
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "partner_gender_required",
+                "message": "Please select Male or Female for your partner so the couples walkthrough renders correctly.",
+            },
+        )
     if normalized_partner_gender and payload.partner_email:
         intake_with_partner["partner_gender"] = normalized_partner_gender
     if payload.relationship_status:

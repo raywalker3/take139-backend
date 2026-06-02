@@ -34,6 +34,49 @@ def _first_name(sub, default="Spouse"):
     return full.split()[0]
 
 
+def _pronouns(sub, prefix: str) -> dict:
+    """Build a dict of pronoun substitutions for a given submission, keyed
+    under the writer's positional prefix (e.g. 'arch' or 'isle').
+
+    Returns keys: {prefix}_he, {prefix}_him, {prefix}_his, {prefix}_himself,
+    {prefix}_Pronoun (subject, capitalized), {prefix}_Possessive (capitalized).
+
+    Defaults to MALE forms when gender is missing/unknown — this is the
+    safest fallback because every existing walkthrough in this file was
+    originally written assuming the Architect is male. For non-male
+    Architects the gender field MUST be set; otherwise pronouns are wrong.
+    """
+    g = (getattr(sub, "gender", None) or "M").upper()
+    if g == "F":
+        return {
+            f"{prefix}_he": "she",
+            f"{prefix}_He": "She",
+            f"{prefix}_him": "her",
+            f"{prefix}_Him": "Her",
+            f"{prefix}_his": "her",
+            f"{prefix}_His": "Her",
+            f"{prefix}_himself": "herself",
+            f"{prefix}_Himself": "Herself",
+            f"{prefix}_man": "woman",
+            f"{prefix}_husband": "wife",
+            f"{prefix}_Husband": "Wife",
+        }
+    # default & 'M'
+    return {
+        f"{prefix}_he": "he",
+        f"{prefix}_He": "He",
+        f"{prefix}_him": "him",
+        f"{prefix}_Him": "Him",
+        f"{prefix}_his": "his",
+        f"{prefix}_His": "His",
+        f"{prefix}_himself": "himself",
+        f"{prefix}_Himself": "Himself",
+        f"{prefix}_man": "man",
+        f"{prefix}_husband": "husband",
+        f"{prefix}_Husband": "Husband",
+    }
+
+
 def _profile_card(S, name, accent, trigger, question, mechanism, breakdown):
     body = [
         Paragraph(name, S["ProfileCardName"]),
@@ -125,7 +168,7 @@ OPENING = [
     "Most marriages do not break on the large rocks. They break on the small repeating ones &mdash; the same disappointment in slightly different clothes, three or four times a week, year after year, until both people have forgotten what they were originally hoping for.",
     "What follows is a counselor's read of the small repeating rocks in your particular marriage. Not the dramatic failures, which you would have addressed already. The small ones. The ones that happen on a Tuesday at 5:40 in the kitchen and that neither of you would have thought to bring to a counselor because, by Wednesday, they have receded into the background of an otherwise good life.",
     "You are both reading this because you have decided to look at those rocks. That decision is more significant than it seems. Most couples spend a lifetime navigating around them without naming them. Naming them is half the work.",
-    "Here is what I want to do for you. I will name what each of you brings the other that you could not have built alone &mdash; the genuine, theological gift that your two shapes form together. Then I will name the collision your two questions create, in the specific way it shows up in your marriage. Then I will name the worst case &mdash; the moment when your Attorney and her Flood are in the room at the same time &mdash; and what to do then. Then I will hand each of you three commitments, not as rules, but as the kind of small daily practices that, over years, change the temperature of a home.",
+    "Here is what I want to do for you. I will name what each of you brings the other that you could not have built alone &mdash; the genuine, theological gift that your two shapes form together. Then I will name the collision your two questions create, in the specific way it shows up in your marriage. Then I will name the worst case &mdash; the moment when your Attorney and {isle_his} Flood are in the room at the same time &mdash; and what to do then. Then I will hand each of you three commitments, not as rules, but as the kind of small daily practices that, over years, change the temperature of a home.",
     "Read it together, if you can. If not, read it separately and then sit down with it. Argue with what does not fit. Stay with what does. The goal is not insight; the goal is a marriage in which the small repeating rocks become smaller, less repeating, and eventually a part of the landscape you can both laugh at.",
 ]
 
@@ -134,20 +177,20 @@ TWO_SHAPES_INTRO = [
 ]
 
 TWO_SHAPES_BODY = [
-    "{name_arch}, you are an <b>Architect</b> whose body reads disrespect as an alarm and whose deepest question is whether you are protected. You build structures because you believe, in your bones, that suffering is largely a function of insufficient planning. When the building fails, an <b>Attorney</b> takes the floor and begins to litigate &mdash; not to win an argument, but to prove he is safe.",
+    "{name_arch}, you are an <b>Architect</b> whose body reads disrespect as an alarm and whose deepest question is whether you are protected. You build structures because you believe, in your bones, that suffering is largely a function of insufficient planning. When the building fails, an <b>Attorney</b> takes the floor and begins to litigate &mdash; not to win an argument, but to prove {arch_he} is safe.",
     "{name_isle}, you are an <b>Island</b> whose body reads insignificance as an alarm and whose deepest question is whether you are significant. You have learned to be self-contained because containment, for you, is dignity &mdash; a refusal to spill yourself into rooms that have not asked for you. When the containment breaks, a <b>Flood</b> takes the floor and a week of unspoken weight comes out at once.",
     "Notice what these two profiles do <i>not</i> share, and notice what they actually share underneath. You are not asking the same question. One of you is asking <i>am I protected?</i> and the other is asking <i>am I significant?</i> &mdash; two questions that, in a marriage, are easy to mistake for each other and easy to fail to give each other.",
-    "But underneath the two questions is the same root. You are both people who have learned to live with a level of vigilance most of the world does not require. {name_arch} is vigilant about the perimeter; {name_isle} is vigilant about whether her presence in the room is actually wanted. Both of you, in different costumes, are asking <i>am I safe to be here, fully, as myself?</i>",
+    "But underneath the two questions is the same root. You are both people who have learned to live with a level of vigilance most of the world does not require. {name_arch} is vigilant about the perimeter; {name_isle} is vigilant about whether {isle_his} presence in the room is actually wanted. Both of you, in different costumes, are asking <i>am I safe to be here, fully, as myself?</i>",
     "This is not a coincidence. The Architect and the Island are, in fact, one of the more common pairings in marriages that last, and there is a reason. Each of you intuitively respects something in the other that most spouses would not understand. The Architect respects the right to an interior life. The Island respects the right to plan and prepare without being mocked for it. The friction between you is real, but the foundation is unusually good.",
 ]
 
 GIFT_TO_ARCH = [
-    "{name_isle} gives {name_arch} something almost no one else in his life is in a position to give: <b>a room that does not demand he be three meetings ahead.</b>",
-    "Most of the rooms {name_arch} walks into require the Architect to be working. People depend on him. Plans depend on him. The structures he has built keep functioning because he keeps building them. The Architect cannot rest in those rooms because the moment he does, something he has been holding will drop.",
-    "{name_isle}, by virtue of being an Island, is the rare room that does not require this of him. She does not need him to entertain her. She does not need him to manage her emotional weather. She does not, in most seasons, need him to anticipate her three moves ahead. The Island's self-containment, which to a different mechanism would feel like withholding, is to the Architect one of the few oases in his week.",
-    "The theological word for what {name_isle} gives {name_arch} is <i>sabbath.</i> Not the formal Sabbath of Sunday observance, but the small, recurring sabbaths of a marriage in which one person does not require the other to be performing. The Architect does not know how to rest because his job in every other room is to keep building. {name_isle}, simply by being who she is, gives him a room in which the building is allowed to stop.",
-    "{name_arch} &mdash; if you want to thank {name_isle} for something this week, thank her for this. She probably does not know she is giving it to you. Islands rarely know that their containment is a gift; they have been told often enough that it is a problem. Tell her that her ability to be near you without needing you to perform is one of the kindest things in your life. She will not know what to do with the compliment. Say it anyway.",
-    "{name_isle} &mdash; what {name_arch} is receiving from you, when you simply sit beside him without filling the air, is the closest thing he gets to rest most weeks. The thing in you that you have sometimes been told is too much alone, too quiet, too contained, is for him a kind of medicine.",
+    "{name_isle} gives {name_arch} something almost no one else in {arch_his} life is in a position to give: <b>a room that does not demand {arch_he} be three meetings ahead.</b>",
+    "Most of the rooms {name_arch} walks into require the Architect to be working. People depend on {arch_him}. Plans depend on {arch_him}. The structures {arch_he} has built keep functioning because {arch_he} keeps building them. The Architect cannot rest in those rooms because the moment {arch_he} does, something {arch_he} has been holding will drop.",
+    "{name_isle}, by virtue of being an Island, is the rare room that does not require this of {arch_him}. {isle_He} does not need {arch_him} to entertain {isle_him}. {isle_He} does not need {arch_him} to manage {isle_his} emotional weather. {isle_He} does not, in most seasons, need {arch_him} to anticipate {isle_his} three moves ahead. The Island's self-containment, which to a different mechanism would feel like withholding, is to the Architect one of the few oases in {arch_his} week.",
+    "The theological word for what {name_isle} gives {name_arch} is <i>sabbath.</i> Not the formal Sabbath of Sunday observance, but the small, recurring sabbaths of a marriage in which one person does not require the other to be performing. The Architect does not know how to rest because {arch_his} job in every other room is to keep building. {name_isle}, simply by being who {isle_he} is, gives {arch_him} a room in which the building is allowed to stop.",
+    "{name_arch} &mdash; if you want to thank {name_isle} for something this week, thank {isle_him} for this. {isle_He} probably does not know {isle_he} is giving it to you. Islands rarely know that their containment is a gift; they have been told often enough that it is a problem. Tell {isle_him} that {isle_his} ability to be near you without needing you to perform is one of the kindest things in your life. {isle_He} will not know what to do with the compliment. Say it anyway.",
+    "{name_isle} &mdash; what {name_arch} is receiving from you, when you simply sit beside {arch_him} without filling the air, is the closest thing {arch_he} gets to rest most weeks. The thing in you that you have sometimes been told is too much alone, too quiet, too contained, is for {arch_him} a kind of medicine.",
 ]
 
 GIFT_TO_ISLE = [
@@ -156,21 +199,21 @@ GIFT_TO_ISLE = [
     "The cost of this is rarely visible to the Island, and it is almost never named by anyone else. But the cost is real. Without a trellis, even the most beautiful vine begins, over years, to lie on the ground. The Island can live a remarkable interior life and still end up with an exterior life that does not match it &mdash; appointments missed, opportunities allowed to drift past, gifts that never quite found a way to be given.",
     "{name_arch}, by virtue of being an Architect, is constantly building the trellis you would have been unlikely to build for yourself. The fact that the schedule holds, that the calendar functions, that the structures are in place, that the contingencies are accounted for &mdash; this is not a small thing. It is the trellis on which your life can grow without you having to admit that you needed one.",
     "There is a theological word for what {name_arch} gives {name_isle}, too. It is <i>covering.</i> Not the patriarchal covering that has been used badly in many marriages, but the older biblical sense of one person standing in front of the weather so the other can grow. Paul writes that husbands are to love their wives as Christ loved the church &mdash; and the love of Christ for his church is often, in Scripture, the love of a builder for what he is building. {name_arch} loves you by building.",
-    "{name_isle} &mdash; if you want to thank {name_arch} for something this week, thank him for this. Most weeks you will not feel the trellis, because trellises that work are invisible. Thank him for one specific thing he built that you did not have to build yourself. He will not know what to do with the compliment. Say it anyway.",
-    "{name_arch} &mdash; what {name_isle} is receiving from you, when you simply hold the calendar and the contingencies and the long view, is the freedom to live an interior life without paying the full external cost of doing so. The thing in you that has sometimes been told it is too much planning, too much vigilance, is for her a kind of covering.",
+    "{name_isle} &mdash; if you want to thank {name_arch} for something this week, thank {arch_him} for this. Most weeks you will not feel the trellis, because trellises that work are invisible. Thank {arch_him} for one specific thing {arch_he} built that you did not have to build yourself. {arch_He} will not know what to do with the compliment. Say it anyway.",
+    "{name_arch} &mdash; what {name_isle} is receiving from you, when you simply hold the calendar and the contingencies and the long view, is the freedom to live an interior life without paying the full external cost of doing so. The thing in you that has sometimes been told it is too much planning, too much vigilance, is for {isle_him} a kind of covering.",
 ]
 
 COLLISION = [
     "Now we come to the small repeating rock. It will be familiar to both of you, even if you have not named it.",
     "{name_arch}'s core question is <i>am I protected?</i> {name_isle}'s is <i>am I significant?</i> These two questions are not opposed in theory. In the daily mechanics of a marriage, they ask for different things, and the asking often misfires.",
-    "Protection wants reliability, structure, predictability. When {name_arch} is trying to feel protected, he reaches for systems: the schedule, the plan, the list, the contingency. The way the Architect loves you, {name_isle}, is by securing the next three rooms before either of you walks into them. To {name_arch}, this is love. He is, in his own grammar, putting his arms around the family.",
-    "Significance wants attention, weight, the felt sense of being seen as a singular person rather than as a function. When {name_isle} is trying to feel significant, she does not reach for systems &mdash; she reaches for a moment in which she is unmistakably the subject of someone's attention, not the object of someone's management. To {name_isle}, the felt sense of being administered &mdash; even kindly, even efficiently &mdash; is not protection. It is a kind of erasure.",
-    "Here is the collision in slow motion. {name_arch}, in trying to protect the family on a Tuesday evening, treats {name_isle} as a piece of the system he is securing &mdash; the dinner that needs to be timed, the kid that needs to be picked up, the calendar item that needs to be confirmed. He is, in his mind, loving her by holding the perimeter. She experiences it as being addressed as a function rather than as a person. Her trigger fires: <i>insignificance.</i>",
-    "She does not say so. Islands do not say so. Instead, she withdraws into the Island's self-containment &mdash; she goes quiet, becomes briefer in her responses, retreats into her interior life. To {name_arch}, this withdrawal does not read as <i>she is hurt.</i> It reads as <i>she is disregarding me.</i> His trigger fires: <i>disrespect.</i> The Architect doubles down on the systems, because more building is the only answer the Architect knows. The Island withdraws further, because more containment is the only answer the Island knows. Within twenty minutes, neither of you can remember what started it. Both of you are quietly convinced you are the one who has been wronged.",
+    "Protection wants reliability, structure, predictability. When {name_arch} is trying to feel protected, {arch_he} reaches for systems: the schedule, the plan, the list, the contingency. The way the Architect loves you, {name_isle}, is by securing the next three rooms before either of you walks into them. To {name_arch}, this is love. {arch_He} is, in {arch_his} own grammar, putting {arch_his} arms around the family.",
+    "Significance wants attention, weight, the felt sense of being seen as a singular person rather than as a function. When {name_isle} is trying to feel significant, {isle_he} does not reach for systems &mdash; {isle_he} reaches for a moment in which {isle_he} is unmistakably the subject of someone's attention, not the object of someone's management. To {name_isle}, the felt sense of being administered &mdash; even kindly, even efficiently &mdash; is not protection. It is a kind of erasure.",
+    "Here is the collision in slow motion. {name_arch}, in trying to protect the family on a Tuesday evening, treats {name_isle} as a piece of the system {arch_he} is securing &mdash; the dinner that needs to be timed, the kid that needs to be picked up, the calendar item that needs to be confirmed. {arch_He} is, in {arch_his} mind, loving {isle_him} by holding the perimeter. {isle_He} experiences it as being addressed as a function rather than as a person. {isle_His} trigger fires: <i>insignificance.</i>",
+    "{isle_He} does not say so. Islands do not say so. Instead, {isle_he} withdraws into the Island's self-containment &mdash; {isle_he} goes quiet, becomes briefer in {isle_his} responses, retreats into {isle_his} interior life. To {name_arch}, this withdrawal does not read as <i>{isle_he} is hurt.</i> It reads as <i>{isle_he} is disregarding me.</i> {arch_His} trigger fires: <i>disrespect.</i> The Architect doubles down on the systems, because more building is the only answer the Architect knows. The Island withdraws further, because more containment is the only answer the Island knows. Within twenty minutes, neither of you can remember what started it. Both of you are quietly convinced you are the one who has been wronged.",
     "This is not a moral failure on either side. It is the predictable arithmetic of two profiles whose alarms misread each other's love language. You are both, in your own grammar, trying to love. You are both, in the other's grammar, getting it slightly wrong.",
     "The way out is not for either of you to stop being who you are. The Architect is not going to stop building, and shouldn't. The Island is not going to stop containing, and shouldn't. The way out is for each of you to learn the other's grammar well enough to translate, in real time, what is actually happening.",
-    "{name_arch}, when {name_isle} goes quiet, the translation is almost never <i>she is disregarding me.</i> Nine times out of ten, the translation is <i>she just got administered when she needed to be seen.</i> The right move, when you notice the quiet, is not to litigate. It is to set down the calendar for sixty seconds and look at her as a person rather than a node in your system. Ask her one direct question that has nothing to do with logistics. The Island will not always answer immediately &mdash; she may need a beat &mdash; but she will register the gesture, and the trigger will start to recede.",
-    "{name_isle}, when {name_arch} goes into Architect mode at the end of a long day, the translation is almost never <i>he does not care about me.</i> Nine times out of ten, the translation is <i>he is afraid the perimeter will fail and is loving us the only way he knows how.</i> The right move, when you feel administered, is not to withdraw immediately. It is to name what just happened in one sentence &mdash; <i>I need a minute as a person, not as the next item</i> &mdash; and then to let him course-correct. He will. The Architect respects directness; what he cannot read is silence.",
+    "{name_arch}, when {name_isle} goes quiet, the translation is almost never <i>{isle_he} is disregarding me.</i> Nine times out of ten, the translation is <i>{isle_he} just got administered when {isle_he} needed to be seen.</i> The right move, when you notice the quiet, is not to litigate. It is to set down the calendar for sixty seconds and look at {isle_him} as a person rather than a node in your system. Ask {isle_him} one direct question that has nothing to do with logistics. The Island will not always answer immediately &mdash; {isle_he} may need a beat &mdash; but {isle_he} will register the gesture, and the trigger will start to recede.",
+    "{name_isle}, when {name_arch} goes into Architect mode at the end of a long day, the translation is almost never <i>{arch_he} does not care about me.</i> Nine times out of ten, the translation is <i>{arch_he} is afraid the perimeter will fail and is loving us the only way {arch_he} knows how.</i> The right move, when you feel administered, is not to withdraw immediately. It is to name what just happened in one sentence &mdash; <i>I need a minute as a person, not as the next item</i> &mdash; and then to let {arch_him} course-correct. {arch_He} will. The Architect respects directness; what {arch_he} cannot read is silence.",
 ]
 
 BOTH_BREAK = [
@@ -264,8 +307,8 @@ ROUND_6 = [
 ]
 
 
-def _render(text, name_arch, name_isle):
-    return text.format(name_arch=name_arch, name_isle=name_isle)
+def _render(text, **subs):
+    return text.format(**subs)
 
 
 def build(sub_arch, sub_isle) -> bytes:
@@ -280,8 +323,25 @@ def build(sub_arch, sub_isle) -> bytes:
     name_arch = _first_name(sub_arch, "Architect")
     name_isle = _first_name(sub_isle, "Island")
 
+    # Build the full substitution dict: names + pronouns for each spouse.
+    subs = {"name_arch": name_arch, "name_isle": name_isle}
+    subs.update(_pronouns(sub_arch, "arch"))
+    subs.update(_pronouns(sub_isle, "isle"))
+
+    # Section three / four headings depend on the Island spouse's gender:
+    # "HER gift to HIM" when Island=F, "HIS gift to HIM" when Island=M.
+    # Spelled out by combining each side's possessive + object pronouns.
+    isle_poss_upper = subs["isle_His"].upper()   # 'HER' or 'HIS'
+    arch_obj_upper  = subs["arch_him"].upper()   # 'HIM' or 'HER'
+    arch_poss_upper = subs["arch_His"].upper()
+    isle_obj_upper  = subs["isle_him"].upper()
+
+    # Per-spouse "in {his/her} life" possessive (used in subheadings)
+    arch_life_poss = subs["arch_his"]   # 'his' or 'her'
+    isle_life_poss = subs["isle_his"]
+
     def R(text):
-        return _render(text, name_arch, name_isle)
+        return _render(text, **subs)
 
     doc, buf = make_doc(
         brand_text="Take 139  \u00b7  A Couples Walkthrough",
@@ -374,15 +434,15 @@ def build(sub_arch, sub_isle) -> bytes:
     story.append(PageBreak())
 
     # ── SECTION 3 ──
-    section_header(story, S, "SECTION THREE  \u00b7  HER GIFT TO HIM",
+    section_header(story, S, f"SECTION THREE  \u00b7  {isle_poss_upper} GIFT TO {arch_obj_upper}",
                    f"What {name_isle} gives {name_arch}.",
-                   "Something almost no one else in his life is in a position to give.")
+                   f"Something almost no one else in {arch_life_poss} life is in a position to give.")
     for p in GIFT_TO_ARCH:
         story.append(Paragraph(R(p), S["BodyJ"]))
     story.append(PageBreak())
 
     # ── SECTION 4 ──
-    section_header(story, S, "SECTION FOUR  \u00b7  HIS GIFT TO HER",
+    section_header(story, S, f"SECTION FOUR  \u00b7  {arch_poss_upper} GIFT TO {isle_obj_upper}",
                    f"What {name_arch} gives {name_isle}.",
                    "Something Islands rarely build for themselves.")
     for p in GIFT_TO_ISLE:
@@ -435,7 +495,7 @@ def build(sub_arch, sub_isle) -> bytes:
     story.append(PageBreak())
     section_header(story, S, "SECTION SEVEN  \u00b7  CONTINUED",
                    f"From {name_isle}, to {name_arch}.",
-                   f"Three commitments, in her voice, for him to receive.")
+                   f"Three commitments, in {subs['isle_his']} voice, for {arch_obj_upper.lower()} to receive.")
     story.append(Paragraph(f"FROM {name_isle.upper()}, TO {name_arch.upper()}", S["CommitLabelHer"]))
     story.append(HRFlowable(width="30%", thickness=0.6, color=ACCENT_HER,
                             hAlign="LEFT", spaceBefore=2, spaceAfter=10))
