@@ -219,7 +219,17 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     # bypassed or a stale client is calling /submit. Refuse to render
     # the report so we never produce another walkthrough that calls
     # someone by their archetype instead of their actual name.
-    finalize_name = (payload.name or "").strip()
+    # Light cleanup of how the name was typed.
+    # - Trim whitespace
+    # - If user typed ALL lowercase or ALL UPPERCASE, title-case it (so
+    #   'charlie' → 'Charlie', 'CHARLIE' → 'Charlie'). If they typed it
+    #   correctly mixed-case (e.g. 'McCready', 'al-Hassan'), leave it.
+    _raw_name = (payload.name or "").strip()
+    if _raw_name and (_raw_name == _raw_name.lower() or _raw_name == _raw_name.upper()):
+        # Title-case each whitespace-separated token, preserving simple
+        # particle-style names (we just call .title() — the common case).
+        _raw_name = _raw_name.title()
+    finalize_name = _raw_name
     finalize_email = (payload.email or "").strip().lower() if payload.email else ""
     if not finalize_name or not finalize_email:
         raise HTTPException(
@@ -557,8 +567,18 @@ def connect_pair(payload: PairConnectIn, db: Session = Depends(get_db)):
     if my_code == partner_code:
         raise HTTPException(status_code=400, detail="You cannot pair with yourself")
 
-    me = db.query(Submission).filter(Submission.pair_code == my_code).first()
-    partner = db.query(Submission).filter(Submission.pair_code == partner_code).first()
+    me = (
+        db.query(Submission)
+          .filter(Submission.pair_code == my_code)
+          .filter(Submission.archived_at.is_(None))
+          .first()
+    )
+    partner = (
+        db.query(Submission)
+          .filter(Submission.pair_code == partner_code)
+          .filter(Submission.archived_at.is_(None))
+          .first()
+    )
     if me is None or partner is None:
         raise HTTPException(status_code=404, detail="One or both codes not found")
 
@@ -1224,7 +1244,12 @@ def pair_auto_detect(my_pair_code: str, db: Session = Depends(get_db)):
     if not my_pair_code:
         raise HTTPException(status_code=400, detail="pair code required")
 
-    me = db.query(Submission).filter(Submission.pair_code == my_pair_code).first()
+    me = (
+        db.query(Submission)
+          .filter(Submission.pair_code == my_pair_code)
+          .filter(Submission.archived_at.is_(None))
+          .first()
+    )
     if me is None:
         raise HTTPException(status_code=404, detail="submission not found")
 
@@ -1246,6 +1271,7 @@ def pair_auto_detect(my_pair_code: str, db: Session = Depends(get_db)):
         partner_sub = (
             db.query(Submission)
               .filter(Submission.pair_code == me.paired_with_code)
+              .filter(Submission.archived_at.is_(None))
               .first()
         )
         result["partner_pair_code"] = me.paired_with_code
@@ -1280,9 +1306,12 @@ def pair_auto_detect(my_pair_code: str, db: Session = Depends(get_db)):
             return result
 
         # Sibling was redeemed — has the partner completed an assessment?
+        # Use the MOST RECENT non-archived submission (handles retakes
+        # cleanly: an old archived submission won't be auto-paired).
         partner_sub = (
             db.query(Submission)
               .filter(Submission.access_code_used == sibling_access_code)
+              .filter(Submission.archived_at.is_(None))
               .order_by(Submission.created_at.desc())
               .first()
         )
@@ -2678,6 +2707,133 @@ def admin_backfill_submission_names(
         "errors": errors,
         "fixed": fixed,
         "skipped": skipped,
+    }
+
+
+# ─── Admin: normalize all-lower/all-UPPER names + backfill genders ──────────
+class NormalizeNamesAndGendersIn(BaseModel):
+    """Optional dict of email → gender ('M' | 'F' | 'X') the caller can pass
+    in to seed genders for known users. We also apply some heuristics from
+    the first name itself when no override is given (very common Anglo names
+    only — anything ambiguous is skipped; admin can override later).
+    """
+    gender_overrides: dict = Field(default_factory=dict)
+    dry_run: bool = False
+
+
+# Conservative first-name → gender table for backfill. Anything ambiguous
+# (Jordan, Taylor, Casey, Avery, Charlie, ...) is intentionally NOT here
+# — admin should pass an override for those rather than us guessing.
+_FIRST_NAME_GENDER = {
+    # Common male first names (Anglo)
+    "chris": "M", "christopher": "M", "michael": "M", "david": "M",
+    "matthew": "M", "mark": "M", "luke": "M", "john": "M", "james": "M",
+    "daniel": "M", "andrew": "M", "joshua": "M", "jacob": "M", "joseph": "M",
+    "paul": "M", "peter": "M", "stephen": "M", "steven": "M", "timothy": "M",
+    "thomas": "M", "benjamin": "M", "samuel": "M", "william": "M",
+    "robert": "M", "richard": "M", "ryan": "M", "sean": "M", "seth": "M",
+    "nathan": "M", "nathaniel": "M", "caleb": "M", "isaac": "M", "aaron": "M",
+    "adam": "M", "ethan": "M", "noah": "M", "liam": "M", "jeremy": "M",
+    "jonathan": "M", "jeremiah": "M", "micah": "M", "eli": "M", "levi": "M",
+    # Common female first names (Anglo)
+    "sarah": "F", "mary": "F", "rachel": "F", "rebecca": "F", "hannah": "F",
+    "esther": "F", "ruth": "F", "abigail": "F", "leah": "F", "miriam": "F",
+    "deborah": "F", "naomi": "F", "anna": "F", "elizabeth": "F",
+    "emily": "F", "emma": "F", "olivia": "F", "ava": "F", "sophia": "F",
+    "jessica": "F", "jennifer": "F", "katherine": "F", "catherine": "F",
+    "kate": "F", "caitlin": "F", "caroline": "F", "carolyn": "F",
+    "victoria": "F", "madeline": "F", "madeleine": "F", "natalie": "F",
+    "lydia": "F", "phoebe": "F", "chloe": "F", "grace": "F", "hope": "F",
+    "faith": "F", "joy": "F", "paige": "F", "sophie": "F", "susan": "F",
+    "laura": "F", "lauren": "F", "megan": "F", "michelle": "F",
+    "amanda": "F", "amy": "F", "jenna": "F", "jen": "F", "melissa": "F",
+}
+
+
+@app.post("/admin/normalize-names-and-backfill-genders")
+def admin_normalize_names_and_backfill_genders(
+    payload: NormalizeNamesAndGendersIn,
+    db: Session = Depends(get_db),
+    _: None = _Depends(admin_auth.require_admin),
+):
+    """Two things in one pass over every Submission row:
+
+    1. NAME NORMALIZATION — if Submission.name is all-lowercase ('charlie')
+       or all-UPPERCASE ('CHARLIE'), title-case it. Names with mixed case
+       (like 'McCready') are left untouched.
+    2. GENDER BACKFILL — if Submission.gender is NULL, try:
+         (a) explicit override from payload.gender_overrides[email]
+         (b) the first-name table above
+       Skip silently if neither resolves.
+
+    Returns full report. dry_run=True previews without writing.
+    """
+    overrides = {
+        (k or "").strip().lower(): _normalize_gender(v)
+        for k, v in (payload.gender_overrides or {}).items()
+    }
+
+    name_changes = []
+    gender_changes = []
+    untouched = 0
+
+    rows = db.query(Submission).all()
+    for sub in rows:
+        changed_this_row = False
+
+        # 1. Name case normalization
+        raw = (sub.name or "").strip()
+        if raw and (raw == raw.lower() or raw == raw.upper()):
+            new_name = raw.title()
+            if new_name != raw:
+                name_changes.append({
+                    "pair_code": sub.pair_code,
+                    "old": raw,
+                    "new": new_name,
+                })
+                if not payload.dry_run:
+                    sub.name = new_name
+                changed_this_row = True
+
+        # 2. Gender backfill
+        if not getattr(sub, "gender", None):
+            chosen = None
+            email_key = (sub.email or "").strip().lower()
+            if email_key in overrides and overrides[email_key]:
+                chosen = overrides[email_key]
+                src = "override"
+            else:
+                first = (sub.name or "").strip().split()[0:1]
+                if first:
+                    guess = _FIRST_NAME_GENDER.get(first[0].lower())
+                    if guess:
+                        chosen = guess
+                        src = "first_name_table"
+            if chosen:
+                gender_changes.append({
+                    "pair_code": sub.pair_code,
+                    "name": sub.name,
+                    "email": sub.email,
+                    "gender": chosen,
+                    "source": src,
+                })
+                if not payload.dry_run:
+                    sub.gender = chosen
+                changed_this_row = True
+
+        if not changed_this_row:
+            untouched += 1
+
+    if not payload.dry_run:
+        db.commit()
+
+    return {
+        "ok": True,
+        "dry_run": payload.dry_run,
+        "total_submissions": len(rows),
+        "name_changes": name_changes,
+        "gender_changes": gender_changes,
+        "untouched": untouched,
     }
 
 

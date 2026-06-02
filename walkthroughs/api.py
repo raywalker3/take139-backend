@@ -18,41 +18,6 @@ from .base import ensure_fonts
 from .personal import PERSONAL_REGISTRY
 from .couples import COUPLES_REGISTRY
 from .fallback import build_personal_fallback, build_couples_fallback
-from .couples_neutral import build_neutral_couples_walkthrough
-
-
-# Which gender combination does each gendered pair file assume?
-# Values are (gender_of_first_position, gender_of_second_position) in the
-# registry key's order. If the actual pair doesn't match this, we route to
-# the gender-neutral walkthrough instead so we never email someone a PDF
-# where the prose calls them "he" when they are "she".
-#
-# All current pair files were written with male+female assumptions. As
-# rewrites land, this table is what we update — set to None for any pair
-# whose prose has been made gender-aware.
-GENDER_ASSUMPTION = {
-    ("ARCH", "ARCH"):  None,         # same-mechanism; prose is symmetric
-    ("ARCH", "ISLE"):  ("M", "F"),   # Architect=M, Island=F (Chris+Carolyn)
-    ("ARCH", "AMB"):   ("M", "F"),
-    ("ARCH", "VAULT"): ("M", "F"),
-    ("ARCH", "ADPT"):  ("M", "F"),
-    ("ARCH", "CAMP"):  ("M", "F"),
-    ("ISLE", "ISLE"):  None,
-    ("AMB", "ISLE"):   ("M", "F"),
-    ("ISLE", "VAULT"): ("M", "F"),  # Note: writer's positional choice may vary
-    ("ADPT", "ISLE"):  ("M", "F"),
-    ("ISLE", "CAMP"):  ("M", "F"),
-    ("AMB", "AMB"):    None,
-    ("AMB", "VAULT"):  ("M", "F"),
-    ("ADPT", "AMB"):   ("M", "F"),
-    ("AMB", "CAMP"):   ("M", "F"),
-    ("VAULT", "VAULT"): None,
-    ("ADPT", "VAULT"): ("M", "F"),
-    ("CAMP", "VAULT"): ("M", "F"),
-    ("ADPT", "ADPT"):  None,
-    ("ADPT", "CAMP"):  ("M", "F"),
-    ("CAMP", "CAMP"):  None,
-}
 
 
 def _hydrate_submission_name(submission, db=None) -> None:
@@ -177,33 +142,18 @@ def build_personal_walkthrough(submission, db=None) -> bytes:
     return builder(submission)
 
 
-def _gender_match(actual: tuple, assumed: tuple) -> bool:
-    """True iff the actual gender pair matches the assumed pair exactly.
-
-    Both partners must have a known gender ('M' or 'F'). If either side is
-    None, 'X', or anything else, we say no — and route to neutral.
-    """
-    if not assumed:
-        return False  # safe default: no assumption known
-    g_a, g_b = actual
-    if g_a not in ("M", "F") or g_b not in ("M", "F"):
-        return False
-    return (g_a, g_b) == assumed
-
-
 def build_couples_walkthrough(sub_a, sub_b, db=None) -> bytes:
     """Generate the couples walkthrough PDF for a paired submission.
 
-    Routing logic:
-      1. If both partners have known genders matching the writer's assumed
-         gender combo, use the specific gendered walkthrough.
-      2. Otherwise (any unknown gender, same-mechanism, or gender combo that
-         doesn't match the prose), use the gender-neutral walkthrough.
-      3. If we don't have either (no mechanism keys at all), fall through to
-         the 'in preparation' fallback.
+    Original routing (restored 2026-06-02 after a course correction):
+    try (mech_a, mech_b); on miss try (mech_b, mech_a) with swap; if
+    neither is in the registry, use the friendly fallback PDF.
 
-    Pass `db` (a SQLAlchemy session) so we can resolve real first names for
-    both partners when Submission.name is blank.
+    Gender awareness now happens INSIDE each pair file via pronouns built
+    from sub.gender — the writer's prose is preserved; only pronouns swap.
+
+    Pass `db` (a SQLAlchemy session) so we can resolve real first names
+    for both partners when Submission.name is blank.
     """
     ensure_fonts()
     _hydrate_submission_name(sub_a, db)
@@ -211,42 +161,14 @@ def build_couples_walkthrough(sub_a, sub_b, db=None) -> bytes:
     mech_a = _normalize_mechanism(sub_a.primary_mechanism)
     mech_b = _normalize_mechanism(sub_b.primary_mechanism)
 
-    g_a = (getattr(sub_a, "gender", None) or "").upper() or None
-    g_b = (getattr(sub_b, "gender", None) or "").upper() or None
+    builder = COUPLES_REGISTRY.get((mech_a, mech_b))
+    if builder:
+        return builder(sub_a, sub_b)
+    builder = COUPLES_REGISTRY.get((mech_b, mech_a))
+    if builder:
+        return builder(sub_b, sub_a)  # swap to match writer's ordering
 
-    # Same-mechanism pairs have no gender assumption — prose is symmetric
-    # for those, so we use the gendered file for any combo.
-    if mech_a == mech_b:
-        builder = COUPLES_REGISTRY.get((mech_a, mech_b))
-        if builder:
-            return builder(sub_a, sub_b)
-        return build_neutral_couples_walkthrough(sub_a, sub_b)
-
-    # Cross-mechanism: check both registry orderings, gate on gender match
-    key_ab = (mech_a, mech_b)
-    key_ba = (mech_b, mech_a)
-
-    if key_ab in COUPLES_REGISTRY:
-        assumed = GENDER_ASSUMPTION.get(key_ab)
-        # If assumption is None, the writer has marked the file as fully
-        # gender-aware; use it for any combo.
-        if assumed is None or _gender_match((g_a, g_b), assumed):
-            return COUPLES_REGISTRY[key_ab](sub_a, sub_b)
-
-    if key_ba in COUPLES_REGISTRY:
-        assumed = GENDER_ASSUMPTION.get(key_ba)
-        # Note: in the swapped case, sub_b takes the first position in the
-        # writer's file, so the gender check is (g_b, g_a).
-        if assumed is None or _gender_match((g_b, g_a), assumed):
-            return COUPLES_REGISTRY[key_ba](sub_b, sub_a)
-
-    # We have a written walkthrough but the gender combo doesn't match.
-    # Use the substantive neutral version, NOT the 'coming soon' fallback.
-    print(
-        f"[COUPLES WALKTHROUGH] Routing to neutral for ({mech_a}, {mech_b}) "
-        f"with genders ({g_a}, {g_b}). Writer's assumption didn't match."
-    )
-    return build_neutral_couples_walkthrough(sub_a, sub_b)
+    return build_couples_fallback(sub_a, sub_b)
 
 
 def has_personal_writeup(submission) -> bool:
