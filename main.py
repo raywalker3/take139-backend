@@ -93,6 +93,25 @@ class TriggerScores(BaseModel):
     SIG: float = 0
 
 
+def _normalize_gender(g) -> Optional[str]:
+    """Map any frontend gender value to canonical 'M' | 'F' | 'X' | None.
+
+    Accepts: 'M', 'F', 'X', 'male', 'female', 'man', 'woman', 'other',
+    'non-binary', 'nb', 'prefer not to say', etc. Returns None on empty input.
+    """
+    if g is None:
+        return None
+    s = str(g).strip().lower()
+    if not s:
+        return None
+    if s in ("m", "male", "man", "husband", "boy"):
+        return "M"
+    if s in ("f", "female", "woman", "wife", "girl"):
+        return "F"
+    # Anything else → unspecified (we'll route to gender-neutral fallback)
+    return "X"
+
+
 class SubmissionIn(BaseModel):
     """Payload the frontend sends when someone finishes the assessment.
 
@@ -104,10 +123,17 @@ class SubmissionIn(BaseModel):
     """
     name: Optional[str] = Field(None, max_length=200)
     email: Optional[EmailStr] = None
+    # Gender captured at intake — 'M' | 'F' | 'X' (unspecified). Frontends
+    # may send 'male'/'female'/'other' too; we normalize in the handler.
+    gender: Optional[str] = Field(None, max_length=20)
+    birthdate: Optional[str] = Field(None, max_length=20)
+    relationship_status: Optional[str] = Field(None, max_length=40)
     # Partner's email — collected at the finalize gate ONLY when the
     # access code is a Couple code. Stored in intake_json under the key
     # 'partner_email' so we can later match a future signup to this pair.
     partner_email: Optional[EmailStr] = None
+    # Partner's gender (couple flow): 'M' | 'F' | 'X'.
+    partner_gender: Optional[str] = Field(None, max_length=20)
     access_code_used: Optional[str] = None
 
     # Intake — home description, family structure, etc.
@@ -207,10 +233,21 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
         intake_with_partner["partner_email"] = str(payload.partner_email).strip().lower()
 
     # Store
+    # Normalize gender input from a variety of frontend shapes.
+    normalized_gender = _normalize_gender(payload.gender)
+    normalized_partner_gender = _normalize_gender(payload.partner_gender)
+    if normalized_partner_gender and payload.partner_email:
+        intake_with_partner["partner_gender"] = normalized_partner_gender
+    if payload.relationship_status:
+        intake_with_partner["relationship_status"] = payload.relationship_status
+
     sub = Submission(
         pair_code=pair_code,
         name=finalize_name,
         email=finalize_email,
+        gender=normalized_gender,
+        birthdate=payload.birthdate,
+        relationship_status=payload.relationship_status,
         access_code_used=payload.access_code_used,
         intake_json=json.dumps(intake_with_partner),
         answers_json=json.dumps(payload.answers),
@@ -340,6 +377,42 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
             # Code marking failed but submission succeeded — log, don't fail user.
             print(f"[CODE CONSUME ERROR] {e}")
 
+    # ─── Auto-invite the partner if this was a Couple Package + partner email ───
+    # Fires only when:
+    #   - The buyer's access code looks like COUPLE-XXXXX-A or COUPLE-XXXXX-B
+    #   - The buyer supplied a partner_email at the finalize gate
+    #   - The sibling code exists and is still active (not yet redeemed)
+    # We never re-send if the partner has already submitted.
+    try:
+        if (
+            payload.partner_email
+            and payload.access_code_used
+            and payload.access_code_used.upper().startswith("COUPLE-")
+            and payload.access_code_used.upper().endswith(("-A", "-B"))
+        ):
+            sibling_letter = "B" if payload.access_code_used.upper().endswith("-A") else "A"
+            sibling_code = payload.access_code_used.upper()[:-1] + sibling_letter
+            sibling_row = db.query(AccessCode).filter(AccessCode.code == sibling_code).first()
+            already_used = (
+                db.query(Submission)
+                .filter(Submission.access_code_used == sibling_code)
+                .first()
+            )
+            if sibling_row is not None and already_used is None:
+                from email_service import send_partner_invitation
+                send_partner_invitation(
+                    to_email=str(payload.partner_email),
+                    partner_name="",  # we don't know it yet — partner enters at their own finalize gate
+                    buyer_name=(payload.name or "").strip() or "Your partner",
+                    access_code=sibling_code,
+                    relationship=payload.relationship_status or "",
+                    frontend_url=os.environ.get("FRONTEND_URL", "https://take139.com"),
+                )
+                print(f"[PARTNER INVITE] Sent {sibling_code} to {payload.partner_email}")
+    except Exception as e:
+        # Non-fatal — buyer's own report is unaffected.
+        print(f"[PARTNER INVITE ERROR] {e}")
+
     # ─── Auto-issue a session so the user is signed in to their dashboard ───
     # The User row was already get_or_create'd higher up in the handler.
     # Mint a fresh session token so the frontend can drop the user straight
@@ -414,6 +487,7 @@ def _scored_summary(sub: Submission) -> dict:
     return {
         "pair_code": sub.pair_code,
         "name": sub.name or "Your partner",
+        "gender": getattr(sub, "gender", None),
         "primary_trigger": sub.primary_trigger,
         "primary_core_question": sub.primary_core_question,
         "primary_mechanism": sub.primary_mechanism,
@@ -439,6 +513,8 @@ def get_pair_profile(code: str, db: Session = Depends(get_db)):
 
     sub = db.query(Submission).filter(Submission.pair_code == code).first()
     if sub is None:
+        raise HTTPException(status_code=404, detail="Pair code not found")
+    if getattr(sub, "archived_at", None):
         raise HTTPException(status_code=404, detail="Pair code not found")
 
     # 30-day expiration
@@ -558,6 +634,7 @@ def _submissions_for_email(db: Session, email: str) -> list:
     direct = (
         db.query(Submission)
         .filter(Submission.email == e)
+        .filter(Submission.archived_at.is_(None))
         .order_by(Submission.created_at.desc())
         .all()
     )
@@ -2604,6 +2681,189 @@ def admin_backfill_submission_names(
     }
 
 
+# ─── Admin: diagnose a couple-pair (forensics) ──────────────────────
+@app.get("/admin/diagnose-pair/{code_a}/{code_b}")
+def admin_diagnose_pair(
+    code_a: str,
+    code_b: str,
+    _: None = _Depends(admin_auth.require_admin),
+    db: Session = Depends(get_db),
+):
+    """Dump full DB state for two pair codes and any CouplePair row that
+    connects them. Used to diagnose 'my couples report is wrong' reports.
+
+    Returns:
+      - submission_a / submission_b: name, email, gender, results, access code,
+        paired_with_code, created_at, etc.
+      - couple_pair: any active or archived CouplePair row binding the two
+      - mismatches: any data that looks inconsistent
+    """
+    a = (code_a or "").strip().upper()
+    b = (code_b or "").strip().upper()
+
+    def _serialize(sub):
+        if sub is None:
+            return None
+        return {
+            "id": sub.id,
+            "pair_code": sub.pair_code,
+            "name": sub.name,
+            "email": sub.email,
+            "gender": getattr(sub, "gender", None),
+            "primary_trigger": sub.primary_trigger,
+            "primary_core_question": sub.primary_core_question,
+            "primary_mechanism": sub.primary_mechanism,
+            "primary_breakdown": sub.primary_breakdown,
+            "access_code_used": sub.access_code_used,
+            "paired_with_code": sub.paired_with_code,
+            "paired_at": sub.paired_at.isoformat() if sub.paired_at else None,
+            "created_at": sub.created_at.isoformat() if sub.created_at else None,
+            "results_json": json.loads(sub.results_json) if sub.results_json else None,
+        }
+
+    sub_a = db.query(Submission).filter(Submission.pair_code == a).first()
+    sub_b = db.query(Submission).filter(Submission.pair_code == b).first()
+
+    cp = (
+        db.query(CouplePair)
+        .filter(
+            ((CouplePair.pair_code_a == a) & (CouplePair.pair_code_b == b))
+            | ((CouplePair.pair_code_a == b) & (CouplePair.pair_code_b == a))
+        )
+        .all()
+    )
+
+    # Also look up ALL submissions for both emails — if a user re-took,
+    # the duplicate-results bug is most likely here.
+    all_subs_a, all_subs_b = [], []
+    if sub_a and sub_a.email:
+        rows = (
+            db.query(Submission)
+            .filter(Submission.email == sub_a.email)
+            .order_by(Submission.created_at.desc())
+            .all()
+        )
+        all_subs_a = [_serialize(r) for r in rows]
+    if sub_b and sub_b.email:
+        rows = (
+            db.query(Submission)
+            .filter(Submission.email == sub_b.email)
+            .order_by(Submission.created_at.desc())
+            .all()
+        )
+        all_subs_b = [_serialize(r) for r in rows]
+
+    # Mismatch checks
+    mismatches = []
+    if sub_a and sub_b:
+        if sub_a.primary_mechanism == sub_b.primary_mechanism and sub_a.primary_breakdown == sub_b.primary_breakdown and sub_a.primary_trigger == sub_b.primary_trigger:
+            mismatches.append({
+                "kind": "identical_profile",
+                "detail": (
+                    "Both submissions have IDENTICAL primary_trigger, mechanism, and "
+                    "breakdown. This usually means one user's data overwrote the other, "
+                    "or one user took the assessment twice using both access codes."
+                ),
+            })
+        if sub_a.email and sub_a.email == sub_b.email:
+            mismatches.append({
+                "kind": "same_email_both_sides",
+                "detail": f"Both submissions belong to the same email: {sub_a.email}",
+            })
+        if sub_a.access_code_used == sub_b.access_code_used:
+            mismatches.append({
+                "kind": "same_access_code",
+                "detail": f"Both submissions used the same access code: {sub_a.access_code_used}",
+            })
+        # Cross-checks against paired_with_code
+        if sub_a.paired_with_code and sub_a.paired_with_code != b:
+            mismatches.append({
+                "kind": "a_paired_elsewhere",
+                "detail": f"Submission A's paired_with_code is {sub_a.paired_with_code}, not {b}.",
+            })
+        if sub_b.paired_with_code and sub_b.paired_with_code != a:
+            mismatches.append({
+                "kind": "b_paired_elsewhere",
+                "detail": f"Submission B's paired_with_code is {sub_b.paired_with_code}, not {a}.",
+            })
+
+    return {
+        "requested": {"code_a": a, "code_b": b},
+        "submission_a": _serialize(sub_a),
+        "submission_b": _serialize(sub_b),
+        "couple_pair_rows": [
+            {
+                "id": c.id,
+                "pair_code_a": c.pair_code_a,
+                "pair_code_b": c.pair_code_b,
+                "authorised_by_code": c.authorised_by_code,
+                "created_at": c.created_at.isoformat() if c.created_at else None,
+                "archived_at": c.archived_at.isoformat() if getattr(c, "archived_at", None) else None,
+                "archived_reason": getattr(c, "archived_reason", None),
+            }
+            for c in cp
+        ],
+        "all_submissions_for_email_a": all_subs_a,
+        "all_submissions_for_email_b": all_subs_b,
+        "mismatches": mismatches,
+    }
+
+
+# ─── Admin: Stripe coupon / promo code inspector ──────────────────
+@app.get("/admin/stripe/promo-codes")
+def admin_stripe_promo_codes(_: None = _Depends(admin_auth.require_admin)):
+    """List all promotion codes Stripe currently has on file (live or test,
+    whichever STRIPE_SECRET_KEY is wired to). Use to diagnose 'my promo code
+    doesn't work' reports.
+    """
+    import stripe
+    stripe_secret = os.environ.get("STRIPE_SECRET_KEY", "")
+    if not stripe_secret:
+        return {"ok": False, "error": "STRIPE_SECRET_KEY not set"}
+    stripe.api_key = stripe_secret
+    mode = "live" if stripe_secret.startswith("sk_live_") else ("test" if stripe_secret.startswith("sk_test_") else "unknown")
+
+    out = {"ok": True, "mode": mode, "promotion_codes": [], "coupons": []}
+    try:
+        # All promotion codes (the human-readable strings like 'betatesting')
+        codes = stripe.PromotionCode.list(limit=50)
+        for pc in codes.auto_paging_iter():
+            out["promotion_codes"].append({
+                "id": pc.id,
+                "code": pc.code,
+                "active": pc.active,
+                "expires_at": pc.expires_at,
+                "max_redemptions": pc.max_redemptions,
+                "times_redeemed": pc.times_redeemed,
+                "restrictions": dict(pc.restrictions) if pc.restrictions else None,
+                "coupon_id": pc.coupon.id if pc.coupon else None,
+                "coupon_percent_off": pc.coupon.percent_off if pc.coupon else None,
+                "coupon_amount_off": pc.coupon.amount_off if pc.coupon else None,
+                "coupon_valid": pc.coupon.valid if pc.coupon else None,
+            })
+    except Exception as e:
+        out["promotion_codes_error"] = str(e)
+
+    try:
+        coupons = stripe.Coupon.list(limit=50)
+        for c in coupons.auto_paging_iter():
+            out["coupons"].append({
+                "id": c.id,
+                "name": c.name,
+                "percent_off": c.percent_off,
+                "amount_off": c.amount_off,
+                "duration": c.duration,
+                "valid": c.valid,
+                "times_redeemed": c.times_redeemed,
+                "max_redemptions": c.max_redemptions,
+                "redeem_by": c.redeem_by,
+            })
+    except Exception as e:
+        out["coupons_error"] = str(e)
+
+    return out
+
+
 # ─── Free re-pair flow (POST /me/repair-with-new-partner) ─────────────
 #
 # A signed-in user can break their current Couples bond and pair with
@@ -2901,6 +3161,149 @@ def me_repair_with_new_partner(
         "next_repair_available_at": (now + __import__("datetime").timedelta(days=REPAIR_COOLDOWN_DAYS)).isoformat(),
         "couples_email_status": email_status,
         "orphan_email_status": orphan_status,
+    }
+
+
+# ─── Reset & retake (POST /me/reset-and-retake) ────────────────────
+#
+# A signed-in user can wipe their CURRENT primary submission and retake the
+# assessment using the same access code they originally bought. The old
+# submission is soft-archived (not deleted), the access code is
+# re-marked active so /submit will accept it again, and any active couple
+# pair the user belongs to is also archived (their partner gets the
+# orphan-notification email so nothing happens silently behind their back).
+
+class ResetAndRetakeIn(BaseModel):
+    pair_code: Optional[str] = None  # If provided, reset that specific one; else newest
+    confirm: bool = False
+
+
+@app.post("/me/reset-and-retake")
+def me_reset_and_retake(
+    payload: ResetAndRetakeIn,
+    sess: "user_auth.AuthSession" = _Depends(user_auth.require_session),
+    db: Session = Depends(get_db),
+):
+    """Archive a user's current submission so they can retake the assessment
+    with the same access code. Returns the freed access code for the frontend
+    to drop the user right back into a fresh intake.
+    """
+    if not payload.confirm:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "confirmation_required",
+                    "message": "Reset requires explicit confirmation."},
+        )
+
+    email = (sess.email or "").strip().lower()
+    if not email:
+        raise HTTPException(status_code=401, detail="Not signed in.")
+
+    # Pick the submission to reset — either the explicit one, or the most
+    # recent non-archived one for this user.
+    target = None
+    if payload.pair_code:
+        target = (
+            db.query(Submission)
+              .filter(Submission.pair_code == payload.pair_code.strip().upper())
+              .first()
+        )
+        if target is None or (target.email or "").lower() != email:
+            raise HTTPException(
+                status_code=404,
+                detail={"error": "not_yours",
+                        "message": "That pair code doesn't belong to your account."},
+            )
+    else:
+        subs = _submissions_for_email(db, email)
+        # Filter out already-archived ones if the column exists
+        live_subs = [s for s in subs if not getattr(s, "archived_at", None)]
+        if not live_subs:
+            raise HTTPException(
+                status_code=404,
+                detail={"error": "no_submission",
+                        "message": "You don't have an active submission to reset."},
+            )
+        target = live_subs[0]
+
+    now = datetime.utcnow()
+    old_pair_code = target.pair_code
+    old_access_code = target.access_code_used
+
+    # ─── Soft-archive the submission ───
+    target.archived_at = now
+    target.archived_reason = "reset_and_retake"
+
+    # ─── Archive any active couple-pair this submission is part of ───
+    # Also notify the orphaned partner (pastoral courtesy).
+    orphan_status = {"skipped": True, "reason": "no_partner"}
+    if target.paired_with_code:
+        partner_code = target.paired_with_code
+        partner_sub = (
+            db.query(Submission)
+              .filter(Submission.pair_code == partner_code)
+              .first()
+        )
+        # Archive every active CouplePair
+        pairs = (
+            db.query(CouplePair)
+              .filter(
+                  (CouplePair.pair_code_a == old_pair_code) | (CouplePair.pair_code_b == old_pair_code)
+              )
+              .filter(CouplePair.archived_at.is_(None))
+              .all()
+        )
+        for cp in pairs:
+            cp.archived_at = now
+            cp.archived_reason = "superseded_by_reset_retake"
+        # Mirror-clear partner's paired_with_code so their dashboard reflects it
+        if partner_sub and (partner_sub.paired_with_code or "").upper() == old_pair_code:
+            partner_sub.paired_with_code = None
+            partner_sub.paired_at = None
+        # Orphan email
+        if partner_sub:
+            partner_email = _resolve_email_for_submission(db, partner_sub)
+            if partner_email:
+                try:
+                    from email_service import send_orphan_notification
+                    orphan_status = send_orphan_notification(
+                        to_email=partner_email,
+                        to_name=(partner_sub.name if partner_sub else None),
+                        former_partner_name=(target.name or "Your former partner"),
+                    )
+                except Exception as _exc:
+                    orphan_status = {"error": str(_exc)}
+
+    # ─── Re-free the access code so it can be redeemed again ───
+    freed_code = None
+    if old_access_code and not code_gating.is_test_code(old_access_code):
+        try:
+            ac_row = (
+                db.query(AccessCode)
+                  .filter(AccessCode.code == old_access_code)
+                  .first()
+            )
+            if ac_row is not None:
+                ac_row.status = CODE_STATUS_ACTIVE
+                ac_row.redeemed_at = None
+                ac_row.redeemed_by_submission_pair_code = None
+                # Keep redeemed_by_email so we can still trace history
+                freed_code = old_access_code
+        except Exception as _exc:
+            print(f"[RESET&RETAKE] Could not re-free access code {old_access_code}: {_exc}")
+
+    db.commit()
+
+    return {
+        "ok": True,
+        "archived_pair_code": old_pair_code,
+        "freed_access_code": freed_code,
+        "orphan_email_status": orphan_status,
+        "next_step": (
+            f"Use access code {freed_code} to retake the assessment from the start."
+            if freed_code else
+            "Your old submission is archived. You can take the assessment again with any valid code."
+        ),
     }
 
 

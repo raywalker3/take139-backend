@@ -37,6 +37,14 @@ class Submission(Base):
     name = Column(String(200), nullable=True)
     email = Column(String(200), nullable=True, index=True)
 
+    # Captured at intake. Stored canonically as 'M' | 'F' | 'X' (unspecified).
+    # Used to gate which couples walkthrough variant we render (gendered
+    # prose only when both genders match the writer's hardcoded assumption;
+    # otherwise we fall through to the gender-neutral pair PDF).
+    gender = Column(String(2), nullable=True, index=True)
+    birthdate = Column(String(20), nullable=True)
+    relationship_status = Column(String(40), nullable=True)
+
     # Access context — which code was used? tracks to counselor later
     access_code_used = Column(String(100), nullable=True, index=True)
 
@@ -63,6 +71,12 @@ class Submission(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     emailed_to_user = Column(Boolean, default=False)
     emailed_to_admin = Column(Boolean, default=False)
+
+    # Soft-archive marker. When a user resets-and-retakes, the old submission
+    # is marked archived (not deleted), and the access code is re-freed so
+    # they can use it again. Dashboard / pair lookups filter on this.
+    archived_at = Column(DateTime, nullable=True, index=True)
+    archived_reason = Column(String(80), nullable=True)
 
 
 class ImagoSubmission(Base):
@@ -307,6 +321,11 @@ def init_db():
     # Soft migrations for existing prod DBs
     _safe_add_column("couple_pairs", "archived_at DATETIME")
     _safe_add_column("couple_pairs", "archived_reason VARCHAR(80)")
+    _safe_add_column("submissions", "gender VARCHAR(2)")
+    _safe_add_column("submissions", "birthdate VARCHAR(20)")
+    _safe_add_column("submissions", "relationship_status VARCHAR(40)")
+    _safe_add_column("submissions", "archived_at DATETIME")
+    _safe_add_column("submissions", "archived_reason VARCHAR(80)")
 
 
 def get_db():

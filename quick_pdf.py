@@ -28,7 +28,7 @@ TRIGGERS = [
     {"code": "DISC", "name": "Disconnection"},
     {"code": "INJ",  "name": "Injustice"},
     {"code": "CTRL", "name": "Control"},
-    {"code": "SHM",  "name": "Shame"},
+    {"code": "SHAM", "name": "Shame"},     # canonical key (was SHM legacy)
     {"code": "SIG",  "name": "Significance"},
 ]
 
@@ -38,8 +38,25 @@ CORE_QUESTIONS = [
     {"code": "PROT", "name": "Am I protected?"},
     {"code": "FREE", "name": "Am I free?"},
     {"code": "ACC",  "name": "Am I acceptable?"},
-    {"code": "REM",  "name": "Am I enough to be remembered?"},
+    {"code": "SIG",  "name": "Am I significant?"},  # canonical (was REM legacy)
 ]
+
+# Legacy aliases we still accept on input — so admins typing 'SHM' or 'REM'
+# from older docs don't get a 400. The validator normalizes these UP-FRONT
+# (BEFORE the validity check) so downstream code always sees canonical keys.
+_INPUT_ALIASES = {
+    "SHM":   "SHAM",   # legacy trigger code
+    "REM":   "SIG",    # legacy core question code
+    "COURT": "ATTY",   # legacy breakdown
+    "DISAP": "GHOST",  # legacy breakdown
+}
+
+
+def _canon(code: str) -> str:
+    if not code:
+        return code
+    upper = code.strip().upper()
+    return _INPUT_ALIASES.get(upper, upper)
 
 MECHANISMS = [
     {"code": "ARCH",  "name": "The Architect"},
@@ -121,8 +138,11 @@ class GhostSubmission:
         scores = {t["code"]: 0 for t in TRIGGERS}
         if self.primary_trigger in scores:
             scores[self.primary_trigger] = 100
-        # Backend report_data normalises SHM<->SHAM; emit SHAM for compat.
-        if "SHM" in scores:
+        # The TRIGGERS list now uses 'SHAM' canonically; the SHM→SHAM
+        # normalization that lived here for legacy clients is no longer
+        # needed because _canon() runs upstream. Leaving the no-op so any
+        # legacy caller that hand-builds a GhostSubmission still survives.
+        if "SHM" in scores and "SHAM" not in scores:
             scores["SHAM"] = scores.pop("SHM")
         self.results_json = json.dumps({
             "primary_trigger": self.primary_trigger,
@@ -145,13 +165,17 @@ class ValidationError(ValueError):
 
 def validate_profile(*, trigger: str, core_question: str,
                      mechanism: str, breakdown: str) -> None:
-    if trigger.upper() not in _VALID_TRIGGERS:
+    t = _canon(trigger)
+    cq = _canon(core_question)
+    m = _canon(mechanism)
+    b = _canon(breakdown)
+    if t not in _VALID_TRIGGERS:
         raise ValidationError(f"Unknown trigger code: {trigger!r}")
-    if core_question.upper() not in _VALID_CQ:
+    if cq not in _VALID_CQ:
         raise ValidationError(f"Unknown core-question code: {core_question!r}")
-    if mechanism.upper() not in _VALID_MECH:
+    if m not in _VALID_MECH:
         raise ValidationError(f"Unknown mechanism code: {mechanism!r}")
-    if breakdown.upper() not in _VALID_BD:
+    if b not in _VALID_BD:
         raise ValidationError(f"Unknown breakdown code: {breakdown!r}")
 
 
@@ -164,7 +188,16 @@ def build_ghost_submission(
     breakdown: str,
     email: Optional[str] = None,
 ) -> GhostSubmission:
-    """One-line constructor with validation."""
+    """One-line constructor with validation. Canonicalizes legacy aliases
+    (SHM→SHAM, REM→SIG, COURT→ATTY, DISAP→GHOST) BEFORE building the ghost.
+    Bug 2026-06-01: admin picking 'Shame' was sending 'SHM' but downstream
+    code expects 'SHAM' — producing a manual PDF that didn't match the
+    selected trigger.
+    """
+    trigger = _canon(trigger)
+    core_question = _canon(core_question)
+    mechanism = _canon(mechanism)
+    breakdown = _canon(breakdown)
     validate_profile(
         trigger=trigger, core_question=core_question,
         mechanism=mechanism, breakdown=breakdown,
