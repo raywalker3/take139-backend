@@ -2859,6 +2859,38 @@ def admin_normalize_names_and_backfill_genders(
     }
 
 
+# ─── Admin: preview a Couples Walkthrough PDF (no emails sent) ──────────
+@app.get("/admin/preview-couples-pdf/{code_a}/{code_b}")
+def admin_preview_couples_pdf(
+    code_a: str,
+    code_b: str,
+    _: None = _Depends(admin_auth.require_admin),
+    db: Session = Depends(get_db),
+):
+    """Generate (but do NOT email) the Couples Walkthrough PDF for two
+    paired submissions. Returns the PDF bytes directly. Use to QA the
+    output without disturbing the actual users.
+    """
+    a = (code_a or "").strip().upper()
+    b = (code_b or "").strip().upper()
+    sub_a = db.query(Submission).filter(Submission.pair_code == a).first()
+    sub_b = db.query(Submission).filter(Submission.pair_code == b).first()
+    if sub_a is None or sub_b is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"One or both pair codes not found: a={a!r} b={b!r}",
+        )
+    from walkthroughs.api import build_couples_walkthrough
+    pdf_bytes = build_couples_walkthrough(sub_a, sub_b, db=db)
+    filename = f"Take139-Couples-{a}-{b}-PREVIEW.pdf"
+    from fastapi.responses import Response
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="{filename}"'},
+    )
+
+
 # ─── Admin: diagnose a couple-pair (forensics) ──────────────────────
 @app.get("/admin/diagnose-pair/{code_a}/{code_b}")
 def admin_diagnose_pair(
