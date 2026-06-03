@@ -581,32 +581,17 @@ def send_his_her_couple_codes(
         "a.cta:link, a.cta:visited { color:#faf6ef; }"
     )
 
-    def _build_html(my_name, my_code, partner_name, intake_link, is_buyer):
-        buyer_note = ""
-        if is_buyer:
-            buyer_note = (
-                f'<p>You\'ve also paid for {partner_name}\'s code, which we\'ve '
-                f'just sent to them in a separate email. Once both of you have '
-                f'completed Take 139, the Couples Walkthrough auto-generates '
-                f'and arrives in both of your inboxes.</p>'
-            )
-        else:
-            buyer_note = (
-                f'<p>{partner_name} purchased Take 139 for the two of you to take '
-                f'together. Take it privately. Be honest. Once both of you have '
-                f'finished, the Couples Walkthrough auto-generates and arrives '
-                f'in both of your inboxes.</p>'
-            )
+    def _build_html(my_name, my_code, intake_link):
+        salutation = f"Hi {my_name}" if my_name else "Hi there"
         return (
             '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' + css
             + '</style></head><body><div class="container">'
             + '<div class="brand">Take 139 &middot; Your access code</div>'
-            + f'<h1>Hi {my_name},</h1>'
-            + buyer_note
-            + f'<div class="codelabel">{my_name}\'s code</div>'
+            + f'<h1>{salutation},</h1>'
+            + '<p>Thank you for being part of Take 139. Your access code for the assessment is below.</p>'
             + f'<div class="codebox">{my_code}</div>'
             + f'<div class="cta-wrap"><a href="{intake_link}" class="cta">Take Take 139 &rarr;</a></div>'
-            + '<div class="note"><strong>How it works:</strong> The assessment takes about fifteen minutes. Take it alone, somewhere private. Your personal report arrives by email when you finish. Once both of you are done, the Couples Walkthrough auto-generates and lands in both inboxes.</div>'
+            + '<p>The assessment takes about fifteen minutes. Take it alone, somewhere quiet. Your personal report arrives by email when you finish. Once both you and your partner have completed the assessment, the Couples Walkthrough is generated automatically and emailed to both of you.</p>'
             + '<p style="font-size:13px;color:#8a7f72;">Questions? Reply to this email or write us at <a href="mailto:hello@take139.com">hello@take139.com</a>.</p>'
             + '<div class="footer">Grace and peace,'
             + '<div class="sig">&mdash; Dr. Chris Hilken</div>'
@@ -614,20 +599,16 @@ def send_his_her_couple_codes(
             + '</div></div></body></html>'
         )
 
+    subject = "Your Take 139 access code"
+
     # His email
     his_intake_link = frontend_url.rstrip("/") + "/index.html?code=" + his_code + "&buyer=" + his_email
-    his_html = _build_html(
-        my_name=his_name or "there",
-        my_code=his_code,
-        partner_name=her_name or "your partner",
-        intake_link=his_intake_link,
-        is_buyer=True,  # The buyer is always the one in HIS_INFO
-    )
+    his_html = _build_html(my_name=his_name, my_code=his_code, intake_link=his_intake_link)
     try:
         out["his_email_status"] = resend.Emails.send({
             "from": FROM_EMAIL,
             "to": [his_email],
-            "subject": f"{his_name}, here's your Take 139 code",
+            "subject": subject,
             "html": his_html,
             "reply_to": ADMIN_EMAIL,
         })
@@ -636,18 +617,12 @@ def send_his_her_couple_codes(
 
     # Her email
     her_intake_link = frontend_url.rstrip("/") + "/index.html?code=" + her_code + "&buyer=" + her_email
-    her_html = _build_html(
-        my_name=her_name or "there",
-        my_code=her_code,
-        partner_name=his_name or "your partner",
-        intake_link=her_intake_link,
-        is_buyer=False,
-    )
+    her_html = _build_html(my_name=her_name, my_code=her_code, intake_link=her_intake_link)
     try:
         out["her_email_status"] = resend.Emails.send({
             "from": FROM_EMAIL,
             "to": [her_email],
-            "subject": f"{his_name} invited you to take Take 139 together",
+            "subject": subject,
             "html": her_html,
             "reply_to": ADMIN_EMAIL,
         })
