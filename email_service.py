@@ -541,3 +541,117 @@ def send_partner_invitation(
         return resend.Emails.send(params)
     except Exception as e:
         return {"error": str(e)}
+
+
+def send_his_her_couple_codes(
+    his_name: str,
+    his_email: str,
+    his_code: str,
+    her_name: str,
+    her_email: str,
+    her_code: str,
+    relationship: str = "",
+    frontend_url: str = "https://take139.com",
+) -> dict:
+    """Email each partner their own access code after a his_her_v1 Couple
+    Package purchase. Sends two separate emails, each addressed by name,
+    each containing only that partner's own code.
+
+    Returns: {his_email_status: ..., her_email_status: ...}
+    """
+    out = {"his_email_status": None, "her_email_status": None}
+    if not RESEND_API_KEY:
+        out["error"] = "no RESEND_API_KEY set"
+        return out
+
+    css = (
+        "body { font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; margin:0; padding:0; background:#faf6ef; color:#2a2620; }"
+        ".container { max-width:560px; margin:0 auto; padding:40px 24px; }"
+        ".brand { font-size:11px; letter-spacing:0.35em; color:#c8956c; text-transform:uppercase; font-weight:600; margin-bottom:14px; }"
+        "h1 { font-family:Georgia,serif; font-size:24px; line-height:1.3; color:#2a2620; margin:0 0 16px 0; font-weight:400; }"
+        "p { line-height:1.7; font-size:15px; color:#3a342d; margin:0 0 14px 0; }"
+        ".cta-wrap { text-align:center; margin:26px 0; }"
+        ".cta { display:inline-block; background:#2a2620; color:#faf6ef !important; padding:14px 28px; border-radius:4px; text-decoration:none; font-size:14px; letter-spacing:0.07em; font-weight:600; }"
+        ".codebox { background:#fff; border:1px solid #e0d6c5; padding:14px 18px; margin:18px 0; font-family:'Courier New',monospace; font-size:20px; color:#2a2620; text-align:center; letter-spacing:0.08em; border-radius:4px; }"
+        ".codelabel { font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color:#8a7f72; text-align:center; margin-bottom:6px; }"
+        ".note { background:#fff; border-left:3px solid #c8956c; padding:14px 18px; margin:18px 0; font-size:14px; color:#3a342d; line-height:1.65; }"
+        ".footer { margin-top:34px; padding-top:20px; border-top:1px solid #e0d6c5; font-size:12px; color:#8a7f72; line-height:1.6; }"
+        ".footer .sig { margin-top:10px; color:#2a2620; font-weight:600; font-family:Georgia,serif; font-size:14px; }"
+        "a { color:#c8956c; text-decoration:none; }"
+        "a.cta:link, a.cta:visited { color:#faf6ef; }"
+    )
+
+    def _build_html(my_name, my_code, partner_name, intake_link, is_buyer):
+        buyer_note = ""
+        if is_buyer:
+            buyer_note = (
+                f'<p>You\'ve also paid for {partner_name}\'s code, which we\'ve '
+                f'just sent to them in a separate email. Once both of you have '
+                f'completed Take 139, the Couples Walkthrough auto-generates '
+                f'and arrives in both of your inboxes.</p>'
+            )
+        else:
+            buyer_note = (
+                f'<p>{partner_name} purchased Take 139 for the two of you to take '
+                f'together. Take it privately. Be honest. Once both of you have '
+                f'finished, the Couples Walkthrough auto-generates and arrives '
+                f'in both of your inboxes.</p>'
+            )
+        return (
+            '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' + css
+            + '</style></head><body><div class="container">'
+            + '<div class="brand">Take 139 &middot; Your access code</div>'
+            + f'<h1>Hi {my_name},</h1>'
+            + buyer_note
+            + f'<div class="codelabel">{my_name}\'s code</div>'
+            + f'<div class="codebox">{my_code}</div>'
+            + f'<div class="cta-wrap"><a href="{intake_link}" class="cta">Take Take 139 &rarr;</a></div>'
+            + '<div class="note"><strong>How it works:</strong> The assessment takes about fifteen minutes. Take it alone, somewhere private. Your personal report arrives by email when you finish. Once both of you are done, the Couples Walkthrough auto-generates and lands in both inboxes.</div>'
+            + '<p style="font-size:13px;color:#8a7f72;">Questions? Reply to this email or write us at <a href="mailto:hello@take139.com">hello@take139.com</a>.</p>'
+            + '<div class="footer">Grace and peace,'
+            + '<div class="sig">&mdash; Dr. Chris Hilken</div>'
+            + '<div style="margin-top:14px;"><a href="https://take139.com">take139.com</a></div>'
+            + '</div></div></body></html>'
+        )
+
+    # His email
+    his_intake_link = frontend_url.rstrip("/") + "/index.html?code=" + his_code + "&buyer=" + his_email
+    his_html = _build_html(
+        my_name=his_name or "there",
+        my_code=his_code,
+        partner_name=her_name or "your partner",
+        intake_link=his_intake_link,
+        is_buyer=True,  # The buyer is always the one in HIS_INFO
+    )
+    try:
+        out["his_email_status"] = resend.Emails.send({
+            "from": FROM_EMAIL,
+            "to": [his_email],
+            "subject": f"{his_name}, here's your Take 139 code",
+            "html": his_html,
+            "reply_to": ADMIN_EMAIL,
+        })
+    except Exception as e:
+        out["his_email_status"] = {"error": str(e)}
+
+    # Her email
+    her_intake_link = frontend_url.rstrip("/") + "/index.html?code=" + her_code + "&buyer=" + her_email
+    her_html = _build_html(
+        my_name=her_name or "there",
+        my_code=her_code,
+        partner_name=his_name or "your partner",
+        intake_link=her_intake_link,
+        is_buyer=False,
+    )
+    try:
+        out["her_email_status"] = resend.Emails.send({
+            "from": FROM_EMAIL,
+            "to": [her_email],
+            "subject": f"{his_name} invited you to take Take 139 together",
+            "html": her_html,
+            "reply_to": ADMIN_EMAIL,
+        })
+    except Exception as e:
+        out["her_email_status"] = {"error": str(e)}
+
+    return out

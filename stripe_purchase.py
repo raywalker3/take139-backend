@@ -127,6 +127,80 @@ def create_checkout_session(
         raise HTTPException(status_code=502, detail=f"Stripe error: {str(e)}")
 
 
+def create_couple_checkout_session(
+    his_name: str,
+    his_email: str,
+    her_name: str,
+    her_email: str,
+    relationship: str = "",
+    success_path: str = "/",
+    cancel_path: str = "/",
+) -> dict:
+    """Create a Stripe Checkout Session for the Couple Package, with both
+    partners' names + emails + genders pre-attached as metadata so the
+    webhook can assign male→A / female→B and email each their own code.
+
+    Returns: {"checkout_url": ..., "session_id": ...}
+    Raises HTTPException on validation / Stripe error.
+    """
+    if not STRIPE_SECRET_KEY:
+        raise HTTPException(
+            status_code=503,
+            detail="Stripe is not configured on this server. Try again later.",
+        )
+
+    his_name  = (his_name  or "").strip()
+    his_email = (his_email or "").strip().lower()
+    her_name  = (her_name  or "").strip()
+    her_email = (her_email or "").strip().lower()
+
+    if not his_name or not her_name:
+        raise HTTPException(status_code=400, detail="Both first names are required.")
+    if "@" not in his_email or "@" not in her_email:
+        raise HTTPException(status_code=400, detail="Both email addresses are required.")
+    if his_email == her_email:
+        raise HTTPException(status_code=400, detail="His and her emails must be different.")
+
+    product = PRODUCTS["couple"]
+
+    try:
+        session = stripe.checkout.Session.create(
+            mode="payment",
+            customer_email=his_email,  # Stripe receipt goes to the buyer (he)
+            line_items=[{
+                "quantity": 1,
+                "price_data": {
+                    "currency": "usd",
+                    "unit_amount": product["price_cents"],
+                    "product_data": {
+                        "name": product["name"],
+                        "description": product["description"],
+                    },
+                },
+            }],
+            allow_promotion_codes=True,
+            # Pre-attach BOTH partners' data so the webhook can assign
+            # gender-correct codes and label each email correctly.
+            metadata={
+                "kind": "couple",
+                "flow": "his_her_v1",
+                "his_name":  his_name,
+                "his_email": his_email,
+                "her_name":  her_name,
+                "her_email": her_email,
+                "relationship": (relationship or "")[:40],
+                # 'buyer_email' is preserved for legacy code paths.
+                "buyer_email": his_email,
+            },
+            success_url=f"{FRONTEND_URL}{success_path}?stripe_session={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{FRONTEND_URL}{cancel_path}?stripe_cancelled=1",
+            expires_at=None,
+        )
+        return {"checkout_url": session.url, "session_id": session.id}
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=502, detail=f"Stripe error: {str(e)}")
+
+
 def verify_webhook(payload_bytes: bytes, signature_header: str) -> dict:
     """Verify a Stripe webhook signature and return the parsed event.
 
@@ -213,8 +287,38 @@ def handle_checkout_completed(db: Session, event: dict) -> dict:
             notes=f"Stripe couples purchase by {email}",
         )
         codes = [a.code, b.code]
+
+        # his_her_v1 flow: pre-pin each code to a specific recipient by
+        # overwriting stripe_customer_email per row. Code A (ends with -A)
+        # is the MALE partner; Code B is the FEMALE. This means /submit
+        # can derive gender directly from the access code suffix.
+        if metadata.get("flow") == "his_her_v1":
+            his_email_meta = (metadata.get("his_email") or "").strip().lower()
+            her_email_meta = (metadata.get("her_email") or "").strip().lower()
+            if his_email_meta:
+                a.stripe_customer_email = his_email_meta
+                a.notes = (a.notes or "") + f" | his_her_v1: pinned to {his_email_meta} (M)"
+            if her_email_meta:
+                b.stripe_customer_email = her_email_meta
+                b.notes = (b.notes or "") + f" | his_her_v1: pinned to {her_email_meta} (F)"
+            db.commit()
     else:
         return {"error": f"Cannot generate code for kind: {kind}", "session_id": session_id}
+
+    # If this is a his_her_v1 couple purchase, expose the his/her metadata
+    # so the webhook handler can send labeled emails and pre-pin each code
+    # to the right recipient by gender.
+    his_her = None
+    if metadata.get("flow") == "his_her_v1" and kind == CODE_KIND_COUPLE:
+        his_her = {
+            "his_name":  metadata.get("his_name", ""),
+            "his_email": metadata.get("his_email", ""),
+            "her_name":  metadata.get("her_name", ""),
+            "her_email": metadata.get("her_email", ""),
+            "relationship": metadata.get("relationship", ""),
+            "his_code": codes[0],  # role-A code goes to male
+            "her_code": codes[1],  # role-B code goes to female
+        }
 
     return {
         "codes": codes,
@@ -222,4 +326,5 @@ def handle_checkout_completed(db: Session, event: dict) -> dict:
         "email": email,
         "session_id": session_id,
         "idempotent": False,
+        "his_her": his_her,
     }

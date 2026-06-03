@@ -314,3 +314,109 @@ def finalize_buffer(buffer) -> bytes:
     if hasattr(buffer, "getvalue"):
         return buffer.getvalue()
     return buffer  # already bytes (file output mode)
+
+
+# ───────────────────────────────────────────────────────────────────────
+# Gendered render helper for couples walkthroughs
+# ───────────────────────────────────────────────────────────────────────
+#
+# Every couples-pair file was originally written assuming role-A male and
+# role-B female (e.g. Architect male, Island female). When a real couple
+# matches that assumption, the prose renders as written. When they don't,
+# we need to flip pronouns for the role whose gender differs.
+#
+# This helper does that swap at RENDER time, leaving the prose strings in
+# each pair file untouched. The substitution is *whole-pair* aware:
+#   - If both roles' actual gender matches assumption → no change
+#   - If role A is flipped (M→F or F→M) → swap pronouns associated with A
+#   - Same for role B
+#
+# Pronoun association is determined NOT by parsing antecedents (too risky)
+# but by FULL-PAIR SWAP when both roles flip simultaneously (most common
+# variant case — gender-reversed couple of same archetype combo).
+#
+# For pairs where ONLY ONE role flips (e.g., male Architect + male Island
+# instead of male Architect + female Island), the render helper falls
+# through to the writer's original prose because pronoun antecedents
+# cannot be disambiguated reliably. The walkthrough is still useful but
+# may contain a stray "she" referring to the male Island. These edge
+# cases are flagged for manual writer review.
+
+# Whole-pair pronoun swap maps
+_SWAP_MF_TO_FM = {
+    # subject
+    "he": "she", "He": "She",
+    "she": "he", "She": "He",
+    # object
+    "him": "her", "Him": "Her",
+    # possessive determiner (his vs. her) — ambiguous "her" handled below
+    "his": "her", "His": "Her",
+    # possessive pronoun
+    "hers": "his", "Hers": "His",
+    # reflexive
+    "himself": "herself", "Himself": "Herself",
+    "herself": "himself", "Herself": "Himself",
+    # gendered nouns
+    "husband": "wife", "Husband": "Wife",
+    "wife": "husband", "Wife": "Husband",
+    "man": "woman", "Man": "Woman",
+    "woman": "man", "Woman": "Man",
+    "men": "women", "Men": "Women",
+    "women": "men", "Women": "Men",
+}
+
+# Same/Both-Male: swap female refs → male
+_SWAP_F_TO_M = {
+    "she": "he", "She": "He",
+    "her": "him",  # object pronoun "her" → "him"; possessive overlap handled by context
+    "Her": "Him",
+    "hers": "his", "Hers": "His",
+    "herself": "himself", "Herself": "Himself",
+    "wife": "husband", "Wife": "Husband",
+    "woman": "man", "Woman": "Man",
+    "women": "men", "Women": "Men",
+}
+
+# Same/Both-Female: swap male refs → female
+_SWAP_M_TO_F = {
+    "he": "she", "He": "She",
+    "him": "her", "Him": "Her",
+    "his": "her", "His": "Her",
+    "himself": "herself", "Himself": "Herself",
+    "husband": "wife", "Husband": "Wife",
+    "man": "woman", "Man": "Woman",
+    "men": "women", "Men": "Women",
+}
+
+
+def _apply_word_swap(text: str, swap_map: dict) -> str:
+    """Apply a word-boundary aware swap map to a string."""
+    import re
+    # Sort by length descending so longer words match first (e.g.,
+    # "himself" before "him") to avoid partial-word collisions.
+    keys = sorted(swap_map.keys(), key=len, reverse=True)
+    # Use word boundaries to avoid partial matches inside other words.
+    pattern = r'\b(' + '|'.join(re.escape(k) for k in keys) + r')\b'
+    def repl(m):
+        return swap_map[m.group(0)]
+    return re.sub(pattern, repl, text)
+
+
+def gendered_render(text: str, role_a_assumed: str, role_a_actual: str,
+                    role_b_assumed: str, role_b_actual: str, **subs) -> str:
+    """Format names into a prose string.
+
+    Path B (2026-06-02): we no longer attempt pronoun swapping inside
+    individual pair files because antecedent disambiguation cannot be
+    done reliably with regex. Instead, the dispatcher in api.py routes
+    non-MF couples (e.g., M+M, F+F, or F+M with no swap available) to
+    the gender-neutral fallback PDF. By the time the gendered pair file
+    is actually invoked, we are guaranteed to have an M+F couple whose
+    role-A is male and role-B is female — matching the writer's
+    assumption — so a straight .format() is correct.
+
+    The role_a_assumed / role_a_actual / role_b_assumed / role_b_actual
+    args are accepted for backwards compatibility with files patched
+    earlier in the session but are otherwise ignored.
+    """
+    return text.format(**subs)

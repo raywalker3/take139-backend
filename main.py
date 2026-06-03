@@ -249,6 +249,24 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
     normalized_gender = _normalize_gender(payload.gender)
     normalized_partner_gender = _normalize_gender(payload.partner_gender)
 
+    # his_her_v1 override: if the access code is a Couple Package code
+    # purchased through the new HIS/HER flow, derive gender from the
+    # access code suffix (A=Male, B=Female). This guarantees correctness
+    # even if the client somehow sends the wrong value.
+    if payload.access_code_used:
+        code_upper = payload.access_code_used.upper()
+        if code_upper.startswith("COUPLE-"):
+            ac_row = (
+                db.query(AccessCode)
+                  .filter(AccessCode.code == code_upper)
+                  .first()
+            )
+            if ac_row is not None and ac_row.notes and "his_her_v1" in (ac_row.notes or ""):
+                if code_upper.endswith("-A"):
+                    normalized_gender = "M"
+                elif code_upper.endswith("-B"):
+                    normalized_gender = "F"
+
     # Strict gender check (2026-06-02): the assessment requires M or F so
     # the original walkthroughs render with correct pronouns. Anything else
     # is rejected here rather than silently coerced.
@@ -856,6 +874,34 @@ def purchase_checkout(payload: PurchaseCheckoutIn):
     )
 
 
+class CouplePrepayIn(BaseModel):
+    his_name: str
+    his_email: EmailStr
+    her_name: str
+    her_email: EmailStr
+    relationship: Optional[str] = None
+
+
+@app.post("/purchase/couple-prepay")
+def purchase_couple_prepay(payload: CouplePrepayIn):
+    """Create a Stripe Checkout for the Couple Package using the
+    HIS INFO / HER INFO form. Both partners' names + emails are baked
+    into Stripe session metadata. On webhook delivery, codes are
+    pre-assigned (male→A, female→B) and emailed to each by name.
+
+    Same-gender couples are not supported through this flow — the
+    frontend offers only HIS/HER fields, so by construction the buyer
+    is providing two distinct gendered partners.
+    """
+    return stripe_purchase.create_couple_checkout_session(
+        his_name=payload.his_name,
+        his_email=str(payload.his_email),
+        her_name=payload.her_name,
+        her_email=str(payload.her_email),
+        relationship=(payload.relationship or ""),
+    )
+
+
 @app.post("/stripe/webhook")
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     """Receive Stripe webhook events.
@@ -876,17 +922,35 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         print(f"[STRIPE WEBHOOK ERROR] {result}")
         return {"ok": False, "error": result["error"]}
 
-    # Send confirmation email to buyer (only on first delivery)
+    # Send confirmation email(s) to buyer (only on first delivery)
     if not result.get("idempotent"):
         try:
-            from email_service import send_purchase_confirmation
             frontend_url = os.environ.get("FRONTEND_URL", "https://take139.com").rstrip("/")
-            send_purchase_confirmation(
-                to_email=result["email"],
-                kind=result["kind"],
-                codes=result["codes"],
-                frontend_url=frontend_url,
-            )
+
+            # NEW: his_her_v1 Couple Package — send two labeled emails,
+            # one to each partner with only their own code.
+            if result.get("his_her"):
+                from email_service import send_his_her_couple_codes
+                hh = result["his_her"]
+                send_his_her_couple_codes(
+                    his_name=hh["his_name"],
+                    his_email=hh["his_email"],
+                    his_code=hh["his_code"],
+                    her_name=hh["her_name"],
+                    her_email=hh["her_email"],
+                    her_code=hh["her_code"],
+                    relationship=hh.get("relationship", ""),
+                    frontend_url=frontend_url,
+                )
+            else:
+                # Legacy single-email path (Single, Connect, or pre-his_her Couple).
+                from email_service import send_purchase_confirmation
+                send_purchase_confirmation(
+                    to_email=result["email"],
+                    kind=result["kind"],
+                    codes=result["codes"],
+                    frontend_url=frontend_url,
+                )
         except Exception as e:
             print(f"[STRIPE EMAIL ERROR] Code(s) created but email failed: {e}")
 
