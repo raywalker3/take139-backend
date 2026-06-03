@@ -427,41 +427,13 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
             # Code marking failed but submission succeeded — log, don't fail user.
             print(f"[CODE CONSUME ERROR] {e}")
 
-    # ─── Auto-invite the partner if this was a Couple Package + partner email ───
-    # Fires only when:
-    #   - The buyer's access code looks like COUPLE-XXXXX-A or COUPLE-XXXXX-B
-    #   - The buyer supplied a partner_email at the finalize gate
-    #   - The sibling code exists and is still active (not yet redeemed)
-    # We never re-send if the partner has already submitted.
-    try:
-        if (
-            payload.partner_email
-            and payload.access_code_used
-            and payload.access_code_used.upper().startswith("COUPLE-")
-            and payload.access_code_used.upper().endswith(("-A", "-B"))
-        ):
-            sibling_letter = "B" if payload.access_code_used.upper().endswith("-A") else "A"
-            sibling_code = payload.access_code_used.upper()[:-1] + sibling_letter
-            sibling_row = db.query(AccessCode).filter(AccessCode.code == sibling_code).first()
-            already_used = (
-                db.query(Submission)
-                .filter(Submission.access_code_used == sibling_code)
-                .first()
-            )
-            if sibling_row is not None and already_used is None:
-                from email_service import send_partner_invitation
-                send_partner_invitation(
-                    to_email=str(payload.partner_email),
-                    partner_name="",  # we don't know it yet — partner enters at their own finalize gate
-                    buyer_name=(payload.name or "").strip() or "Your partner",
-                    access_code=sibling_code,
-                    relationship=payload.relationship_status or "",
-                    frontend_url=os.environ.get("FRONTEND_URL", "https://take139.com"),
-                )
-                print(f"[PARTNER INVITE] Sent {sibling_code} to {payload.partner_email}")
-    except Exception as e:
-        # Non-fatal — buyer's own report is unaffected.
-        print(f"[PARTNER INVITE ERROR] {e}")
+    # NOTE (2026-06-02): the old auto-partner-invitation email used to fire
+    # here. It's been removed because the new HIS/HER pre-Stripe flow
+    # emails both partners their codes directly from the Stripe webhook
+    # (see send_his_her_couple_codes). Re-sending an "invited you" email
+    # from /submit on top of that would be duplicative and confusing.
+    # The legacy send_partner_invitation function remains in
+    # email_service.py for now but is no longer called by any code path.
 
     # ─── Auto-issue a session so the user is signed in to their dashboard ───
     # The User row was already get_or_create'd higher up in the handler.
