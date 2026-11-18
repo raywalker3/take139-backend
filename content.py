@@ -44,15 +44,15 @@ MECHANISM_NAMES = {
     "AMB": "Ambassador",
     "VAULT": "Vault",
     "ADPT": "Adapter",
-    "CAMP": "Campaign",
+    "CAMP": "Performance",
 }
 
 BREAKDOWN_NAMES = {
     "COURT": "Attorney",  # Renamed from Courtroom per Chris's request
-    "DISAP": "Disappearance",
+    "DISAP": "Ghost",
     "FLOOD": "Flood",
-    "GHOST": "Ghost",
-    "VERD": "Verdict",
+    "GHOST": "Mask",
+    "VERD": "Quiet Exit",
     "PLEA": "Plea",
 }
 

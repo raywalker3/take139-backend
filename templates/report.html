@@ -235,6 +235,12 @@
     background: #c8956c;
     border-radius: 4px;
   }
+  .score-row.is-primary .score-label { color: #2a2620; }
+  .score-row.is-primary .score-fill { background: #8a4a2c; }
+  .score-label.wide { width: 2.15in; }
+  .chart-block { page-break-inside: avoid; margin-top: 0.28in; }
+  .chart-block h2 { margin-top: 0; }
+  .chart-key { font-size: 8.5pt; color: #8a7f72; font-family: 'Helvetica', sans-serif; margin: -0.04in 0 0.12in 0; }
   .score-num {
     width: 0.45in;
     text-align: right;
@@ -518,13 +524,35 @@ But when something gets through my defenses, I cope with that pain by becoming <
 <p class="small-muted">How sensitive you are to each kind of relational pain, scored out of 100.</p>
 <div class="scores-list">
   {% for t in trigger_scores %}
-  <div class="score-row">
+  <div class="score-row{% if t.primary %} is-primary{% endif %}">
     <div class="score-label">{{ t.name }}</div>
     <div class="score-track"><div class="score-fill" style="width: {{ t.score }}%"></div></div>
     <div class="score-num">{{ t.score }}</div>
   </div>
   {% endfor %}
 </div>
+
+{% set charts = [
+  ("Your Core Question Profile", "How strongly each of the six core questions showed up in your answers.", core_question_scores, True),
+  ("Your Mechanism Profile", "How much you lean on each of the six everyday mechanisms.", mechanism_scores, False),
+  ("Your Breakdown Profile", "How likely each of the six breakdown patterns is when your defenses are overwhelmed.", breakdown_scores, False),
+] %}
+{% for title, sub, rows, wide in charts %}{% if rows %}
+<div class="chart-block">
+<h2>{{ title }}</h2>
+<p class="small-muted">{{ sub }}</p>
+<p class="chart-key">Your result is shown in the darker bar.</p>
+<div class="scores-list">
+  {% for t in rows %}
+  <div class="score-row{% if t.primary %} is-primary{% endif %}">
+    <div class="score-label{% if wide %} wide{% endif %}">{{ t.name }}</div>
+    <div class="score-track"><div class="score-fill" style="width: {{ t.score }}%"></div></div>
+    <div class="score-num">{{ t.score }}</div>
+  </div>
+  {% endfor %}
+</div>
+</div>
+{% endif %}{% endfor %}
 
 <!-- ═══════════ TRIGGER DEEP DIVE ═══════════ -->
 <div class="section-break"></div>

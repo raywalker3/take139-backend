@@ -224,7 +224,7 @@ QUESTION_BODY_P2 = [
 ]
 
 QUESTION_BODY_P3 = [
-    "The gospel anchor for the question you carry is this: you are an <i>Adopted Son</i>, "
+    "The gospel anchor for the question you carry is this: you are an <i>Adopted Child</i>, "
     "a <i>Saint</i> — set apart by God as his own possession, fully known, fully named, "
     "inscribed on the palms of his hands. Ephesians 1:4\u20135 says God chose you "
     "<i>before the foundation of the world</i> — not because you earned visibility, but "

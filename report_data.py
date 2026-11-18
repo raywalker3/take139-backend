@@ -5,6 +5,8 @@ from the live frontend) so the PDF report mirrors exactly what the user sees
 on-screen at the end of the assessment.
 """
 from datetime import datetime
+
+from profile_scoring import compute_profile_scores
 from typing import Optional
 
 from content import (
@@ -148,6 +150,19 @@ def _build_trigger_score_list(trigger_scores: dict) -> list:
 
 # ─── Main entry point ───
 
+def _build_profile_score_list(scores: dict, labels: dict, primary_key: str) -> list:
+    """Return [{name, score, primary}] sorted highest-first for a bar chart."""
+    out = []
+    for code, label in labels.items():
+        try:
+            score = int(round(float((scores or {}).get(code) or 0)))
+        except (TypeError, ValueError):
+            score = 0
+        out.append({"name": label, "score": score, "primary": code == primary_key})
+    out.sort(key=lambda r: r["score"], reverse=True)
+    return out
+
+
 def get_report_data(
     primary_trigger: str,
     core_question: str,
@@ -158,6 +173,7 @@ def get_report_data(
     name: str,
     pair_code: str,
     wrapup_answers: Optional[dict] = None,
+    answers: Optional[dict] = None,
 ) -> dict:
     """Assemble the full dictionary of template variables for the PDF + email."""
 
@@ -243,5 +259,26 @@ def get_report_data(
         "prayer_paragraphs": _prayer_paragraphs(mech_key),
 
         # Trigger score list for the bar chart
-        "trigger_scores": _build_trigger_score_list(trigger_scores),
+        "trigger_scores": [dict(r, primary=(r["name"] == TRIGGER_LABELS.get(trig_key))) for r in _build_trigger_score_list(trigger_scores)],
+        **_profile_charts(answers, cq_key, mech_key, brk_key),
+    }
+
+
+def _profile_charts(answers, cq_key, mech_key, brk_key) -> dict:
+    """Core question, mechanism and breakdown bar charts, recomputed from the
+    stored raw answers. Empty lists when no answers exist (e.g. admin quick PDFs)."""
+    try:
+        ps = compute_profile_scores(answers) if answers else None
+    except Exception as e:  # never let a chart break a report
+        print(f"[REPORT] profile score compute failed: {e}")
+        ps = None
+    if not ps:
+        return {"core_question_scores": [], "mechanism_scores": [], "breakdown_scores": []}
+    cq_labels = {k: (v.get("name") or k) for k, v in CORE_QUESTIONS.items()}
+    mech_labels = {k: "The " + v for k, v in MECHANISM_NAMES.items()}
+    brk_labels = {k: "The " + v for k, v in BREAKDOWN_NAMES.items()}
+    return {
+        "core_question_scores": _build_profile_score_list(ps["core_question"], cq_labels, cq_key),
+        "mechanism_scores": _build_profile_score_list(ps["mechanism"], mech_labels, mech_key),
+        "breakdown_scores": _build_profile_score_list(ps["breakdown"], brk_labels, brk_key),
     }

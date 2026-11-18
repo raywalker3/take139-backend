@@ -205,6 +205,13 @@
     </div>
     {% endif %}
 
+    {% if breakdown_name %}
+    <div class="row">
+      <div class="label">Your Breakdown Pattern</div>
+      <div class="value-plain">The {{ breakdown_name }}{% if breakdown_desc %} &mdash; <span style="font-style:italic;color:#6b6158;">{{ breakdown_desc }}</span>{% endif %}</div>
+    </div>
+    {% endif %}
+
     {% if mechanism_gospel_need %}
     <div class="row">
       <div class="label">The Gospel Truth You Most Need</div>

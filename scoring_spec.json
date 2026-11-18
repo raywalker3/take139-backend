@@ -1,0 +1,828 @@
+{
+ "P1": [
+  {
+   "id": "p1q1",
+   "type": "scale",
+   "weight": 1.5,
+   "scoring": [
+    {
+     "CTRL": 2
+    },
+    {
+     "CTRL": 1
+    },
+    {
+     "DISC": 1
+    },
+    {
+     "DIS": 2,
+     "SIG": 1
+    },
+    {
+     "DIS": 3,
+     "SIG": 2
+    }
+   ]
+  },
+  {
+   "id": "p1q2",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {
+     "CTRL": 1
+    },
+    {},
+    {
+     "SIG": 1
+    },
+    {
+     "SIG": 2,
+     "DISC": 1
+    },
+    {
+     "SIG": 3,
+     "DISC": 2
+    }
+   ]
+  },
+  {
+   "id": "p1q3",
+   "type": "mc",
+   "weight": 1.5,
+   "scoring": {
+    "A": {
+     "DIS": 3,
+     "INJ": 1
+    },
+    "B": {
+     "DIS": 2,
+     "SHM": 2
+    },
+    "C": {
+     "SHM": 3,
+     "CTRL": 1
+    },
+    "D": {
+     "SIG": 2,
+     "SHM": 1
+    },
+    "E": {}
+   }
+  },
+  {
+   "id": "p1q4",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {},
+    {},
+    {
+     "SHM": 1,
+     "CTRL": 1
+    },
+    {
+     "SHM": 2,
+     "CTRL": 1,
+     "DIS": 1
+    },
+    {
+     "SHM": 3,
+     "CTRL": 2
+    }
+   ]
+  },
+  {
+   "id": "p1q5",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {},
+    {},
+    {
+     "INJ": 1,
+     "SIG": 1
+    },
+    {
+     "INJ": 2,
+     "SIG": 2
+    },
+    {
+     "INJ": 3,
+     "SIG": 2
+    }
+   ]
+  },
+  {
+   "id": "p1q6",
+   "type": "mc",
+   "weight": 1,
+   "scoring": {
+    "A": {},
+    "B": {
+     "DISC": 2,
+     "SHM": 1
+    },
+    "C": {
+     "DISC": 3
+    },
+    "D": {
+     "DISC": 3,
+     "SIG": 1
+    },
+    "E": {
+     "CTRL": 1
+    }
+   }
+  },
+  {
+   "id": "p1q7",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {},
+    {},
+    {
+     "CTRL": 1
+    },
+    {
+     "CTRL": 3
+    },
+    {
+     "CTRL": 3,
+     "DIS": 1
+    }
+   ]
+  },
+  {
+   "id": "p1q8",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {},
+    {},
+    {
+     "SIG": 1,
+     "DISC": 1
+    },
+    {
+     "SIG": 3
+    },
+    {
+     "SIG": 3,
+     "DISC": 1
+    }
+   ]
+  },
+  {
+   "id": "p1q9",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {},
+    {},
+    {
+     "DIS": 1,
+     "SIG": 1
+    },
+    {
+     "DIS": 2,
+     "INJ": 1
+    },
+    {
+     "DIS": 3,
+     "INJ": 1,
+     "SIG": 1
+    }
+   ]
+  },
+  {
+   "id": "p1q10",
+   "type": "mc",
+   "weight": 1.5,
+   "scoring": {
+    "A": {
+     "INJ": 3,
+     "DIS": 1
+    },
+    "B": {
+     "INJ": 2
+    },
+    "C": {
+     "INJ": 1
+    },
+    "D": {
+     "SIG": 1,
+     "SHM": 1
+    },
+    "E": {
+     "CTRL": 2,
+     "SHM": 1
+    }
+   }
+  }
+ ],
+ "P2": [
+  {
+   "id": "p2q1",
+   "type": "mc",
+   "weight": 1.5,
+   "scoring": {
+    "A": {
+     "COMP": 2,
+     "PROT": 1
+    },
+    "B": {
+     "LOV": 3
+    },
+    "C": {
+     "PROT": 2,
+     "COMP": 1
+    },
+    "D": {
+     "FREE": 2,
+     "REM": 1
+    },
+    "E": {
+     "REM": 3
+    },
+    "F": {
+     "ACC": 3
+    }
+   }
+  },
+  {
+   "id": "p2q2",
+   "type": "freetext",
+   "weight": 1.5,
+   "scoring": null
+  },
+  {
+   "id": "p2q3",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {},
+    {},
+    {},
+    {},
+    {}
+   ]
+  },
+  {
+   "id": "p2q4",
+   "type": "mc",
+   "weight": 1,
+   "scoring": {
+    "A": {
+     "COMP": 3
+    },
+    "B": {
+     "LOV": 2,
+     "REM": 1
+    },
+    "C": {
+     "PROT": 3
+    },
+    "D": {
+     "FREE": 3
+    },
+    "E": {
+     "ACC": 3
+    },
+    "F": {
+     "REM": 3
+    }
+   }
+  },
+  {
+   "id": "p2q5",
+   "type": "freetext",
+   "weight": 1,
+   "scoring": null
+  },
+  {
+   "id": "p2q6",
+   "type": "freetext",
+   "weight": 1,
+   "scoring": null
+  },
+  {
+   "id": "p2q7",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {},
+    {},
+    {
+     "COMP": 1
+    },
+    {},
+    {}
+   ]
+  },
+  {
+   "id": "p2q8",
+   "type": "mc",
+   "weight": 1,
+   "scoring": {
+    "A": {
+     "COMP": 3
+    },
+    "B": {
+     "LOV": 3
+    },
+    "C": {
+     "PROT": 3
+    },
+    "D": {
+     "FREE": 3
+    },
+    "E": {
+     "ACC": 3
+    },
+    "F": {
+     "REM": 3
+    }
+   }
+  }
+ ],
+ "P3": [
+  {
+   "id": "p3q1",
+   "type": "mc",
+   "weight": 1,
+   "scoring": {
+    "A": {
+     "ARCH": 3
+    },
+    "B": {
+     "AMB": 2,
+     "ADPT": 1
+    },
+    "C": {
+     "CAMP": 2
+    },
+    "D": {
+     "ISLE": 3
+    },
+    "E": {
+     "ADPT": 3
+    },
+    "F": {
+     "CAMP": 1,
+     "ADPT": 1
+    }
+   }
+  },
+  {
+   "id": "p3q2",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {
+     "ISLE": 3,
+     "VAULT": 1
+    },
+    {
+     "VAULT": 2,
+     "ISLE": 1
+    },
+    {
+     "AMB": 1,
+     "ADPT": 1
+    },
+    {
+     "AMB": 2,
+     "ADPT": 1
+    },
+    {
+     "ARCH": 3,
+     "CAMP": 1
+    }
+   ]
+  },
+  {
+   "id": "p3q3",
+   "type": "freetext",
+   "weight": 1.5,
+   "scoring": null
+  },
+  {
+   "id": "p3q4",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {
+     "ARCH": 2,
+     "ISLE": 2,
+     "VAULT": 1
+    },
+    {
+     "ARCH": 2,
+     "VAULT": 1
+    },
+    {},
+    {
+     "AMB": 1,
+     "ADPT": 1
+    },
+    {
+     "AMB": 1,
+     "ADPT": 2
+    }
+   ]
+  },
+  {
+   "id": "p3q5",
+   "type": "mc",
+   "weight": 1,
+   "scoring": {
+    "A": {
+     "ISLE": 3
+    },
+    "B": {
+     "AMB": 1,
+     "ADPT": 1
+    },
+    "C": {
+     "ADPT": 2,
+     "AMB": 1
+    },
+    "D": {
+     "AMB": 2
+    },
+    "E": {
+     "VAULT": 2,
+     "ARCH": 1
+    },
+    "F": {
+     "CAMP": 3
+    }
+   }
+  },
+  {
+   "id": "p3q6",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {
+     "ADPT": 2,
+     "ISLE": 1,
+     "VAULT": 1
+    },
+    {
+     "VAULT": 2,
+     "ISLE": 1
+    },
+    {
+     "ARCH": 3
+    },
+    {
+     "AMB": 1,
+     "ADPT": 1
+    },
+    {
+     "ARCH": 2,
+     "CAMP": 1
+    }
+   ]
+  },
+  {
+   "id": "p3q7",
+   "type": "scale",
+   "weight": 1.5,
+   "scoring": [
+    {
+     "ISLE": 2
+    },
+    {},
+    {
+     "ARCH": 1,
+     "AMB": 1
+    },
+    {
+     "ARCH": 2,
+     "AMB": 2
+    },
+    {
+     "ARCH": 3,
+     "AMB": 3
+    }
+   ]
+  },
+  {
+   "id": "p3q8",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {
+     "ISLE": 2,
+     "VAULT": 2
+    },
+    {
+     "VAULT": 3
+    },
+    {},
+    {
+     "AMB": 1,
+     "ADPT": 1
+    },
+    {
+     "AMB": 2,
+     "ADPT": 1
+    }
+   ]
+  },
+  {
+   "id": "p3q9",
+   "type": "mc",
+   "weight": 1,
+   "scoring": {
+    "A": {
+     "ARCH": 2
+    },
+    "B": {
+     "AMB": 2,
+     "ADPT": 1
+    },
+    "C": {
+     "VAULT": 2,
+     "ISLE": 1
+    },
+    "D": {
+     "CAMP": 3
+    },
+    "E": {},
+    "F": {
+     "ISLE": 2,
+     "VAULT": 1
+    }
+   }
+  },
+  {
+   "id": "p3q10",
+   "type": "mc",
+   "weight": 1,
+   "scoring": {
+    "A": {
+     "ISLE": 2,
+     "VAULT": 1
+    },
+    "B": {
+     "AMB": 3,
+     "ADPT": 1
+    },
+    "C": {
+     "ARCH": 2,
+     "CAMP": 1
+    },
+    "D": {
+     "ISLE": 2,
+     "VAULT": 2
+    },
+    "E": {
+     "AMB": 2
+    },
+    "F": {
+     "ARCH": 2
+    }
+   }
+  }
+ ],
+ "P4": [
+  {
+   "id": "p4q1",
+   "type": "mc",
+   "weight": 1.5,
+   "scoring": {
+    "A": {
+     "COURT": 3
+    },
+    "B": {
+     "DISAP": 3
+    },
+    "C": {
+     "FLOOD": 3
+    },
+    "D": {
+     "GHOST": 3
+    },
+    "E": {
+     "VERD": 3
+    },
+    "F": {
+     "PLEA": 3
+    }
+   }
+  },
+  {
+   "id": "p4q2",
+   "type": "mc",
+   "weight": 1,
+   "scoring": {
+    "A": {
+     "COURT": 2,
+     "GHOST": 1
+    },
+    "B": {
+     "DISAP": 3
+    },
+    "C": {
+     "FLOOD": 3
+    },
+    "D": {
+     "GHOST": 3,
+     "VERD": 1
+    },
+    "E": {
+     "DISAP": 1,
+     "VERD": 2
+    },
+    "F": {
+     "PLEA": 3
+    }
+   }
+  },
+  {
+   "id": "p4q3",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {
+     "DISAP": 2,
+     "GHOST": 1
+    },
+    {
+     "PLEA": 1,
+     "VERD": 1
+    },
+    {
+     "COURT": 2
+    },
+    {
+     "COURT": 1,
+     "VERD": 1
+    },
+    {}
+   ]
+  },
+  {
+   "id": "p4q4",
+   "type": "freetext",
+   "weight": 1.5,
+   "scoring": null
+  },
+  {
+   "id": "p4q5",
+   "type": "mc",
+   "weight": 1,
+   "scoring": {
+    "A": {
+     "COURT": 3
+    },
+    "B": {
+     "DISAP": 3
+    },
+    "C": {
+     "FLOOD": 3
+    },
+    "D": {
+     "VERD": 2,
+     "GHOST": 1
+    },
+    "E": {
+     "GHOST": 3
+    },
+    "F": {
+     "PLEA": 3
+    }
+   }
+  },
+  {
+   "id": "p4q6",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {
+     "DISAP": 2,
+     "GHOST": 1
+    },
+    {
+     "VERD": 1
+    },
+    {},
+    {
+     "PLEA": 2,
+     "FLOOD": 1
+    },
+    {
+     "PLEA": 3
+    }
+   ]
+  },
+  {
+   "id": "p4q7",
+   "type": "scale",
+   "weight": 1,
+   "scoring": [
+    {
+     "DISAP": 1,
+     "GHOST": 1
+    },
+    {},
+    {
+     "VERD": 1
+    },
+    {
+     "COURT": 2
+    },
+    {
+     "COURT": 3
+    }
+   ]
+  },
+  {
+   "id": "p4q8",
+   "type": "mc",
+   "weight": 1,
+   "scoring": {
+    "A": {
+     "COURT": 2
+    },
+    "B": {
+     "DISAP": 3
+    },
+    "C": {
+     "FLOOD": 2
+    },
+    "D": {
+     "GHOST": 3
+    },
+    "E": {
+     "VERD": 3
+    },
+    "F": {
+     "PLEA": 3
+    }
+   }
+  }
+ ],
+ "FREETEXT": {
+  "p2q2": {
+   "points": 3,
+   "patterns": {
+    "COMP": "\\b(wrong|correct|criticiz|incompeten|stupid|mistake|fail|embarrass|show.?up|look bad|judg)\\b",
+    "LOV": "\\b(leav|pull.?away|cold|stop.?lov|abandon|reject|go|walk.?away|distant|gone)\\b",
+    "PROT": "\\b(unfair|betray|cheat|lie|hurt|harm|wrong.?me|treat.?me|protect|safe)\\b",
+    "FREE": "\\b(control|manag|tell.?me|trap|smother|pressure|cling|own.?person|space|freedom)\\b",
+    "ACC": "\\b(expos|embarrass|shame|see.?me|flaw|hide|secret|humiliat|disgrac|judg)\\b",
+    "REM": "\\b(forget|ignor|invisible|matter|import|remember|afterthought|overlook|notice)\\b"
+   }
+  },
+  "p2q5": {
+   "points": 2,
+   "patterns": {
+    "COMP": "\\b(achiev|win|proud|good.?at|succeed|compet|grade|score|best)\\b",
+    "LOV": "\\b(held|hug|chose|notic|love|pick|warm|close|safe|togeth)\\b",
+    "PROT": "\\b(protect|safe|secure|defend|shield|watch.?over)\\b",
+    "FREE": "\\b(free|escape|alone|away|run|explor|adventur)\\b",
+    "ACC": "\\b(forgiv|accept|okay|not.?in.?trouble|fine|clean)\\b",
+    "REM": "\\b(celebrat|proud|special|remember|star|important|matter)\\b"
+   }
+  },
+  "p2q6": {
+   "points": 2,
+   "patterns": {
+    "COMP": "\\b(capabl|reliabl|intellig|contribut|smart|good.?at|competen|strong|hardwork)\\b",
+    "LOV": "\\b(care|loyal|love|heart|devot|faithful|kind)\\b",
+    "PROT": "\\b(fair|good.?intent|meant.?well|honest|integrit|right)\\b",
+    "FREE": "\\b(space|independen|not.?a.?burden|own|free|alone)\\b",
+    "ACC": "\\b(try|work.?in.?progress|not.?proud|imperfect|mess|broken|growing)\\b",
+    "REM": "\\b(depth|more.?to.?offer|particular|see|beneath|underneath|matter)\\b"
+   }
+  },
+  "p3q3": {
+   "points": 3,
+   "patterns": {
+    "ARCH": "\\b(reliabl|competen|gets.?things.?done|high.?standard|organiz|togethe|responsible)\\b",
+    "ISLE": "\\b(self.?suffic|private|hard.?to.?know|reserved|quiet|keep.?to)\\b",
+    "AMB": "\\b(warm|helpful|always.?there|caring|kind|sweet|generous|giving)\\b",
+    "CAMP": "\\b(charism|achiev|ambitio|presence|dynamic|driven|impressive|leader)\\b",
+    "ADPT": "\\b(adapt|easy.?to.?be|match|goes.?with|flexible|change|chameleon|different)\\b",
+    "VAULT": "\\b(depth|thoughtful|guarded|private|worth.?know|layered|complex|deep)\\b"
+   }
+  },
+  "p4q4": {
+   "points": 3,
+   "patterns": {
+    "COURT": "\\b(argu|evidence|case|prove|heard|acknowledg|fight|debate|right|point)\\b",
+    "DISAP": "\\b(withdraw|quiet|alone|disappear|space|shut.?down|pull|away|silent|ghost|unreachable|gone)\\b",
+    "FLOOD": "\\b(pour|everything|cry|tears|overwhelm|all.?at.?once|burst|couldn.?t.?stop)\\b",
+    "GHOST": "\\b(fine|normal|act|pretend|outside|inside|carry|perform|mask)\\b",
+    "VERD": "\\b(disconnect|losing|fade|change|pattern|decide|pull.?away|gradual|slow)\\b",
+    "PLEA": "\\b(apolog|fix|reassur|sorry|restore|beg|please|need.?to.?know|desperate)\\b"
+   }
+  }
+ }
+}

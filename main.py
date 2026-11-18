@@ -178,6 +178,15 @@ class SubmissionOut(BaseModel):
     user_email: Optional[str] = None
 
 
+
+def _safe_json(raw):
+    try:
+        v = json.loads(raw or "{}")
+        return v if isinstance(v, dict) else {}
+    except Exception:
+        return {}
+
+
 # ─── Routes ───
 
 @app.get("/")
@@ -338,6 +347,7 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
         name=payload.name or "",
         pair_code=pair_code,
         wrapup_answers=payload.wrapup_answers,
+        answers=payload.answers,
     )
 
     # ─── Generate the Personal Profile PDF (PRIMARY attachment) ───
@@ -1671,6 +1681,7 @@ def me_personal_pdf(
         name=sub.name or "",
         pair_code=sub.pair_code,
         wrapup_answers=results.get("wrapup_answers"),
+        answers=_safe_json(sub.answers_json),
     )
     try:
         pdf_bytes = generate_report_pdf(data)
@@ -1809,6 +1820,7 @@ def me_resend_report(
         name=sub.name or "",
         pair_code=sub.pair_code,
         wrapup_answers=results.get("wrapup_answers"),
+        answers=_safe_json(sub.answers_json),
     )
     try:
         pdf_bytes = generate_report_pdf(data)
