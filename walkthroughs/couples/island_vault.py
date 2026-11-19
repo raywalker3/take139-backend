@@ -24,6 +24,7 @@ from reportlab.platypus import (
 )
 
 from ..base import (
+    real_card, real_cover_lines,
     make_doc, make_styles, finalize_buffer, ensure_fonts,
     section_header,
     PAGE_W, MARGIN_L, MARGIN_R,
@@ -391,14 +392,14 @@ def build(sub_a, sub_b) -> bytes:
         [[
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_isle.upper()}</b></font><br/>"
-                "Island &middot; Ghost<br/>"
-                "<font size=9 color='#6b6862'>Disconnection &middot; Am I significant?</font>",
+                f"{real_cover_lines(sub_a, 'Island &middot; Ghost', 'Disconnection &middot; Am I significant?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(sub_a, 'Island &middot; Ghost', 'Disconnection &middot; Am I significant?')[1]}</font>",
                 ParagraphStyle("c1", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
             Paragraph(
                 f"<font color='#8a4a2c'><b>{name_vault.upper()}</b></font><br/>"
-                "Vault &middot; Ghost<br/>"
-                "<font size=9 color='#6b6862'>Shame &middot; Am I acceptable?</font>",
+                f"{real_cover_lines(sub_b, 'Vault &middot; Ghost', 'Shame &middot; Am I acceptable?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(sub_b, 'Vault &middot; Ghost', 'Shame &middot; Am I acceptable?')[1]}</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -441,11 +442,11 @@ def build(sub_a, sub_b) -> bytes:
         story.append(Paragraph(R(p), S["BodyJ"]))
     side_by_side = Table(
         [[
-            _profile_card(S, name_isle, ACCENT, "Disconnection", "Am I significant?",
-                          "The Island", "The Ghost"),
+            _profile_card(S, name_isle, ACCENT,
+                          *real_card(sub_a, "Disconnection", "Am I significant?", "The Island", "The Ghost")),
             "",
-            _profile_card(S, name_vault, ACCENT_HER, "Shame", "Am I acceptable?",
-                          "The Vault", "The Ghost"),
+            _profile_card(S, name_vault, ACCENT_HER,
+                          *real_card(sub_b, "Shame", "Am I acceptable?", "The Vault", "The Ghost")),
         ]],
         colWidths=[
             (PAGE_W - MARGIN_L - MARGIN_R - 18) / 2.0, 18,

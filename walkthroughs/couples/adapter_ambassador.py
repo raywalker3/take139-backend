@@ -29,6 +29,7 @@ from reportlab.platypus import (
 )
 
 from ..base import (
+    real_card, real_cover_lines,
     make_doc, make_styles, finalize_buffer, ensure_fonts,
     section_header,
     PAGE_W, MARGIN_L, MARGIN_R,
@@ -873,14 +874,14 @@ def build(sub_a, sub_b) -> bytes:
         [[
             Paragraph(
                 f"<font color='#8a4a2c'><b>{name_a.upper()}</b></font><br/>"
-                "Adapter &middot; Plea / Quiet Exit<br/>"
-                "<font size=9 color='#6b6862'>Control &middot; Am I free?</font>",
+                f"{real_cover_lines(sub_a, 'Adapter &middot; Plea / Quiet Exit', 'Control &middot; Am I free?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(sub_a, 'Adapter &middot; Plea / Quiet Exit', 'Control &middot; Am I free?')[1]}</font>",
                 ParagraphStyle("c1", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_b.upper()}</b></font><br/>"
-                "Ambassador &middot; Plea<br/>"
-                "<font size=9 color='#6b6862'>Disconnection &middot; Am I lovable?</font>",
+                f"{real_cover_lines(sub_b, 'Ambassador &middot; Plea', 'Disconnection &middot; Am I lovable?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(sub_b, 'Ambassador &middot; Plea', 'Disconnection &middot; Am I lovable?')[1]}</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -924,12 +925,10 @@ def build(sub_a, sub_b) -> bytes:
     side_by_side = Table(
         [[
             _profile_card(S, name_a, ACCENT,
-                          "Control / Shame", "Am I free?",
-                          "The Adapter", "The Plea / Quiet Exit"),
+                          *real_card(sub_a, "Control / Shame", "Am I free?", "The Adapter", "The Plea / Quiet Exit")),
             "",
             _profile_card(S, name_b, ACCENT_HER,
-                          "Disconnection", "Am I lovable?",
-                          "The Ambassador", "The Plea"),
+                          *real_card(sub_b, "Disconnection", "Am I lovable?", "The Ambassador", "The Plea")),
         ]],
         colWidths=[
             (PAGE_W - MARGIN_L - MARGIN_R - 18) / 2.0, 18,

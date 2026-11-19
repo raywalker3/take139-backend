@@ -27,6 +27,7 @@ from reportlab.platypus import (
 
 try:
     from ..base import (
+    real_card, real_cover_lines,
         make_doc, make_styles, finalize_buffer, ensure_fonts,
         section_header,
         PAGE_W, MARGIN_L, MARGIN_R,
@@ -766,14 +767,14 @@ def build(sub_a, sub_b) -> bytes:
         [[
             Paragraph(
                 f"<font color='#8a4a2c'><b>{name_a.upper()}</b></font><br/>"
-                "Adapter &middot; Attorney<br/>"
-                "<font size=9 color='#6b6862'>Control &middot; Am I free?</font>",
+                f"{real_cover_lines(sub_a, 'Adapter &middot; Attorney', 'Control &middot; Am I free?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(sub_a, 'Adapter &middot; Attorney', 'Control &middot; Am I free?')[1]}</font>",
                 ParagraphStyle("c1", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_b.upper()}</b></font><br/>"
-                "Performance Campaign &middot; Attorney<br/>"
-                "<font size=9 color='#6b6862'>Significance &middot; Am I significant?</font>",
+                f"{real_cover_lines(sub_b, 'Performance Campaign &middot; Attorney', 'Significance &middot; Am I significant?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(sub_b, 'Performance Campaign &middot; Attorney', 'Significance &middot; Am I significant?')[1]}</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -816,12 +817,11 @@ def build(sub_a, sub_b) -> bytes:
         story.append(Paragraph(R(p), S["BodyJ"]))
     side_by_side = Table(
         [[
-            _profile_card(S, name_a, ACCENT, "Control", "Am I free?",
-                          "The Adapter", "The Attorney"),
+            _profile_card(S, name_a, ACCENT,
+                          *real_card(sub_a, "Control", "Am I free?", "The Adapter", "The Attorney")),
             "",
-            _profile_card(S, name_b, ACCENT_HER, "Significance",
-                          "Am I significant?",
-                          "The Performance Campaign", "The Attorney"),
+            _profile_card(S, name_b, ACCENT_HER,
+                          *real_card(sub_b, "Significance", "Am I significant?", "The Performance Campaign", "The Attorney")),
         ]],
         colWidths=[
             (PAGE_W - MARGIN_L - MARGIN_R - 18) / 2.0, 18,

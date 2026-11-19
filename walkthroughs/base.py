@@ -420,3 +420,42 @@ def gendered_render(text: str, role_a_assumed: str, role_a_actual: str,
     earlier in the session but are otherwise ignored.
     """
     return text.format(**subs)
+
+
+# ─── Real-profile labels for couples covers and profile cards ───────────
+# Added 2026-11-18. Couples walkthroughs used to print a fixed, assumed
+# profile for each partner. These helpers print the partner's actual
+# results, falling back to the original text when a code is missing
+# (e.g. sample PDFs built without a real submission).
+_PL_TRIG = {"DIS": "Disrespect", "DISC": "Disconnection", "INJ": "Injustice",
+            "CTRL": "Control", "SHM": "Shame", "SHAM": "Shame", "SIG": "Significance"}
+_PL_CQ = {"COMP": "Am I competent?", "LOV": "Am I lovable?", "PROT": "Am I protected?",
+          "FREE": "Am I free?", "ACC": "Am I acceptable?", "REM": "Am I significant?"}
+_PL_MECH = {"ARCH": "Architect", "ISLE": "Island", "AMB": "Ambassador", "VAULT": "Vault",
+            "ADPT": "Adapter", "CAMP": "Performance", "PERF": "Performance"}
+_PL_BRK = {"COURT": "Attorney", "ATTY": "Attorney", "DISAP": "Ghost", "FLOOD": "Flood",
+           "GHOST": "Mask", "MASK": "Mask", "VERD": "Quiet Exit", "PLEA": "Plea"}
+
+
+def real_profile(sub, trig, cq, mech, brk):
+    """Return (trigger, core_question, mechanism, breakdown) display labels
+    for this submission; each falls back to the given default."""
+    g = lambda attr: (getattr(sub, attr, None) or "").upper()
+    return (_PL_TRIG.get(g("primary_trigger"), trig),
+            _PL_CQ.get(g("primary_core_question"), cq),
+            _PL_MECH.get(g("primary_mechanism"), mech),
+            _PL_BRK.get(g("primary_breakdown"), brk))
+
+
+def real_card(sub, trig, cq, mech, brk):
+    """Arguments for _profile_card(): trigger, question, 'The X', 'The Y'."""
+    t, q, m, b = real_profile(sub, trig, cq, mech.replace("The ", ""), brk.replace("The ", ""))
+    return (t, q, "The " + m, "The " + b)
+
+
+def real_cover_lines(sub, mech_line, q_line):
+    """Cover text: ('Mechanism · Breakdown', 'Trigger · Core Question')."""
+    if not (getattr(sub, "primary_mechanism", None) and getattr(sub, "primary_breakdown", None)):
+        return mech_line, q_line
+    t, q, m, b = real_profile(sub, "", "", "", "")
+    return (f"{m} &middot; {b}", f"{t} &middot; {q}" if t and q else q_line)

@@ -21,6 +21,7 @@ from reportlab.platypus import (
 )
 
 from ..base import (
+    real_card, real_cover_lines,
     make_doc, make_styles, finalize_buffer, ensure_fonts,
     section_header,
     PAGE_W, MARGIN_L, MARGIN_R,
@@ -732,14 +733,14 @@ def build(sub_a, sub_b) -> bytes:
         [[
             Paragraph(
                 f"<font color='#8a4a2c'><b>{name_arch.upper()}</b></font><br/>"
-                "Architect &middot; Attorney<br/>"
-                "<font size=9 color='#6b6862'>Disrespect &middot; Am I protected?</font>",
+                f"{real_cover_lines(sub_a, 'Architect &middot; Attorney', 'Disrespect &middot; Am I protected?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(sub_a, 'Architect &middot; Attorney', 'Disrespect &middot; Am I protected?')[1]}</font>",
                 ParagraphStyle("c1", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_amb.upper()}</b></font><br/>"
-                "Ambassador &middot; Plea<br/>"
-                "<font size=9 color='#6b6862'>Disconnection &middot; Am I lovable?</font>",
+                f"{real_cover_lines(sub_b, 'Ambassador &middot; Plea', 'Disconnection &middot; Am I lovable?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(sub_b, 'Ambassador &middot; Plea', 'Disconnection &middot; Am I lovable?')[1]}</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -779,11 +780,11 @@ def build(sub_a, sub_b) -> bytes:
         story.append(Paragraph(R(p), S["BodyJ"]))
     side_by_side = Table(
         [[
-            _profile_card(S, name_arch, ACCENT, "Disrespect", "Am I protected?",
-                          "The Architect", "The Attorney"),
+            _profile_card(S, name_arch, ACCENT,
+                          *real_card(sub_a, "Disrespect", "Am I protected?", "The Architect", "The Attorney")),
             "",
-            _profile_card(S, name_amb, ACCENT_HER, "Disconnection", "Am I lovable?",
-                          "The Ambassador", "The Plea"),
+            _profile_card(S, name_amb, ACCENT_HER,
+                          *real_card(sub_b, "Disconnection", "Am I lovable?", "The Ambassador", "The Plea")),
         ]],
         colWidths=[
             (PAGE_W - MARGIN_L - MARGIN_R - 18) / 2.0,

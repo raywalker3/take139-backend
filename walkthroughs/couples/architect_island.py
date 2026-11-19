@@ -20,6 +20,7 @@ from reportlab.platypus import (
 )
 
 from ..base import (
+    real_card, real_cover_lines,
     make_doc, make_styles, finalize_buffer, ensure_fonts,
     section_header,
     PAGE_W, MARGIN_L, MARGIN_R,
@@ -368,14 +369,14 @@ def build(sub_arch, sub_isle) -> bytes:
         [[
             Paragraph(
                 f"<font color='#8a4a2c'><b>{name_arch.upper()}</b></font><br/>"
-                "Architect &middot; Attorney<br/>"
-                "<font size=9 color='#6b6862'>Disrespect &middot; Am I protected?</font>",
+                f"{real_cover_lines(sub_arch, 'Architect &middot; Attorney', 'Disrespect &middot; Am I protected?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(sub_arch, 'Architect &middot; Attorney', 'Disrespect &middot; Am I protected?')[1]}</font>",
                 ParagraphStyle("c1", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_isle.upper()}</b></font><br/>"
-                "Island &middot; Flood<br/>"
-                "<font size=9 color='#6b6862'>Insignificance &middot; Am I significant?</font>",
+                f"{real_cover_lines(sub_isle, 'Island &middot; Flood', 'Insignificance &middot; Am I significant?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(sub_isle, 'Island &middot; Flood', 'Insignificance &middot; Am I significant?')[1]}</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -414,9 +415,11 @@ def build(sub_arch, sub_isle) -> bytes:
         story.append(Paragraph(R(p), S["BodyJ"]))
     side_by_side = Table(
         [[
-            _profile_card(S, name_arch, ACCENT, "Disrespect", "Am I protected?", "The Architect", "The Attorney"),
+            _profile_card(S, name_arch, ACCENT,
+                          *real_card(sub_arch, "Disrespect", "Am I protected?", "The Architect", "The Attorney")),
             "",
-            _profile_card(S, name_isle, ACCENT_HER, "Insignificance", "Am I significant?", "The Island", "The Flood"),
+            _profile_card(S, name_isle, ACCENT_HER,
+                          *real_card(sub_isle, "Insignificance", "Am I significant?", "The Island", "The Flood")),
         ]],
         colWidths=[
             (PAGE_W - MARGIN_L - MARGIN_R - 18) / 2.0, 18, (PAGE_W - MARGIN_L - MARGIN_R - 18) / 2.0,

@@ -21,6 +21,7 @@ from reportlab.platypus import (
 )
 
 from ..base import (
+    real_card, real_cover_lines,
     make_doc, make_styles, finalize_buffer, ensure_fonts,
     section_header,
     PAGE_W, MARGIN_L, MARGIN_R,
@@ -716,8 +717,10 @@ def build(sub_a, sub_b) -> bytes:
     # Sort alphabetically so A <= B (same-mechanism pair: order is arbitrary)
     if raw_a.lower() <= raw_b.lower():
         name_a, name_b = raw_a, raw_b
+        psub_a, psub_b = sub_a, sub_b
     else:
         name_a, name_b = raw_b, raw_a
+        psub_a, psub_b = sub_b, sub_a
 
     def R(text):
         return _render(text, name_a, name_b)
@@ -747,14 +750,14 @@ def build(sub_a, sub_b) -> bytes:
         [[
             Paragraph(
                 f"<font color='#8a4a2c'><b>{name_a.upper()}</b></font><br/>"
-                "Architect &middot; Attorney<br/>"
-                f"<font size=9 color='#6b6862'>Disrespect / Injustice &middot; Am I protected?</font>",
+                f"{real_cover_lines(psub_a, 'Architect &middot; Attorney', 'Disrespect / Injustice &middot; Am I protected?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(psub_a, 'Architect &middot; Attorney', 'Disrespect / Injustice &middot; Am I protected?')[1]}</font>",
                 ParagraphStyle("c1", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_b.upper()}</b></font><br/>"
-                "Architect &middot; Attorney / Quiet Exit<br/>"
-                f"<font size=9 color='#6b6862'>Disrespect / Injustice &middot; Am I protected?</font>",
+                f"{real_cover_lines(psub_b, 'Architect &middot; Attorney / Quiet Exit', 'Disrespect / Injustice &middot; Am I protected?')[0]}<br/>"
+                f"<font size=9 color='#6b6862'>{real_cover_lines(psub_b, 'Architect &middot; Attorney / Quiet Exit', 'Disrespect / Injustice &middot; Am I protected?')[1]}</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -798,12 +801,10 @@ def build(sub_a, sub_b) -> bytes:
     side_by_side = Table(
         [[
             _profile_card(S, name_a, ACCENT,
-                          "Disrespect / Injustice", "Am I protected?",
-                          "The Architect", "The Attorney"),
+                          *real_card(psub_a, "Disrespect / Injustice", "Am I protected?", "The Architect", "The Attorney")),
             "",
             _profile_card(S, name_b, ACCENT_HER,
-                          "Disrespect / Injustice", "Am I protected?",
-                          "The Architect", "Attorney / Quiet Exit"),
+                          *real_card(psub_b, "Disrespect / Injustice", "Am I protected?", "The Architect", "Attorney / Quiet Exit")),
         ]],
         colWidths=[
             (PAGE_W - MARGIN_L - MARGIN_R - 18) / 2.0, 18,

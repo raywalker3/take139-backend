@@ -3569,3 +3569,159 @@ def me_reset_and_retake(
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), reload=True)
+
+
+# ─── Admin: submissions browser, PDF downloads, manual pairing ──────────
+# Added 2026-11-18. Lets the admin find any submission, download that
+# person's exact Profile PDF / Personal Walkthrough, preview a couples
+# walkthrough for ANY two submissions, and pair two submissions directly
+# (optionally emailing both partners).
+
+def _admin_profile_pdf_bytes(sub: Submission) -> bytes:
+    try:
+        results = json.loads(sub.results_json or "{}")
+        intake = json.loads(sub.intake_json or "{}")
+    except Exception:
+        results, intake = {}, {}
+    atmos = intake.get("atmosphere") or []
+    family = intake.get("family_type") or ""
+    home_desc = results.get("home_desc") or (", ".join(atmos) + (" " if atmos else "") + str(family or "")).strip()
+    data = get_report_data(
+        primary_trigger=sub.primary_trigger or "",
+        core_question=sub.primary_core_question or "",
+        mechanism=sub.primary_mechanism or "",
+        breakdown=sub.primary_breakdown or "",
+        trigger_scores=(results.get("trigger_scores") or {}),
+        home_desc=home_desc,
+        name=sub.name or "",
+        pair_code=sub.pair_code,
+        wrapup_answers=results.get("wrapup_answers"),
+        answers=_safe_json(sub.answers_json),
+    )
+    return generate_report_pdf(data)
+
+
+def _admin_get_sub(db: Session, code: str) -> Submission:
+    c = (code or "").strip().upper()
+    sub = db.query(Submission).filter(Submission.pair_code == c).first()
+    if sub is None:
+        raise HTTPException(status_code=404, detail=f"No submission with pair code {c}")
+    return sub
+
+
+def _pdf_response(pdf: bytes, fname: str):
+    from fastapi.responses import Response
+    return Response(content=pdf, media_type="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="{fname}"',
+                             "Cache-Control": "private, no-cache"})
+
+
+def _safe_name(s: str) -> str:
+    import re as _re
+    return _re.sub(r"[^A-Za-z0-9]+", "-", (s or "profile")).strip("-") or "profile"
+
+
+@app.get("/admin/submissions")
+def admin_list_submissions(
+    q: Optional[str] = None,
+    limit: int = 300,
+    _: None = _Depends(admin_auth.require_admin),
+    db: Session = Depends(get_db),
+):
+    rows = (db.query(Submission)
+            .filter(Submission.archived_at.is_(None))
+            .order_by(Submission.created_at.desc())
+            .limit(min(max(limit, 1), 1000)).all())
+    needle = (q or "").strip().lower()
+    out = []
+    for r in rows:
+        item = {
+            "pair_code": r.pair_code, "name": r.name, "email": r.email,
+            "gender": getattr(r, "gender", None),
+            "trigger": r.primary_trigger, "core_question": r.primary_core_question,
+            "mechanism": r.primary_mechanism, "breakdown": r.primary_breakdown,
+            "access_code_used": r.access_code_used,
+            "paired_with_code": r.paired_with_code,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+        if needle and needle not in " ".join(str(v or "") for v in item.values()).lower():
+            continue
+        out.append(item)
+    return {"count": len(out), "submissions": out}
+
+
+@app.get("/admin/pdf/profile/{code}")
+def admin_pdf_profile(code: str, _: None = _Depends(admin_auth.require_admin), db: Session = Depends(get_db)):
+    sub = _admin_get_sub(db, code)
+    return _pdf_response(_admin_profile_pdf_bytes(sub), f"Take139-Profile-{_safe_name(sub.name)}-{sub.pair_code}.pdf")
+
+
+@app.get("/admin/pdf/walkthrough/{code}")
+def admin_pdf_walkthrough(code: str, _: None = _Depends(admin_auth.require_admin), db: Session = Depends(get_db)):
+    sub = _admin_get_sub(db, code)
+    from walkthroughs.api import build_personal_walkthrough
+    return _pdf_response(build_personal_walkthrough(sub, db=db),
+                         f"Take139-Walkthrough-{_safe_name(sub.name)}-{sub.pair_code}.pdf")
+
+
+@app.get("/admin/pdf/couples/{code_a}/{code_b}")
+def admin_pdf_couples(code_a: str, code_b: str, _: None = _Depends(admin_auth.require_admin), db: Session = Depends(get_db)):
+    a = _admin_get_sub(db, code_a)
+    b = _admin_get_sub(db, code_b)
+    from walkthroughs.api import build_couples_walkthrough
+    return _pdf_response(build_couples_walkthrough(a, b, db=db),
+                         f"Take139-Couples-{_safe_name(a.name)}-{_safe_name(b.name)}.pdf")
+
+
+class AdminPairIn(BaseModel):
+    code_a: str
+    code_b: str
+    send_email: bool = False
+
+
+@app.post("/admin/pair")
+def admin_pair(payload: AdminPairIn, _: None = _Depends(admin_auth.require_admin), db: Session = Depends(get_db)):
+    """Pair two submissions directly. Unlinks any previous partner of
+    either person (archiving the old CouplePair row), records the new
+    bond, and optionally emails both partners the couples walkthrough."""
+    a = _admin_get_sub(db, payload.code_a)
+    b = _admin_get_sub(db, payload.code_b)
+    if a.pair_code == b.pair_code:
+        raise HTTPException(status_code=400, detail="Pick two different submissions.")
+    now = datetime.utcnow()
+    unlinked = []
+    # Clear previous partners that point at a or b
+    for s in (a, b):
+        old = s.paired_with_code
+        if old and old not in (a.pair_code, b.pair_code):
+            prev = db.query(Submission).filter(Submission.pair_code == old).first()
+            if prev is not None and prev.paired_with_code == s.pair_code:
+                prev.paired_with_code = None
+                prev.paired_at = None
+                unlinked.append(prev.pair_code)
+    # Archive CouplePair rows involving either person that aren't this exact pair
+    rows = db.query(CouplePair).filter(
+        ((CouplePair.pair_code_a.in_([a.pair_code, b.pair_code])) |
+         (CouplePair.pair_code_b.in_([a.pair_code, b.pair_code])))
+        & (CouplePair.archived_at.is_(None))
+    ).all()
+    for cp in rows:
+        if {cp.pair_code_a, cp.pair_code_b} != {a.pair_code, b.pair_code}:
+            cp.archived_at = now
+            cp.archived_reason = "admin re-pair"
+    a.paired_with_code, a.paired_at = b.pair_code, now
+    b.paired_with_code, b.paired_at = a.pair_code, now
+    db.commit()
+    existing = db.query(CouplePair).filter(
+        (((CouplePair.pair_code_a == a.pair_code) & (CouplePair.pair_code_b == b.pair_code)) |
+         ((CouplePair.pair_code_a == b.pair_code) & (CouplePair.pair_code_b == a.pair_code)))
+    ).first()
+    if existing is None:
+        db.add(CouplePair(pair_code_a=a.pair_code, pair_code_b=b.pair_code, authorised_by_code="ADMIN"))
+    elif existing.archived_at is not None:
+        existing.archived_at = None
+        existing.archived_reason = None
+    db.commit()
+    email_status = _send_couples_email_pair(db, a, b) if payload.send_email else None
+    return {"ok": True, "a": a.pair_code, "b": b.pair_code, "unlinked_previous": unlinked,
+            "email_status": email_status}
