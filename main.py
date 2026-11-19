@@ -9,6 +9,7 @@ Handles:
 
 Future phases: counselor auth, couple reports, Stripe auto-codes.
 """
+import re
 import os
 import json
 import base64
@@ -1038,6 +1039,8 @@ def consultant_inquiry(payload: ConsultantInquiryIn):
         ("Organization",   (payload.organization or "").strip() or "—"),
         ("Inquiry type",   (payload.inquiry_type or "").strip() or "—"),
     ]
+    import html as _html
+    rows = [(k, _html.escape(v)) for k, v in rows]
     rows_html = "".join(
         f"<tr><td style='padding:4px 16px 4px 0;color:#8b8475;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;'>{k}</td>"
         f"<td style='padding:4px 0;color:#1d1d1b;font-size:14px;'>{v}</td></tr>"
@@ -1046,7 +1049,7 @@ def consultant_inquiry(payload: ConsultantInquiryIn):
     message_html = (
         f"<div style='margin-top:24px;padding:16px;background:#f5f1e8;border-left:3px solid #8a4a2c;'>"
         f"<div style='font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8a4a2c;font-weight:600;margin-bottom:6px;'>Message</div>"
-        f"<div style='color:#1d1d1b;font-size:14px;line-height:1.6;white-space:pre-wrap;'>{(payload.message or '').strip() or '(none)'}</div>"
+        f"<div style='color:#1d1d1b;font-size:14px;line-height:1.6;white-space:pre-wrap;'>{_html.escape((payload.message or '').strip()) or '(none)'}</div>"
         f"</div>"
     )
     html_body = (
@@ -1083,6 +1086,42 @@ def consultant_inquiry(payload: ConsultantInquiryIn):
         )
 
     return {"ok": True}
+
+
+class ImagoWaitlistIn(BaseModel):
+    email: str
+    source: Optional[str] = None
+
+
+@app.post("/imago/waitlist")
+def imago_waitlist(payload: ImagoWaitlistIn, db: Session = Depends(get_db)):
+    """Store an IMAGO coming-soon signup and notify the admin."""
+    email = (payload.email or "").strip().lower()
+    if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+        raise HTTPException(status_code=400, detail="Please enter a valid email")
+    from database import ImagoWaitlist
+    if not db.query(ImagoWaitlist).filter(ImagoWaitlist.email == email).first():
+        db.add(ImagoWaitlist(email=email, source=(payload.source or "")[:64]))
+        db.commit()
+        try:
+            from email_service import send_results_email, ADMIN_EMAIL
+            import html as _html
+            send_results_email(
+                to_email=ADMIN_EMAIL,
+                subject=f"IMAGO waitlist signup: {email}",
+                html_body=f"<p>New IMAGO waitlist signup: <b>{_html.escape(email)}</b></p>",
+                pdf_bytes=b"", pdf_filename="",
+            )
+        except Exception as e:
+            print(f"[imago-waitlist] admin email failed: {e}")
+    return {"ok": True}
+
+
+@app.get("/admin/imago-waitlist")
+def admin_imago_waitlist(db: Session = Depends(get_db), _admin: None = Depends(admin_auth.require_admin)):
+    from database import ImagoWaitlist
+    rows = db.query(ImagoWaitlist).order_by(ImagoWaitlist.created_at.desc()).all()
+    return {"count": len(rows), "signups": [{"email": r.email, "source": r.source, "created_at": r.created_at.isoformat()} for r in rows]}
 
 
 # ═════════════════ IMAGO ENDPOINTS ══════════════════════════

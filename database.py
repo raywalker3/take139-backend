@@ -315,6 +315,16 @@ def _safe_add_column(table: str, col_def: str) -> None:
         print(f"[migration] Could not add {table} column: {_exc}")
 
 
+class ImagoWaitlist(Base):
+    """Email signups from the IMAGO coming-soon page."""
+    __tablename__ = "imago_waitlist"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(200), index=True, nullable=False)
+    source = Column(String(64), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+
 def init_db():
     """Create tables if they don't exist."""
     Base.metadata.create_all(bind=engine)

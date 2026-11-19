@@ -227,8 +227,7 @@ QUESTION_BODY_P2 = [
     "(Psalm 139:1\u20134) David is not performing openness here. He is confessing the "
     "inevitable. He is saying: everything the Vault is working so carefully to manage, "
     "God has already seen \u2014 and David does not end this psalm in despair. He ends it "
-    "in the language of invitation: <i>Search me, O God, and know my heart. Try me and "
-    "know my thoughts. And see if there be any grievous way in me.</i> He is asking for "
+    "in the language of invitation: <i>Search me, God, and know my heart; test me and know my anxious thoughts. See if there is any offensive way in me.</i> He is asking for "
     "what the Vault most fears, because he has discovered that the God who already sees "
     "does not turn away from what he finds.",
 
@@ -671,8 +670,8 @@ VAULT_TOOLS = [
     ("The Psalm of the searched heart",
      "When the Vault is in full management mode, open to Psalm 139 and pray it "
      "aloud \u2014 the whole psalm, not selected verses. It ends not in shame but in "
-     "invitation: <i>Search me, O God, and know my heart. Try me and know my "
-     "thoughts.</i> The Vault needs practice asking to be known by God before it "
+     "invitation: <i>Search me, God, and know my heart; test me and know my "
+     "anxious thoughts.</i> The Vault needs practice asking to be known by God before it "
      "can practice asking to be known by people. Begin with the One who has "
      "already entered the rooms."),
 
@@ -809,9 +808,10 @@ GOING_FURTHER_ITEMS = [
      "operations aloud to a safe witness."),
 
     ("Pray Psalm 139 slowly, once a week, for a month.",
-     "All of it \u2014 not the parts that feel safe. Verse 23 especially: <i>Search "
-     "me, O God, and know my heart. Try me and know my thoughts. And see if there "
-     "be any grievous way in me, and lead me in the way everlasting.</i> This is "
+     "Pray all of it, including the parts that feel unsafe. Pray verses 23 and 24 "
+     "especially: <i>Search me, God, and know my heart; test me and know my anxious "
+     "thoughts. See if there is any offensive way in me, and lead me in the way "
+     "everlasting.</i> This is "
      "the Vault's hardest prayer because it is the explicit invitation of the God "
      "who already sees. Practice the invitation. Begin where you are."),
 

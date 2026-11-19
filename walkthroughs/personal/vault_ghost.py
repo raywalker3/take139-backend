@@ -213,7 +213,7 @@ QUESTION_BODY_P2 = [
     " inevitable. He is saying: everything the Vault has been managing, God has already"
     " seen. And David does not end this Psalm in despair or in shame. He ends it in the"
     " language of being held, and then \u2014 astonishingly \u2014 in an invitation: <i>Search"
-    " me, O God, and know my heart. Try me and know my thoughts.</i> He is asking for the"
+    " me, God, and know my heart; test me and know my anxious thoughts.</i> He is asking for the"
     " very thing the Vault most fears, because he has discovered that the God who already"
     " sees does not turn away from what he finds.",
 
@@ -631,8 +631,8 @@ VAULT_TOOLS = [
         "Psalm 139 prayed aloud",
         "When the Vault is in full management mode, open to Psalm 139 and pray it aloud"
         " \u2014 the whole of it, not selected verses. It ends not in shame but in invitation:"
-        " <i>Search me, O God, and know my heart. Try me and know my thoughts. And see if"
-        " there be any grievous way in me.</i> This is the Vault's hardest prayer because"
+        " <i>Search me, God, and know my heart; test me and know my anxious thoughts. See if"
+        " there is any offensive way in me.</i> This is the Vault's hardest prayer because"
         " it is the explicit invitation of the God who already sees. The practice of asking"
         " to be known by God is the precondition for the practice of asking to be known by"
         " people.",

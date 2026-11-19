@@ -2,7 +2,7 @@
 
 Five per archetype, 50 total. Used in the Reflection & Integration section of the IMAGO report. Also reusable by counselors in session.
 
-These questions are not a diagnostic checklist. They are an invitation — a slow walk through your own wiring, asking whether what you see is the Spirit's work or the self's strategy. Read them as you would read Psalm 139:23-24: "Search me, O God, and know my heart! Try me and know my thoughts! And see if there be any grievous way in me, and lead me in the way everlasting."
+These questions are not a diagnostic checklist. They are an invitation — a slow walk through your own wiring, asking whether what you see is the Spirit's work or the self's strategy. Read them as you would read Psalm 139:23-24: "Search me, God, and know my heart; test me and know my anxious thoughts. See if there is any offensive way in me, and lead me in the way everlasting."
 
 Come honestly. There is no correct answer to impress anyone. The One who formed this particular wiring in you already knows what He will find.
 
