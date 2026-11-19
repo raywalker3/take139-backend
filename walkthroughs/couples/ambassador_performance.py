@@ -11,7 +11,7 @@ other is a Performance Campaign. First names are substituted from the submission
 Spouse A (Ambassador): caretaker, temperature manager; trigger Disconnection;
     core question "Am I lovable?"
 Spouse B (Performance Campaign): runner, achiever; trigger Significance;
-    core question "Am I enough to be remembered?"
+    core question "Am I significant?"
 
 One of the most common pairings in ministry and high-achievement households.
 Both are giving — the Ambassador relationally, the Performance professionally.
@@ -192,7 +192,7 @@ TWO_SHAPES_BODY = [
 
     "Notice what these two profiles do <i>not</i> share, and notice what they actually share "
     "underneath. You are not asking the same question. {name_amb} is asking <i>am I lovable?</i> "
-    "and {name_camp} is asking <i>am I enough to be remembered?</i> &mdash; two questions that, "
+    "and {name_camp} is asking <i>am I significant?</i> &mdash; two questions that, "
     "in a marriage, are easy to mistake for each other and surprisingly hard to answer for each "
     "other, because the currency each of you offers is not quite the currency the other needs.",
 
@@ -705,7 +705,7 @@ def build(sub_a, sub_b) -> bytes:
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_camp.upper()}</b></font><br/>"
                 "Performance Campaign &middot; Quiet Exit<br/>"
-                "<font size=9 color='#6b6862'>Significance &middot; Am I enough to be remembered?</font>",
+                "<font size=9 color='#6b6862'>Significance &middot; Am I significant?</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -749,7 +749,7 @@ def build(sub_a, sub_b) -> bytes:
                           "The Ambassador", "The Flood"),
             "",
             _profile_card(S, name_camp, ACCENT_HER, "Significance",
-                          "Am I enough to be remembered?",
+                          "Am I significant?",
                           "The Performance Campaign", "The Quiet Exit"),
         ]],
         colWidths=[

@@ -9,7 +9,7 @@ Spouse B is an Island. First names are substituted from the submissions:
     {name_b}  -> the Island spouse's first name
 
 Adapter: trigger Control/Shame, core question "Am I free?" / "Am I acceptable?"
-Island:  trigger Disconnection/Significance, core question "Am I enough to be remembered?"
+Island:  trigger Disconnection/Significance, core question "Am I significant?"
 
 Key pastoral dynamic: This pairing has an unusual surface stability because both
 spouses appear undemanding. The Adapter accommodates the room; the Island asks for
@@ -209,7 +209,7 @@ TWO_SHAPES_BODY = [
     "share underneath. You are not asking the same question. {name_a} is asking "
     "<i>am I free?</i> &mdash; a question that wants room to move, the latitude "
     "to be many selves without being prosecuted for the inconsistency. {name_b} "
-    "is asking <i>am I enough to be remembered?</i> &mdash; a question that wants "
+    "is asking <i>am I significant?</i> &mdash; a question that wants "
     "weight, to matter, to be carried in someone's thoughts. Both are legitimate. "
     "Both are, in the architecture of a marriage, genuinely difficult to give each "
     "other.",
@@ -868,7 +868,7 @@ def build(sub_a, sub_b) -> bytes:
             Paragraph(
                 f"<font color='#8a4a2c'><b>{name_b.upper()}</b></font><br/>"
                 "Island &middot; Ghost<br/>"
-                "<font size=9 color='#6b6862'>Disconnection &middot; Am I enough to be remembered?</font>",
+                "<font size=9 color='#6b6862'>Disconnection &middot; Am I significant?</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -916,7 +916,7 @@ def build(sub_a, sub_b) -> bytes:
                           "The Adapter", "The Plea"),
             "",
             _profile_card(S, name_b, ACCENT,
-                          "Disconnection / Significance", "Am I enough to be remembered?",
+                          "Disconnection / Significance", "Am I significant?",
                           "The Island", "The Ghost"),
         ]],
         colWidths=[

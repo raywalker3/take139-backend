@@ -207,6 +207,9 @@ def build_ghost_submission(
         primary_trigger=trigger,
         primary_core_question=core_question,
         primary_mechanism=mechanism,
-        primary_breakdown=breakdown,
+        # Store the same breakdown codes a real submission uses
+        # (frontend codes) so every downstream consumer reads them the
+        # same way: Ghost = DISAP, Mask = GHOST.
+        primary_breakdown={"ATTY": "COURT", "GHOST": "DISAP", "MASK": "GHOST"}.get(breakdown, breakdown),
         email=email,
     )

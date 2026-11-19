@@ -1,7 +1,7 @@
 """Personal Walkthrough — Performance Campaign + Quiet Exit (Verdict).
 
 Voice: Tim Keller (from Walking with God through Pain and Suffering).
-Profile: Significance trigger, "Am I enough to be remembered?" core question.
+Profile: Significance trigger, "Am I significant?" core question.
 Breakdown: Quiet Exit / Verdict (VERD) — the retirement of the campaign itself.
 
 Walkthrough #35 of 36. Breakdown code: VERD.
@@ -114,11 +114,11 @@ TRIGGER_PROMPTS = [
 QUESTION_BODY_P1 = [
     "Under every trigger is a question, and the question is older than the trigger. The trigger is the alarm; the question is the wound the alarm has spent years guarding.",
 
-    "Yours is this: <b>Am I enough to be remembered?</b>",
+    "Yours is this: <b>Am I significant?</b>",
 
     "It is not the same as <i>Am I competent?</i>, though you have built extraordinary competence in part as an attempt to answer it. It is not <i>Am I loved?</i>, though you have spent considerable energy in relationships that felt like they might finally answer it. It is something more primal than either: the question a soul asks in the moment it realizes that the world has a great many people in it, that most of those people will be forgotten, and that being forgotten is, somehow, the deepest kind of not-mattering. <i>Will I leave something behind that is still there when I am gone? Will anyone remember I was here?</i>",
 
-    "You have almost certainly never put it in those words. The Performance never does. The Performance translates the question into action rather than sitting with it. But trace backward from the alarm that fired this week, and from the one that fired the week before, and from the campaign you have been running for the last decade, and you will find this question at the root of all of it. <i>Am I enough to be remembered?</i> And behind that question, barely below the surface, its companion: <i>Or am I, after everything, ordinary?</i>",
+    "You have almost certainly never put it in those words. The Performance never does. The Performance translates the question into action rather than sitting with it. But trace backward from the alarm that fired this week, and from the one that fired the week before, and from the campaign you have been running for the last decade, and you will find this question at the root of all of it. <i>Am I significant?</i> And behind that question, barely below the surface, its companion: <i>Or am I, after everything, ordinary?</i>",
 
     "The fear of ordinariness is one of the most socially acceptable fears a person can carry in our present age, which makes it both easier and harder to see clearly. Easier, because the culture around you tends to validate the Campaign and reward the runner. Harder, because the validation makes it almost impossible to notice that what you are running from is not obscurity but the question of your worth, and that no quantity of achievement has ever, in your experience, fully silenced it.",
 ]
@@ -150,7 +150,7 @@ CAMP_BODY_P1 = [
 
     "Nor is it the Adapter's mechanism. The Adapter reads the room and becomes what the room needs — calibrates its self to the audience, fluently and genuinely, as a way of purchasing connection. The Performance does not calibrate to the room. The Performance demonstrates to the room. The Adapter is asking, at some level, <i>what do you need from me?</i> The Performance is asking, at some level, <i>do you see what I have done?</i> The Adapter disappears into the audience; the Performance stands before it.",
 
-    "The Performance Campaign is the runner. It is the achiever. It is the person who has a long r\u00e9sum\u00e9 and, often, a thin sense of who they are off the field. It is the person whose default response to anxiety is not to plan (that is the Architect) and not to withdraw (that is the Island), but to <i>produce</i>. When the question fires — <i>am I enough to be remembered?</i> — the Performance's answer is always the same: <i>let me show you one more thing.</i>",
+    "The Performance Campaign is the runner. It is the achiever. It is the person who has a long r\u00e9sum\u00e9 and, often, a thin sense of who they are off the field. It is the person whose default response to anxiety is not to plan (that is the Architect) and not to withdraw (that is the Island), but to <i>produce</i>. When the question fires — <i>am I significant?</i> — the Performance's answer is always the same: <i>let me show you one more thing.</i>",
 ]
 
 CAMP_BODY_P2 = [
@@ -232,14 +232,14 @@ TWO_TOG_BODY = [
 
     "<b>The Campaign is what your longing does when it still believes the running will answer the question.</b> The Quiet Exit is what your longing does when it has decided, privately and without announcement, that the running has cost more than it has produced. The Campaign runs so the question does not have to be asked. The Quiet Exit fires when the Campaign has been running long enough without the answer that the question has been quietly given up on.",
 
-    "The pattern, in slow motion, looks like this. <b>(1)</b> The Campaign runs. It produces, builds, achieves. It earns credentials and recognition and a visible record of demonstrated worth. <b>(2)</b> An event lands that the record cannot address. The significance trigger fires: someone fails to see you, or sees you and does not respond as your achievements seem to warrant. <b>(3)</b> The body says, <i>I am being treated as though I am replaceable.</i> <b>(4)</b> The core question surfaces: <i>Am I enough to be remembered?</i> <b>(5)</b> The Campaign answers by running harder. The work escalates. The output increases. <b>(6)</b> But somewhere in the escalation — and this is the moment most Performances cannot pinpoint precisely — the answer stops arriving. The work is done. The recognition comes. The verdict the Campaign has been pursuing lands, and the soul does not feel it. <b>(7)</b> The Campaign continues, because stopping is not an option it has a vocabulary for. But something has quietly exited. <b>(8)</b> The works continue. The love has been abandoned. The Verdict has been rendered in private, without announcement, possibly without the Performance even recognizing it as a verdict: <i>this is not worth what it costs me, and I do not know how to stop.</i>",
+    "The pattern, in slow motion, looks like this. <b>(1)</b> The Campaign runs. It produces, builds, achieves. It earns credentials and recognition and a visible record of demonstrated worth. <b>(2)</b> An event lands that the record cannot address. The significance trigger fires: someone fails to see you, or sees you and does not respond as your achievements seem to warrant. <b>(3)</b> The body says, <i>I am being treated as though I am replaceable.</i> <b>(4)</b> The core question surfaces: <i>Am I significant?</i> <b>(5)</b> The Campaign answers by running harder. The work escalates. The output increases. <b>(6)</b> But somewhere in the escalation — and this is the moment most Performances cannot pinpoint precisely — the answer stops arriving. The work is done. The recognition comes. The verdict the Campaign has been pursuing lands, and the soul does not feel it. <b>(7)</b> The Campaign continues, because stopping is not an option it has a vocabulary for. But something has quietly exited. <b>(8)</b> The works continue. The love has been abandoned. The Verdict has been rendered in private, without announcement, possibly without the Performance even recognizing it as a verdict: <i>this is not worth what it costs me, and I do not know how to stop.</i>",
 
     "What interrupts this pattern is not stopping the work, and it is not producing more. It is a return — the specific repentance of going back to the place where the work was once given rather than performed. It is receiving, daily and by practice, the verdict that has already been spoken: engraved on the palms of his hands, chosen before the foundation of the world, significant not by achievement but by adoption. When that verdict is received in the place that has been running the campaign — really received, in the interior, not merely affirmed as a doctrine — the Campaign begins to find it can run for different reasons. The Quiet Exit begins, slowly, to reverse. Below is your sequence. Fill in the blanks. When you are done, read it aloud. The Campaign and the Quiet Exit both lose some of their power when they hear themselves named.",
 ]
 
 TWO_TOG_TEMPLATE = (
     "When ____________________, my body reads it as being made invisible, "
-    "and the old question surfaces \u2014 <i>am I enough to be remembered?</i> "
+    "and the old question surfaces \u2014 <i>am I significant?</i> "
     "My first move is to ____________________, because the Campaign in me believes "
     "that if I can produce ____________________, the threat will pass. "
     "Over time, when the running has not answered the question, something in me has begun to ____________________. "
@@ -427,7 +427,7 @@ def build(submission) -> bytes:
     story.append(Paragraph("PREPARED FOR YOU", S["CoverProfileLabel"]))
     story.append(Paragraph("The Performance Campaign \u00a0\u00b7\u00a0 The Quiet Exit", S["CoverProfileVal"]))
     story.append(Paragraph(
-        "Trigger: Significance \u00a0\u00b7\u00a0 Core Question: Am I enough to be remembered?",
+        "Trigger: Significance \u00a0\u00b7\u00a0 Core Question: Am I significant?",
         S["CoverProfileSub"]))
     story.append(Spacer(1, 1.0 * inch))
     story.append(Paragraph(
@@ -467,7 +467,7 @@ def build(submission) -> bytes:
 
     # \u2500\u2500 SECTION 3: Core Question \u2500\u2500
     section_header(story, S, "SECTION THREE  \u00b7  YOUR CORE QUESTION",
-                   "Am I enough to be remembered?",
+                   "Am I significant?",
                    "The wound the alarm is guarding.")
     for p in QUESTION_BODY_P1:
         story.append(Paragraph(p, S["BodyJ"]))

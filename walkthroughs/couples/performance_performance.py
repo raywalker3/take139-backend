@@ -187,7 +187,7 @@ TWO_SHAPES_INTRO = [
 
 TWO_SHAPES_BODY = [
     "{name_a}, you are a <b>Performance Campaign</b> whose body reads insignificance as "
-    + "an alarm and whose deepest question is <i>Am I enough to be remembered?</i> You "
+    + "an alarm and whose deepest question is <i>Am I significant?</i> You "
     + "are a runner. You discovered early in life that achievement was the surest path "
     + "to being seen &mdash; that ordinary was forgettable, and forgettable was not safe. "
     + "And so you began to build: to produce, to demonstrate, to show what you could do "
@@ -197,7 +197,7 @@ TWO_SHAPES_BODY = [
     + "you are honest, does not feel like rest. It feels like a kind of risk.",
 
     "{name_b}, you are a <b>Performance Campaign</b> running the same mechanism: "
-    + "significance is the alarm, <i>Am I enough to be remembered?</i> is the question. "
+    + "significance is the alarm, <i>Am I significant?</i> is the question. "
     + "You, too, are a runner. You, too, discovered that the path to being seen ran "
     + "through the extraordinary. You, too, have built an identity around demonstrated "
     + "worth rather than received worth &mdash; around what you have produced rather "
@@ -592,7 +592,7 @@ PRAYER = [
 
     "Teach {name_b} the same courage in the same grammar. One stopped hour, with "
     + "{name_a}, producing nothing. Let {name_b} discover that the question &mdash; "
-    + "<i>am I enough to be remembered?</i> &mdash; does not grow louder in "
+    + "<i>am I significant?</i> &mdash; does not grow louder in "
     + "the stopping. Let the stopping become, over time, the evidence that the "
     + "answer has already been given. Not by the accomplishments. By the cross, "
     + "where Christ stood before the Father and said: <i>This one. Known. Named. "
@@ -609,7 +609,7 @@ PRAYER = [
     + "willing to do alone.",
 
     "And where each of them asks &mdash; in the interior quiet of an afternoon "
-    + "when there is nothing to produce &mdash; <i>am I enough to be remembered?</i> "
+    + "when there is nothing to produce &mdash; <i>am I significant?</i> "
     + "Let them hear the answer that was spoken before the question was formed. "
     + "In Christ, at the cross, in the specific love of a God who chose them "
     + "before the foundation of the world and inscribed them on the palms "
@@ -841,13 +841,13 @@ def build(sub_a, sub_b) -> bytes:
             Paragraph(
                 f"<font color='#8a4a2c'><b>{name_a.upper()}</b></font><br/>"
                 "Performance Campaign &middot; Quiet Exit<br/>"
-                f"<font size=9 color='#6b6862'>Significance &middot; Am I enough to be remembered?</font>",
+                f"<font size=9 color='#6b6862'>Significance &middot; Am I significant?</font>",
                 ParagraphStyle("c1", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_b.upper()}</b></font><br/>"
                 "Performance Campaign &middot; Quiet Exit<br/>"
-                f"<font size=9 color='#6b6862'>Significance &middot; Am I enough to be remembered?</font>",
+                f"<font size=9 color='#6b6862'>Significance &middot; Am I significant?</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -890,11 +890,11 @@ def build(sub_a, sub_b) -> bytes:
     side_by_side = Table(
         [[
             _profile_card(S, name_a, ACCENT,
-                          "Significance", "Am I enough to be remembered?",
+                          "Significance", "Am I significant?",
                           "Performance Campaign", "Quiet Exit"),
             "",
             _profile_card(S, name_b, ACCENT_HER,
-                          "Significance", "Am I enough to be remembered?",
+                          "Significance", "Am I significant?",
                           "Performance Campaign", "Quiet Exit"),
         ]],
         colWidths=[

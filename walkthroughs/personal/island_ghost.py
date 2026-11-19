@@ -1,7 +1,7 @@
 """Personal Walkthrough — Island + Ghost.
 
 Voice: Tim Keller (from Walking with God through Pain and Suffering).
-Profile: Disconnection/Significance trigger, "Am I enough to be remembered?" core question.
+Profile: Disconnection/Significance trigger, "Am I significant?" core question.
 ~25 pages, 9 sections.
 
 Key contrast: Island+Ghost is the most invisible profile in all 36.
@@ -166,7 +166,7 @@ QUESTION_BODY_P1 = [
     "The trigger is the alarm; the question is the wound the alarm is guarding. "
     "The Island has been guarding this one for a very long time.",
 
-    "Yours is this: <b>Am I enough to be remembered?</b>",
+    "Yours is this: <b>Am I significant?</b>",
 
     "It is not the same as <i>Am I loved?</i>, though it sometimes wears that face. "
     "It is not <i>Am I competent?</i>, though you have built real competence in part "
@@ -283,7 +283,7 @@ ISLE_BODY_P1 = [
     "But there is a cost the Island rarely acknowledges, and it is this: the same "
     "self-containment that protects you from disappointment also prevents you from "
     "being genuinely known. And the question underneath your trigger — "
-    "<i>Am I enough to be remembered?</i> — cannot be answered by a soul that has "
+    "<i>Am I significant?</i> — cannot be answered by a soul that has "
     "made itself invisible to the people whose memory it most wants. The Island's "
     "strategy and the Island's longing are working against each other at the roots.",
 ]
@@ -510,7 +510,7 @@ TWO_TOG_BODY = [
     "perimeter anyway \u2014 a disconnection, a forgetting, a failure of "
     "significance. <b>(3)</b> The trigger fires. The body says, <i>I was not "
     "enough to be remembered here.</i> <b>(4)</b> The core question wakes up: "
-    "<i>Am I enough to be remembered?</i> <b>(5)</b> The Island does not react "
+    "<i>Am I significant?</i> <b>(5)</b> The Island does not react "
     "outwardly. It absorbs the wound and closes further. <b>(6)</b> The Ghost "
     "takes over: it performs fine-ness, says the right things, moves through the "
     "ordinary motions of the relationship, and goes still. <b>(7)</b> It waits "
@@ -537,7 +537,7 @@ TWO_TOG_BODY = [
 TWO_TOG_TEMPLATE = (
     "When I am ____________________, something in me reads it as disconnection "
     "\u2014 as not being enough to matter to this person \u2014 and the old "
-    "question wakes up: <i>am I enough to be remembered?</i> My first move is "
+    "question wakes up: <i>am I significant?</i> My first move is "
     "to ____________________, because the Island in me believes that if I can "
     "____________________, I will not need to expose the wound. When that does "
     "not work \u2014 when the wound stays open \u2014 the Ghost takes over, and "
@@ -837,7 +837,7 @@ def build(submission) -> bytes:
     story.append(Paragraph(
         "The Island &nbsp;\u00b7&nbsp; The Ghost", S["CoverProfileVal"]))
     story.append(Paragraph(
-        "Trigger: Disconnection &nbsp;\u00b7&nbsp; Core Question: Am I enough to be remembered?",
+        "Trigger: Disconnection &nbsp;\u00b7&nbsp; Core Question: Am I significant?",
         S["CoverProfileSub"]))
     story.append(Spacer(1, 1.0 * inch))
     story.append(Paragraph(
@@ -862,7 +862,7 @@ def build(submission) -> bytes:
     # ── SECTION 2: Trigger ──
     section_header(story, S, "SECTION TWO  \u00b7  YOUR TRIGGER",
                    "Disconnection.",
-                   "The moment your nervous system says: I was not enough to be remembered here.")
+                   "The moment your nervous system says: I was not significant here.")
     for p in TRIGGER_BODY[:4]:
         story.append(Paragraph(p, S["BodyJ"]))
     story.append(PageBreak())
@@ -883,7 +883,7 @@ def build(submission) -> bytes:
 
     # ── SECTION 3: Core Question ──
     section_header(story, S, "SECTION THREE  \u00b7  YOUR CORE QUESTION",
-                   "Am I enough to be remembered?",
+                   "Am I significant?",
                    "The wound the alarm is guarding.")
     for p in QUESTION_BODY_P1:
         story.append(Paragraph(p, S["BodyJ"]))

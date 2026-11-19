@@ -1,7 +1,7 @@
 """Personal Walkthrough — Island + Attorney.
 
 Voice: Tim Keller (from Walking with God through Pain and Suffering).
-Profile: Disconnection/Significance trigger, "Am I enough to be remembered?" core question.
+Profile: Disconnection/Significance trigger, "Am I significant?" core question.
 ~25 pages, 9 sections.
 
 Calibration anchor: same Attorney breakdown as ARCH+ATTY, but carried by the Island
@@ -61,7 +61,7 @@ TRIGGER_PROMPTS = [
 
 QUESTION_BODY_P1 = [
     "Under every trigger is a question, and the question is older than the trigger. The trigger is the alarm; the question is the wound the alarm is guarding. The Island has been guarding this one for a very long time.",
-    "Yours is this: <b>Am I enough to be remembered?</b>",
+    "Yours is this: <b>Am I significant?</b>",
     "It is not the same as <i>Am I loved?</i>, though it sometimes wears that face. It is not <i>Am I competent?</i>, though you have built real competence in part as an answer to it. It is more specific than either. It is the question of a soul that wants to know whether it leaves a mark — whether its passage through the lives of others registers, whether it will be thought of in the night, whether something of it will remain when the moment is over. <i>Am I the kind of person who is remembered?</i>",
     "Most adults would prefer to believe they outgrew this question long ago. They have not. They have only relocated it. The childhood version was blunt: <i>does anyone think about me when I am not in the room?</i> The adult version has more syllables — <i>Does my work matter? Does this relationship account for me? Am I significant to the people whose significance I feel?</i> — but it is the same question, asking in the dark, waiting to see if anyone answers.",
     "For you, this question is especially alive because the Island has made it almost impossible to ask it out loud. An Island does not petition. An Island does not say, <i>I need to know that you think about me.</i> That kind of need would require an exposure that feels intolerable, and so the question stays inside — forming and reforming, gaining evidence, losing none.",
@@ -85,7 +85,7 @@ ISLE_BODY_P1 = [
     "You have built something. You did not build it in a morning, and you probably did not know you were building it. But over years — and usually over a specific handful of moments in which the world showed you what it did and did not keep — you constructed a way of being in the world that we are going to call, throughout this walkthrough, <b>the Island</b>.",
     "The Island's strategy is this: <i>if I need very little from the outside world, I cannot be disappointed by what the outside world fails to give me.</i> The Island is not a hermit and is not antisocial. Islands often have deep and genuine relationships. But the Island has learned that the most essential interior material — the things that matter most, that carry the most weight, that feel the most vulnerable — is better handled alone. You process before you share. You reach conclusions before you open them for discussion. You do not need the other person's presence to work through what is happening inside you, and over time you have come to prefer it that way.",
     "There is something in Scripture that commends self-sufficiency of a kind. The book of Proverbs values the person who is not driven by the applause or contempt of the crowd: <i>Fear of man will prove to be a snare, but whoever trusts in the Lord is kept safe.</i> (Proverbs 29:25) The ability to hold your own counsel, to not be buffeted by every wind of opinion, to process deeply before speaking — these are genuine gifts. The Island has these gifts in abundance.",
-    "But there is a cost that the Island rarely acknowledges, and it is this: the same self-containment that protects you from disappointment also prevents you from being genuinely known. And the question underneath your trigger — <i>Am I enough to be remembered?</i> — cannot be answered by a soul that has made itself invisible to the people whose memory it most wants. The Island's strategy and the Island's longing are working against each other at the roots.",
+    "But there is a cost that the Island rarely acknowledges, and it is this: the same self-containment that protects you from disappointment also prevents you from being genuinely known. And the question underneath your trigger — <i>Am I significant?</i> — cannot be answered by a soul that has made itself invisible to the people whose memory it most wants. The Island's strategy and the Island's longing are working against each other at the roots.",
 ]
 
 ISLE_BODY_P2 = [
@@ -146,7 +146,7 @@ ATT_PROMPTS = [
 TWO_TOG_BODY = [
     "Now we place them next to each other, because the Island and the Attorney are not two separate problems. They are the same longing, shaped by the same wound, moving in the same direction — only one moves in sunlight and one moves underground.",
     "<b>The Island is what your longing does when it has time.</b> The Attorney is what your longing does when something has broken through the Island's defenses. The Island processes alone so that the alarm will not have to ring. The Attorney assembles privately when the alarm rings anyway. Together they form a sealed circuit, and the circuit will run all your life if nothing interrupts it.",
-    "The pattern, in slow motion, looks like this. <b>(1)</b> The Island moves through the world self-sufficiently, needing less than most, maintaining the interior perimeter. <b>(2)</b> Something lands that crosses the perimeter anyway — a disconnection, a forgetting, a failure of significance. <b>(3)</b> The trigger fires. The body says, <i>I was not enough to be remembered here.</i> <b>(4)</b> The core question wakes up: <i>Am I enough to be remembered?</i> <b>(5)</b> The Island does not react outwardly. It takes the evidence inside and begins to file it. <b>(6)</b> Over days or weeks, the Attorney assembles the brief in private. <b>(7)</b> At an unannounced moment, the closing argument is delivered — then the Island retreats. <b>(8)</b> The verdict does not satisfy. The question is awake again within days. And the loop restarts.",
+    "The pattern, in slow motion, looks like this. <b>(1)</b> The Island moves through the world self-sufficiently, needing less than most, maintaining the interior perimeter. <b>(2)</b> Something lands that crosses the perimeter anyway — a disconnection, a forgetting, a failure of significance. <b>(3)</b> The trigger fires. The body says, <i>I was not significant here.</i> <b>(4)</b> The core question wakes up: <i>Am I significant?</i> <b>(5)</b> The Island does not react outwardly. It takes the evidence inside and begins to file it. <b>(6)</b> Over days or weeks, the Attorney assembles the brief in private. <b>(7)</b> At an unannounced moment, the closing argument is delivered — then the Island retreats. <b>(8)</b> The verdict does not satisfy. The question is awake again within days. And the loop restarts.",
     "What breaks the loop is not better solitude, and it is not a better argument. It is a different answer to the question. Until the Island receives — really receives, not merely affirms as doctrine — that it is already known, already inscribed, already carried by the One who does not forget, the loop has nothing to run against. With that answer received and practiced over time, the Island begins, slowly, to find less need for the perimeter. The Attorney begins to file fewer cases. Neither retires fully in this life. But both begin to work shorter hours.",
     "Below is your sequence, written in your own words. Fill in the blanks. When you are done, read it aloud. The Island and the Attorney both lose a measure of their power when they hear themselves named.",
 ]
@@ -187,7 +187,7 @@ ATT_TOOLS = [
 PRAYER_BODY = [
     "Father,",
     "You see the Island in me, and you do not despise it. You know what it was built to protect. You know the specific moments — the ones I have never fully named, even to myself — in which the evidence for the Island's construction was gathered. Thank you that it kept me alive. Thank you that you have been present in the interior even when I gave you no invitation.",
-    "But Father, the Island is tired, and the tally is heavy, and I have been keeping a record that was never mine to keep. Teach me to hand it back. Teach me that being fully known by you is the only answer that actually quiets the question underneath my trigger. When the disconnection fires — when the old wound says, <i>you are not enough to be remembered</i> — would you let me hear your answer before I hear the Island's? <i>I have engraved you on the palms of my hands. I will not forget you.</i> Let that land somewhere deeper than my doctrine.",
+    "But Father, the Island is tired, and the tally is heavy, and I have been keeping a record that was never mine to keep. Teach me to hand it back. Teach me that being fully known by you is the only answer that actually quiets the question underneath my trigger. When the disconnection fires — when the old wound says, <i>you are not significant</i> — would you let me hear your answer before I hear the Island's? <i>I have engraved you on the palms of my hands. I will not forget you.</i> Let that land somewhere deeper than my doctrine.",
     "Lord Jesus, when the Attorney rises — when the wound goes underground and the brief begins to assemble in the dark — would you remind me that you are already my Advocate? That the case you have pleaded on my behalf was not assembled in secret but declared publicly, at Calvary, in front of the powers and authorities and every voice that has ever called me forgettable? I do not need to run the trial. The verdict has been spoken. Help me to receive it today, in this specific wound, as though it were the first time I heard it.",
     "Holy Spirit, where I am hiding, give me the courage to speak. Where I am prosecuting, give me the grace to repair. Where I am keeping the tally, give me the open hand. Remind me that the God who knows me fully has loved me fully — and that this is not a truth to file away. It is a truth to live inside.",
     "In the name of the One who, before the highest court in the universe, took the verdict I deserved so that I would never need to earn the one I long for \u2014 I pray.",
@@ -298,7 +298,7 @@ def build(submission) -> bytes:
     story.append(Paragraph("PREPARED FOR YOU", S["CoverProfileLabel"]))
     story.append(Paragraph("The Island &nbsp;\u00b7&nbsp; The Attorney", S["CoverProfileVal"]))
     story.append(Paragraph(
-        "Trigger: Disconnection &nbsp;\u00b7&nbsp; Core Question: Am I enough to be remembered?",
+        "Trigger: Disconnection &nbsp;\u00b7&nbsp; Core Question: Am I significant?",
         S["CoverProfileSub"]))
     story.append(Spacer(1, 1.0 * inch))
     story.append(Paragraph(
@@ -323,7 +323,7 @@ def build(submission) -> bytes:
     # ── SECTION 2: Trigger ──
     section_header(story, S, "SECTION TWO  \u00b7  YOUR TRIGGER",
                    "Disconnection.",
-                   "The moment your nervous system says: I was not enough to be remembered here.")
+                   "The moment your nervous system says: I was not significant here.")
     for p in TRIGGER_BODY:
         story.append(Paragraph(p, S["BodyJ"]))
     story.append(PageBreak())
@@ -338,7 +338,7 @@ def build(submission) -> bytes:
 
     # ── SECTION 3: Core Question ──
     section_header(story, S, "SECTION THREE  \u00b7  YOUR CORE QUESTION",
-                   "Am I enough to be remembered?",
+                   "Am I significant?",
                    "The wound the alarm is guarding.")
     for p in QUESTION_BODY_P1:
         story.append(Paragraph(p, S["BodyJ"]))

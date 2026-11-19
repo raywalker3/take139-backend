@@ -173,7 +173,7 @@ TWO_SHAPES_INTRO = [
 
 TWO_SHAPES_BODY = [
     "{name_a}, you are an <b>Island</b> whose body reads disconnection or insignificance "
-    + "as an alarm, and whose deepest question is <i>Am I enough to be remembered?</i> "
+    + "as an alarm, and whose deepest question is <i>Am I significant?</i> "
     + "You have learned, over years, to process alone &mdash; to reach conclusions before "
     + "you open them for discussion, to carry the interior weight without showing it, to "
     + "need less than most people in ways that protect you from a very specific "
@@ -270,7 +270,7 @@ GIFT_TO_B = [
     + "to demand disclosure, but simply to notice. For the Island, being noticed "
     + "without having to announce itself is one of the most quietly profound "
     + "experiences available. It is, in miniature, the answer to the question "
-    + "underneath the trigger: <i>Am I enough to be remembered?</i>",
+    + "underneath the trigger: <i>Am I significant?</i>",
 
     "The theological word for what {name_a} gives {name_b} is <i>witness.</i> "
     + "Not testimony in the legal sense, but the older, weightier sense: the "
@@ -346,7 +346,7 @@ COLLISION = [
     + "{name_b} is not sure {name_a} needs him for anything, and he will not push. "
     + "Both of them, in their own way, are keeping a count they were not designed to "
     + "keep, asking a question they were not designed to answer alone: "
-    + "<i>Am I enough to be remembered?</i>",
+    + "<i>Am I significant?</i>",
 
     "The way out is not for either of you to become a different mechanism. Islands "
     + "should not be turned into Ambassadors; the self-containment has genuine gifts, "
@@ -572,7 +572,7 @@ PRAYER = [
     + "<i>woe to him who is alone when he falls.</i> Do not let them fall "
     + "alone in the same home.",
 
-    "And Father, where they ask <i>Am I enough to be remembered?</i> &mdash; "
+    "And Father, where they ask <i>Am I significant?</i> &mdash; "
     + "where the old question surfaces in the interior, as it will, as it always "
     + "has &mdash; remind them that the answer was given before the question was "
     + "formed. <i>Behold, I have engraved you on the palms of my hands.</i> "
@@ -790,13 +790,13 @@ def build(sub_a, sub_b) -> bytes:
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_a.upper()}</b></font><br/>"
                 "Island &middot; Quiet Exit<br/>"
-                f"<font size=9 color='#6b6862'>Disconnection &middot; Am I enough to be remembered?</font>",
+                f"<font size=9 color='#6b6862'>Disconnection &middot; Am I significant?</font>",
                 ParagraphStyle("c1", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_b.upper()}</b></font><br/>"
                 "Island &middot; Quiet Exit<br/>"
-                f"<font size=9 color='#6b6862'>Disconnection &middot; Am I enough to be remembered?</font>",
+                f"<font size=9 color='#6b6862'>Disconnection &middot; Am I significant?</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -839,11 +839,11 @@ def build(sub_a, sub_b) -> bytes:
     side_by_side = Table(
         [[
             _profile_card(S, name_a, ACCENT,
-                          "Disconnection / Significance", "Am I enough to be remembered?",
+                          "Disconnection / Significance", "Am I significant?",
                           "The Island", "The Quiet Exit"),
             "",
             _profile_card(S, name_b, ACCENT_HER,
-                          "Disconnection / Significance", "Am I enough to be remembered?",
+                          "Disconnection / Significance", "Am I significant?",
                           "The Island", "The Quiet Exit"),
         ]],
         colWidths=[

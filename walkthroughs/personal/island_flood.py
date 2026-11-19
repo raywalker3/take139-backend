@@ -1,7 +1,7 @@
 """Personal Walkthrough — Island + Flood.
 
 Voice: Tim Keller (from Walking with God through Pain and Suffering).
-Profile: Disconnection trigger, "Am I enough to be remembered?" core question.
+Profile: Disconnection trigger, "Am I significant?" core question.
 ~25 pages, 9 sections.
 
 Key insight: The Island has spent so long not feeling — or rather, not releasing —
@@ -64,7 +64,7 @@ TRIGGER_PROMPTS = [
 
 QUESTION_BODY_P1 = [
     "Under every trigger is a question, and the question is older than the trigger. The trigger is the alarm; the question is the wound the alarm is guarding. The Island has been guarding this one for a very long time, usually without anyone knowing it is there.",
-    "Yours is this: <b>Am I enough to be remembered?</b>",
+    "Yours is this: <b>Am I significant?</b>",
     "It is not the same as <i>Am I loved?</i>, though it sometimes wears that face. It is not <i>Am I competent?</i>, though you have built real competence in part as a way of trying to answer it. It is more specific than either. It is the question of a soul that wants to know whether its passage through the lives of others registers \u2014 whether it will be thought of in the night, whether something of it will remain when the moment is over, whether the world is, in some measurable way, different because you were in it. <i>Am I the kind of person who gets remembered?</i>",
     "Most adults prefer to believe they outgrew this question long ago. They have not. They have only relocated it. The childhood version was blunt: <i>does anyone think about me when I am not in the room?</i> The adult version has more syllables \u2014 <i>Does my work matter? Does this relationship account for me? Am I significant to the people whose significance I feel?</i> \u2014 but it is the same question, asking in the dark, waiting to see whether anything answers back.",
     "For you, this question is especially alive because the Island has made it nearly impossible to ask it out loud. An Island does not petition. An Island does not say, <i>I need to know that you think about me.</i> That kind of need would require an exposure the Island finds intolerable. So the question stays inside \u2014 forming and reforming, gathering evidence, losing none.",
@@ -87,7 +87,7 @@ ISLE_BODY_P1 = [
     "You have built something. You did not build it in a morning, and you almost certainly did not know you were building it with quite this much weight on it. But over years \u2014 over a specific handful of moments in which the world showed you what it did and did not keep \u2014 you constructed a way of being in the world that we are going to call, throughout this walkthrough, <b>the Island</b>.",
     "The Island's strategy is this: <i>if I need very little from the outside world, I cannot be devastated by what the outside world fails to give me.</i> The Island is not a hermit and is not antisocial. Islands often have deep relationships. But the Island has learned that the most essential interior material \u2014 the things that carry the most weight, that feel the most vulnerable \u2014 is better handled alone. You process before you share. You reach your own conclusions before you open them for discussion. Over the years, this has come to feel not merely manageable but preferable.",
     "There is something in Scripture that commends this kind of self-possession. Proverbs is direct about it: <i>Fear of man will prove to be a snare, but whoever trusts in the Lord is kept safe.</i> (Proverbs 29:25) The ability to hold your own counsel, to not be carried away by the opinion of the crowd, to process deeply before you speak \u2014 these are genuine gifts. The Island has these gifts in abundance. You are not, in your self-containment, simply wrong. You have been doing something real, and doing it faithfully, for a long time.",
-    "But there is a cost the Island almost never names: the same self-containment that protects you from disappointment also prevents you from being genuinely known. The question underneath your trigger \u2014 <i>Am I enough to be remembered?</i> \u2014 cannot be answered by a soul that has made itself systematically invisible to the people whose memory it most wants. The Island's strategy and its longing are working against each other at the roots.",
+    "But there is a cost the Island almost never names: the same self-containment that protects you from disappointment also prevents you from being genuinely known. The question underneath your trigger \u2014 <i>Am I significant?</i> \u2014 cannot be answered by a soul that has made itself systematically invisible to the people whose memory it most wants. The Island's strategy and its longing are working against each other at the roots.",
 ]
 
 ISLE_BODY_P2 = [
@@ -141,7 +141,7 @@ FLOOD_PROMPTS = [
 TWO_TOG_BODY = [
     "Now we put them next to each other, because the Island and the Flood are not two separate problems. They are the same soul in two different seasons \u2014 one in which the holding is working, and one in which it has run out of room.",
     "<b>The Island is what your soul does when it has time.</b> The Flood is what your soul does when the time has run out and the silence has cost more than it could bear. The Island manages so the dam will never have to break. The Flood is what happens when the dam breaks anyway. Together they form a cycle \u2014 and the cycle will run for the rest of your life if nothing interrupts it.",
-    "The pattern, in slow motion, looks like this. <b>(1)</b> The Island moves through the world self-contained, needing less than most, maintaining the interior perimeter. <b>(2)</b> Something lands that crosses the perimeter anyway \u2014 a disconnection, a forgetting, a failure of significance. <b>(3)</b> The trigger fires. The body says, <i>I was not enough to be remembered here.</i> <b>(4)</b> The core question wakes up: <i>Am I enough to be remembered?</i> <b>(5)</b> The Island does not react outwardly. It takes the wound inside and files it. <b>(6)</b> This happens again. And again. The file grows thicker. <b>(7)</b> At a moment no one predicted \u2014 often triggered by something small \u2014 the structure gives and the Flood comes: tears, accumulated feeling, intensity that startles everyone in the room. <b>(8)</b> Afterward, the Island is often ashamed of the Flood and resolves to hold more tightly next time. The cycle restarts.",
+    "The pattern, in slow motion, looks like this. <b>(1)</b> The Island moves through the world self-contained, needing less than most, maintaining the interior perimeter. <b>(2)</b> Something lands that crosses the perimeter anyway \u2014 a disconnection, a forgetting, a failure of significance. <b>(3)</b> The trigger fires. The body says, <i>I was not significant here.</i> <b>(4)</b> The core question wakes up: <i>Am I significant?</i> <b>(5)</b> The Island does not react outwardly. It takes the wound inside and files it. <b>(6)</b> This happens again. And again. The file grows thicker. <b>(7)</b> At a moment no one predicted \u2014 often triggered by something small \u2014 the structure gives and the Flood comes: tears, accumulated feeling, intensity that startles everyone in the room. <b>(8)</b> Afterward, the Island is often ashamed of the Flood and resolves to hold more tightly next time. The cycle restarts.",
     "What breaks the cycle is not better self-containment and not stronger willpower. It is a different practice: the small, regular, honest offering of what you are actually carrying to a God who is listening. Until the Island learns to lament before the accumulation becomes an avalanche \u2014 to bring the complaint to God while it is still a handful rather than a flood \u2014 the pressure will keep building until the structure fails. With this practice in place, slowly, the Floods become less catastrophic, then less frequent, then, for some Islands, rare.",
     "Below is your sequence, written in your own words. Fill in the blanks. When you are done, read it aloud. The Island and the Flood both lose a measure of their power when they hear themselves named out loud, in your own voice.",
 ]
@@ -149,7 +149,7 @@ TWO_TOG_BODY = [
 TWO_TOG_TEMPLATE = (
     "When I am ____________________, something in me reads it as disconnection \u2014 "
     "as not being enough to matter to this person \u2014 and the old question wakes up: "
-    "<i>am I enough to be remembered?</i> My first move is to ____________________, "
+    "<i>am I significant?</i> My first move is to ____________________, "
     "because the Island in me believes that if I can ____________________, I will not "
     "have to expose the wound. What I do not always see is that I have been carrying "
     "____________________ for ____________________, and the filing has been adding "
@@ -294,7 +294,7 @@ def build(submission) -> bytes:
     story.append(Paragraph("PREPARED FOR YOU", S["CoverProfileLabel"]))
     story.append(Paragraph("The Island &nbsp;\u00b7&nbsp; The Flood", S["CoverProfileVal"]))
     story.append(Paragraph(
-        "Trigger: Disconnection &nbsp;\u00b7&nbsp; Core Question: Am I enough to be remembered?",
+        "Trigger: Disconnection &nbsp;\u00b7&nbsp; Core Question: Am I significant?",
         S["CoverProfileSub"]))
     story.append(Spacer(1, 1.0 * inch))
     story.append(Paragraph(
@@ -318,7 +318,7 @@ def build(submission) -> bytes:
     # ── SECTION 2: Trigger ──
     section_header(story, S, "SECTION TWO  \u00b7  YOUR TRIGGER",
                    "Disconnection.",
-                   "The moment your nervous system says: I was not enough to be remembered here.")
+                   "The moment your nervous system says: I was not significant here.")
     for p in TRIGGER_BODY:
         story.append(Paragraph(p, S["BodyJ"]))
     story.append(PageBreak())
@@ -333,7 +333,7 @@ def build(submission) -> bytes:
 
     # ── SECTION 3: Core Question ──
     section_header(story, S, "SECTION THREE  \u00b7  YOUR CORE QUESTION",
-                   "Am I enough to be remembered?",
+                   "Am I significant?",
                    "The wound the alarm is guarding.")
     for p in QUESTION_BODY_P1:
         story.append(Paragraph(p, S["BodyJ"]))

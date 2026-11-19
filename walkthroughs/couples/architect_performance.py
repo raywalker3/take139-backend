@@ -10,7 +10,7 @@ other is a Performance Campaign. First names are substituted from the submission
 
 Spouse A (Architect): planner; trigger Disrespect; core question "Am I protected?"
 Spouse B (Performance Campaign): runner, achiever; trigger Significance;
-    core question "Am I enough to be remembered?"
+    core question "Am I significant?"
 
 The classic high-achieving couple — formidable from outside, each driven by a
 different wound underneath: the Architect by fear of disorder, the Performance
@@ -202,7 +202,7 @@ TWO_SHAPES_BODY = [
 
     "{name_arch}\u2019s question is <i>am I protected?</i> \u2014 meaning, will the things"
     " I have planned hold? The Architect can be at peace if the plan holds even when no one"
-    " notices. {name_camp}\u2019s question is <i>am I enough to be remembered?</i> \u2014"
+    " notices. {name_camp}\u2019s question is <i>am I significant?</i> \u2014"
     " meaning, will the things I have produced be enough? The Performance cannot be at peace"
     " if the producing happens unnoticed. These look like the same drive from a distance."
     " They are not the same wound.",
@@ -306,7 +306,7 @@ COLLISION = [
     " even if you have never put a name on it.",
 
     "{name_arch}\u2019s core question is <i>am I protected?</i> {name_camp}\u2019s"
-    " is <i>am I enough to be remembered?</i> These are not opposed in theory. In the"
+    " is <i>am I significant?</i> These are not opposed in theory. In the"
     " daily mechanics of a marriage, they ask for different things from the same person,"
     " and the asking regularly misfires.",
 
@@ -734,7 +734,7 @@ def build(sub_a, sub_b) -> bytes:
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_camp.upper()}</b></font><br/>"
                 "Performance Campaign &middot; Attorney<br/>"
-                "<font size=9 color='#6b6862'>Significance &middot; Am I enough to be remembered?</font>",
+                "<font size=9 color='#6b6862'>Significance &middot; Am I significant?</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -778,7 +778,7 @@ def build(sub_a, sub_b) -> bytes:
                           "The Architect", "The Attorney"),
             "",
             _profile_card(S, name_camp, ACCENT_HER, "Significance",
-                          "Am I enough to be remembered?",
+                          "Am I significant?",
                           "The Performance Campaign", "The Attorney"),
         ]],
         colWidths=[

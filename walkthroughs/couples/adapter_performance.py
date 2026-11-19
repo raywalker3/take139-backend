@@ -9,7 +9,7 @@ Spouse B is a Performance Campaign. First names are substituted from the submiss
     {name_b}  -> the Performance Campaign spouse's first name
 
 Adapter:              trigger Control; core question "Am I free?"
-Performance Campaign: trigger Significance; core question "Am I enough to be remembered?"
+Performance Campaign: trigger Significance; core question "Am I significant?"
 
 Key pastoral dynamic: This pairing is unusually high-functioning in the marketplace.
 Both spouses are gifted at presenting calibrated public selves. The Adapter takes the
@@ -312,7 +312,7 @@ COLLISION = [
     "even if you have not named it exactly.",
 
     "{name_a}'s core question is <i>Am I free?</i> {name_b}'s is "
-    "<i>Am I enough to be remembered?</i> These two questions do not directly oppose "
+    "<i>Am I significant?</i> These two questions do not directly oppose "
     "each other. But in the daily mechanics of a marriage, they ask for different things "
     "from each other, and the asking misfires in a way that is specific to this pairing.",
 
@@ -773,7 +773,7 @@ def build(sub_a, sub_b) -> bytes:
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_b.upper()}</b></font><br/>"
                 "Performance Campaign &middot; Attorney<br/>"
-                "<font size=9 color='#6b6862'>Significance &middot; Am I enough to be remembered?</font>",
+                "<font size=9 color='#6b6862'>Significance &middot; Am I significant?</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -820,7 +820,7 @@ def build(sub_a, sub_b) -> bytes:
                           "The Adapter", "The Attorney"),
             "",
             _profile_card(S, name_b, ACCENT_HER, "Significance",
-                          "Am I enough to be remembered?",
+                          "Am I significant?",
                           "The Performance Campaign", "The Attorney"),
         ]],
         colWidths=[

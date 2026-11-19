@@ -1,7 +1,7 @@
 """Personal Walkthrough — Island + Plea.
 
 Voice: Tim Keller (from Walking with God through Pain and Suffering).
-Profile: Disconnection trigger, "Am I enough to be remembered?" core question.
+Profile: Disconnection trigger, "Am I significant?" core question.
 ~25 pages, 9 sections.
 
 Calibration note — THE MOST PARADOXICAL PROFILE:
@@ -14,7 +14,7 @@ nightly for things they did not do, asking again if everything is okay.
 Section Five naming: the Plea is not betraying the Island's self-sufficiency — it is
 revealing what the self-sufficiency was always covering. The Island never lived as truly
 free of needing love; they lived as protected from feeling that need. The Plea is the first
-time the unanswered question ("Am I enough to be remembered?") gets honest air.
+time the unanswered question ("Am I significant?") gets honest air.
 
 Key texts: Luke 7 (the woman washing Jesus' feet — a Plea that was also faith);
 1 John 4:18 ("perfect love casts out fear").
@@ -73,7 +73,7 @@ TRIGGER_PROMPTS = [
 
 QUESTION_BODY_P1 = [
     "Under every trigger is a question, and the question is older than the trigger. The trigger is the alarm; the question is the wound the alarm is guarding.",
-    "Yours is this: <b>Am I enough to be remembered?</b>",
+    "Yours is this: <b>Am I significant?</b>",
     "It is not the same as <i>Am I loved?</i>, though it sometimes wears that face. It is the question of a soul that wants to know whether its presence registers — whether it leaves something behind when it leaves the room, whether it occupies a real space in the thoughts of the people whose thoughts matter to it. <i>Am I the kind of person who is carried in someone's mind after the conversation ends?</i>",
     "Most people would prefer to believe they outgrew this question. They have not. They have only become adept at not asking it aloud. For you, the Island has learned to keep this question especially quiet. An Island does not petition. An Island does not say, <i>I need you to think of me.</i> That kind of need would require an exposure the Island finds intolerable. So the question stays inside — circling, gathering evidence, settling into a kind of careful certainty that the answer is probably no.",
     "There is a particular cruelty in this arrangement. The Island's self-containment is designed to protect against the wound of not mattering. But in protecting against the wound, it also prevents the experiences that might answer the question. A soul that has made itself unreadable cannot be carried in someone's thoughts, because there is nothing to carry. The Island's protection and the Island's longing are working against each other at the root, and the Island rarely knows it.",
@@ -115,7 +115,7 @@ ISLE_BODY_P3 = [
 ISLE_LETTER_INSTRUCTION = [
     "The letter below is written in the Island's voice. He is not villainous; he is honest in a way he has not been for a long time. Read it slowly. Then answer the three prompts that follow.",
     "Dear [Your name],",
-    "I built this — the distance, the processing alone, the way I close before you can be reached — because I was trying to solve a specific problem. You needed to matter, and the world you grew up in was not consistently able to tell you that you did. Not cruelly, in most cases. Just inconsistently. And inconsistency, for a soul trying to answer <i>am I enough to be remembered?</i>, is worse than outright rejection. Rejection gives you something to push against. Inconsistency just leaves you checking. So I stopped letting you check.",
+    "I built this — the distance, the processing alone, the way I close before you can be reached — because I was trying to solve a specific problem. You needed to matter, and the world you grew up in was not consistently able to tell you that you did. Not cruelly, in most cases. Just inconsistently. And inconsistency, for a soul trying to answer <i>am I significant?</i>, is worse than outright rejection. Rejection gives you something to push against. Inconsistency just leaves you checking. So I stopped letting you check.",
     "I gave you solitude that looks like strength. I gave you a self-sufficiency that others have admired. I made it possible for you to move through your days without visibly needing anyone's memory of you — because needing it, and then not receiving it, was the specific thing I could not allow to keep happening.",
     "What I did not anticipate is that the same distance that protected you from being forgotten also protected you from being remembered. You cannot be inscribed in someone's mind if you have never let your full self be seen by them. I thought I was answering the question. I was only sealing it away where it could never be answered.",
     "I am not going away. But I want you to hear what I am afraid of. Underneath all the self-sufficiency, it is very simple: that if I stop protecting you from needing, you will find out that the need is real — and that the need, when it is real, can be answered, or not answered. And not-answered, at that depth, is something I have been trying to spare you from your whole life.",
@@ -133,7 +133,7 @@ PLEA_BODY_P1 = [
     "The Plea is a breakdown that does not fit the Island's character. The Island pulls inward; the Plea rushes outward. The Island needs less; the Plea wants more. The Island has spent years at the perimeter of its own need; the Plea suddenly, at the worst possible moment, lets all of it through.",
     "Every mechanism has a place it breaks. Yours is called <b>the Plea</b>. And before we describe it, I want to say something that I would only say to someone in your particular position: <b>the Plea is not a betrayal of the Island's self-sufficiency. It is the first time the Island's most honest question has gotten genuine air.</b> The need was always there. The composure was always a management of it, not an erasure. What the Plea reveals is not something new about you. It is something that has been working quietly underneath the Island's exterior, waiting for the threat to become large enough to break through.",
     "Here is what it looks like. The Island has moved through life with admirable equanimity. It has not required much. And then something happens — not necessarily dramatic, but significant. A relationship that carries real weight shows signs of strain. A person the Island actually needs seems to be moving away. The gap opens. And suddenly, something in the Island that has never run before runs. Toward. Fast.",
-    "The Plea pursues. It sends the message before thinking. It apologizes — sometimes for things it did not do, or things it is not certain were wrong, because in the moment the content matters far less than closing the distance. It asks one more time whether everything is all right. It offers concessions on matters it had good reason to hold. It does all of this at a speed that does not feel like itself — because it is the self underneath the Island: the one that has been asking <i>am I enough to be remembered?</i> quietly for years, and is now asking it at volume.",
+    "The Plea pursues. It sends the message before thinking. It apologizes — sometimes for things it did not do, or things it is not certain were wrong, because in the moment the content matters far less than closing the distance. It asks one more time whether everything is all right. It offers concessions on matters it had good reason to hold. It does all of this at a speed that does not feel like itself — because it is the self underneath the Island: the one that has been asking <i>am I significant?</i> quietly for years, and is now asking it at volume.",
     "I want to name something here that is easy to miss. Luke 7 gives us a picture that speaks to what is happening inside you. A woman described by the text as a sinner — who knew her shame, who had no social standing — entered a Pharisee's dinner uninvited and washed Jesus' feet with her tears. The text calls it an act of love. It also reads like a Plea. It was uncontrolled, physically excessive. It was the kind of display the Island finds mortifying to imagine. And Jesus did not call it a breakdown. He called it faith. <i>Your faith has saved you; go in peace.</i> (Luke 7:50) The Plea, at its depth, is a cry that has finally broken through the Island's management. What the Plea does with that cry matters greatly. But the cry itself is not the enemy.",
 ]
 
@@ -146,7 +146,7 @@ PLEA_BODY_P2 = [
 
 PLEA_BODY_P3 = [
     "Here is the pastoral word this profile most needs to hear. <b>The Plea is not the opposite of the Island. It is the Island's question, finally given voice — but in a form that cannot receive the answer it is asking for.</b>",
-    "Think about what the Plea actually wants. It wants to hear: <i>yes, you are enough, I am not going anywhere, you matter to me.</i> It wants the answer to the question that has been running underground since the Island was built. But here is the cruelty at the heart of the Plea's design: an apology given under fear of abandonment, a concession made to close a gap rather than because the concession was right — these do not produce the reassurance that answers the question. The word <i>we are okay</i>, said in response to a pursued apology, does not carry the weight the Plea was hoping it would. The Plea can feel, underneath the relief, that the reassurance was earned. And earned reassurance does not answer <i>am I enough to be remembered?</i> It only answers: <i>can I maintain this connection if I keep working for it?</i> Which is a different question — and one the Island has been living inside for years.",
+    "Think about what the Plea actually wants. It wants to hear: <i>yes, you are enough, I am not going anywhere, you matter to me.</i> It wants the answer to the question that has been running underground since the Island was built. But here is the cruelty at the heart of the Plea's design: an apology given under fear of abandonment, a concession made to close a gap rather than because the concession was right — these do not produce the reassurance that answers the question. The word <i>we are okay</i>, said in response to a pursued apology, does not carry the weight the Plea was hoping it would. The Plea can feel, underneath the relief, that the reassurance was earned. And earned reassurance does not answer <i>am I significant?</i> It only answers: <i>can I maintain this connection if I keep working for it?</i> Which is a different question — and one the Island has been living inside for years.",
     "John writes with precision about what the Plea is actually after: <i>There is no fear in love, but perfect love casts out fear.</i> (1 John 4:18) The Plea runs on fear. Fear that the gap will become permanent. Fear that the question is about to receive a final, devastating answer in the negative. And fear, John says, does not coexist with perfect love. Not because the fear is sinful, but because the love that the gospel offers is specifically designed to be the answer to it. <i>We love because he first loved us.</i> (1 John 4:19) The movement is from received love to given love — not from feared abandonment to desperate repair. <b>The Island has been earning its significance for a long time. The Plea is simply the Island trying to earn it faster, under more pressure, with a greater sense of emergency.</b> Neither will finally answer the question. The question is answered from outside the Island entirely — by a love that was not earned, is not contingent, and cannot be lost by any human distance.",
 ]
 
@@ -158,7 +158,7 @@ PLEA_PROMPTS = [
 TWO_TOG_BODY = [
     "Now we stand back and look at both of them together, because the Island and the Plea are not two separate problems. They are the same longing, housed in the same soul, expressing itself in two opposite directions — one toward safety, one toward connection — and never quite finding what it is looking for in either.",
     "<b>The Island is what your longing does when it has time.</b> It pulls inward, maintains the perimeter, manages the tally from a safe distance. <b>The Plea is what your longing does when the Island's defenses are overwhelmed.</b> When the gap opens and the threat is real enough, the longing breaks through the perimeter and runs outward — toward the person, toward the reassurance — fast, and usually faster than wisdom can keep up with.",
-    "The sequence, in slow motion: <b>(1)</b> The Island moves through the world self-contained, needing less than most, keeping the interior question mostly quiet. <b>(2)</b> Something lands that the Island cannot manage — a disconnection, a signal that a specific person may be pulling away. <b>(3)</b> The trigger fires. <b>(4)</b> The core question wakes up: <i>Am I enough to be remembered?</i> <b>(5)</b> The Island's usual response is overwhelmed. The Plea takes the floor. <b>(6)</b> The Plea pursues: apologizes, asks again, offers concessions. <b>(7)</b> The reassurance arrives, or does not. Either way, the question is not answered at the level where it lives. The Island reassembles its perimeter, and the next trigger finds the same circuit intact.",
+    "The sequence, in slow motion: <b>(1)</b> The Island moves through the world self-contained, needing less than most, keeping the interior question mostly quiet. <b>(2)</b> Something lands that the Island cannot manage — a disconnection, a signal that a specific person may be pulling away. <b>(3)</b> The trigger fires. <b>(4)</b> The core question wakes up: <i>Am I significant?</i> <b>(5)</b> The Island's usual response is overwhelmed. The Plea takes the floor. <b>(6)</b> The Plea pursues: apologizes, asks again, offers concessions. <b>(7)</b> The reassurance arrives, or does not. Either way, the question is not answered at the level where it lives. The Island reassembles its perimeter, and the next trigger finds the same circuit intact.",
     "What breaks the loop is not better self-containment, and it is not faster pursuit. It is a different answer to the question — received not as a theological assertion but as a lived reality, practiced daily the way a person returns to water: <i>you are already known, already inscribed, already held in the memory of the One who does not forget, and no human distance changes that fact.</i> When this answer reaches deep enough — past the Island's management, past the Plea's panic — both begin, slowly, to work shorter hours.",
     "Below is your sequence in your own words. Write in the blanks. When you are done, read it aloud. The Island and the Plea both lose a measure of their power when they hear themselves named.",
 ]
@@ -166,7 +166,7 @@ TWO_TOG_BODY = [
 TWO_TOG_TEMPLATE = (
     "When I am ____________________, something in me reads it as disconnection, "
     "as evidence that I am not enough to hold this person's attention, and the old "
-    "question wakes up: <i>am I enough to be remembered?</i> My first move is usually "
+    "question wakes up: <i>am I significant?</i> My first move is usually "
     "to ____________________, because the Island in me believes that if I can "
     "____________________, the question will stay quiet. When that does not work "
     "— when the gap opens anyway and the threat feels real — the Plea takes over "
@@ -200,7 +200,7 @@ PLEA_TOOLS = [
 PRAYER_BODY = [
     "Father,",
     "You see the Island in me, and you do not despise it. You know what it was built to protect. You know the specific moments — the ones I have never fully named, even to myself — in which the evidence for its construction was gathered. Thank you that it kept me alive. Thank you that you have been present in the interior even when I gave you no invitation, even in the years I convinced myself I did not need one.",
-    "But Father, the Island is tired, and the question it has been guarding is still awake, and I cannot answer it on my own. Teach me that being fully known by you is not a theological assertion to be filed — it is the answer I have been looking for since I was small enough to not yet know the question had a name. When the disconnection fires, when the trigger says <i>you were not enough to be remembered here</i>, would you let me hear your answer before I hear the Island's? <i>I have engraved you on the palms of my hands. I will not forget you.</i> Let that land not only in my mind but somewhere lower — in the place where the Plea lives.",
+    "But Father, the Island is tired, and the question it has been guarding is still awake, and I cannot answer it on my own. Teach me that being fully known by you is not a theological assertion to be filed — it is the answer I have been looking for since I was small enough to not yet know the question had a name. When the disconnection fires, when the trigger says <i>you were not significant here</i>, would you let me hear your answer before I hear the Island's? <i>I have engraved you on the palms of my hands. I will not forget you.</i> Let that land not only in my mind but somewhere lower — in the place where the Plea lives.",
     "Lord Jesus, when the Plea rises in me — when I find myself pursuing and apologizing and asking one more time whether everything is still all right — would you remind me of the woman in Luke 7? She came in with her tears and her ointment and her hair, and she did not hold any of it back, and you did not call it weakness. You called it faith. Would you receive my Plea the way you received hers? Not as evidence that I am unraveling, but as the first honest thing my Island has said in a very long time. And then would you give me the peace you gave her — not the peace of having closed the gap, but the peace of having been seen and not turned away?",
     "Holy Spirit, where I am hiding, give me the courage to speak. Where I am pursuing in fear, give me the grace to pause and ask what I am actually asking for. Where I am keeping the tally, give me the open hand. Remind me that <i>perfect love casts out fear</i> — not by eliminating the fear through willpower, but by being large enough to hold it without being destroyed by it.",
     "In the name of the One who has engraved me, who holds me, who will not forget — I pray.",
@@ -315,7 +315,7 @@ def build(submission) -> bytes:
     story.append(Paragraph("PREPARED FOR YOU", S["CoverProfileLabel"]))
     story.append(Paragraph("The Island &nbsp;\u00b7&nbsp; The Plea", S["CoverProfileVal"]))
     story.append(Paragraph(
-        "Trigger: Disconnection &nbsp;\u00b7&nbsp; Core Question: Am I enough to be remembered?",
+        "Trigger: Disconnection &nbsp;\u00b7&nbsp; Core Question: Am I significant?",
         S["CoverProfileSub"]))
     story.append(Spacer(1, 1.0 * inch))
     story.append(Paragraph(
@@ -353,7 +353,7 @@ def build(submission) -> bytes:
 
     # ── SECTION 3: Core Question ──
     section_header(story, S, "SECTION THREE  \u00b7  YOUR CORE QUESTION",
-                   "Am I enough to be remembered?",
+                   "Am I significant?",
                    "The wound the alarm is guarding.")
     for p in QUESTION_BODY_P1:
         story.append(Paragraph(p, S["BodyJ"]))

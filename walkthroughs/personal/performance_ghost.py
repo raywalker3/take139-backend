@@ -1,7 +1,7 @@
 """Personal Walkthrough — Performance Campaign + Ghost.
 
 Voice: Tim Keller (from Walking with God through Pain and Suffering).
-Profile: Significance trigger, "Am I enough to be remembered?" core question.
+Profile: Significance trigger, "Am I significant?" core question.
 Mechanism: Performance Campaign (CAMP) — the runner, the achiever, identity
   tied to demonstrated worth.
 Breakdown: Ghost (GHOST) — performs normalcy, goes silent, waits to be
@@ -172,7 +172,7 @@ QUESTION_BODY_P1 = [
     "The trigger is the alarm; the question is the wound the alarm has spent years "
     "guarding.",
 
-    "Yours is this: <b>Am I enough to be remembered?</b>",
+    "Yours is this: <b>Am I significant?</b>",
 
     "It is not the same as <i>Am I competent?</i>, though you have built extraordinary "
     "competence in part as an attempt to answer it. It is not <i>Am I loved?</i>, "
@@ -554,7 +554,7 @@ TWO_TOG_BODY = [
     "produces, demonstrates, runs, makes itself impossible to ignore. The Ghost "
     "moves inward: it goes quiet, withdraws the offering, and waits. Together "
     "they describe the full arc of a soul that has been trying to answer the "
-    "question <i>am I enough to be remembered?</i> entirely on its own \u2014 "
+    "question <i>am I significant?</i> entirely on its own \u2014 "
     "first by running fast enough to compel the answer, then by stopping "
     "altogether to see if the answer will come unprompted.",
 
@@ -915,7 +915,7 @@ def build(submission) -> bytes:
         "The Performance Campaign \u00a0\u00b7\u00a0 The Ghost",
         S["CoverProfileVal"]))
     story.append(Paragraph(
-        "Trigger: Significance \u00a0\u00b7\u00a0 Core Question: Am I enough to be remembered?",
+        "Trigger: Significance \u00a0\u00b7\u00a0 Core Question: Am I significant?",
         S["CoverProfileSub"]))
     story.append(Spacer(1, 1.0 * inch))
     story.append(Paragraph(
@@ -957,7 +957,7 @@ def build(submission) -> bytes:
 
     # \u2500\u2500 SECTION 3: Core Question \u2500\u2500
     section_header(story, S, "SECTION THREE  \u00b7  YOUR CORE QUESTION",
-                   "Am I enough to be remembered?",
+                   "Am I significant?",
                    "The wound the alarm is guarding.")
     for p in QUESTION_BODY_P1:
         story.append(Paragraph(p, S["BodyJ"]))

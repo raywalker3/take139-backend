@@ -1,7 +1,7 @@
 """Personal Walkthrough — Island + Quiet Exit (Verdict).
 
 Voice: Tim Keller (from Walking with God through Pain and Suffering).
-Profile: Disconnection / Significance trigger, "Am I enough to be remembered?"
+Profile: Disconnection / Significance trigger, "Am I significant?"
 Breakdown: Quiet Exit (VERD) — quietly decides "I'm done"; stops investing;
            withdraws into a verdict, often invisible to the other person.
 
@@ -55,7 +55,7 @@ TRIGGER_BODY = [
     "On the surface, not one of these qualifies as an event. They are the ordinary friction of daily life, the small gaps between what we hope for and what we receive, the spaces where intention and attention do not quite meet. But for you, they do not stay small. They register as something more than inconvenience. They register as data — the kind that confirms a conclusion you arrived at a long time ago about your own weight in the lives of the people around you.",
     "This is your trigger. The word we use for it is <b>disconnection</b>, and in its deeper form, <b>significance</b>. The two are related in your particular case. Disconnection does not wound you merely because exclusion is unpleasant. It wounds you because exclusion carries a meaning your soul has been translating for years: <i>you were not necessary to this moment. You were here, and you did not leave a mark that needed accounting for.</i> And whether that translation is accurate — we will come to that — the translation itself is automatic, swift, and very old.",
     "Here is what I want you to see before we go further. The sensitivity you carry — to being overlooked, to being unmemorable, to occupying the periphery of someone's attention when you had hoped to occupy the center — is not vanity. It is not thin skin. It is the residue of real moments, usually early in your life, in which the evidence was gathered and a verdict was quietly reached: <i>the people in my world do not carry me the way I need to be carried.</i> And having reached that verdict, the Island made what seemed like the only reasonable decision: <i>I will stop needing them to.</i>",
-    "But that decision — sensible as it was, honest as it was about the way things actually went — was not without cost. The Island became very good at not needing. And the question underneath the trigger — <i>Am I enough to be remembered?</i> — did not go away. It went underground, where it continued pressing and shaping behavior without the light of honest examination. It kept the tally. And now, when the trigger fires, the tally is still there, still running, still building a case that no one can see. Take a breath before we continue, and answer two questions in writing. Your hand will not spin the question the way your head will.",
+    "But that decision — sensible as it was, honest as it was about the way things actually went — was not without cost. The Island became very good at not needing. And the question underneath the trigger — <i>Am I significant?</i> — did not go away. It went underground, where it continued pressing and shaping behavior without the light of honest examination. It kept the tally. And now, when the trigger fires, the tally is still there, still running, still building a case that no one can see. Take a breath before we continue, and answer two questions in writing. Your hand will not spin the question the way your head will.",
 ]
 
 TRIGGER_PROMPTS = [
@@ -65,7 +65,7 @@ TRIGGER_PROMPTS = [
 
 QUESTION_BODY_P1 = [
     "Under every trigger is a question, and the question is older than the trigger. The trigger is the alarm; the question is the wound the alarm has been standing guard over since you were young enough not to have words for it.",
-    "Yours is this: <b>Am I enough to be remembered?</b>",
+    "Yours is this: <b>Am I significant?</b>",
     "It is not the same as <i>Am I loved?</i>, though it sometimes borrows that face. It is not <i>Am I competent?</i>, though you have built real competence in part as a response to it. It is the question of a soul that wants to know whether its passage through the lives of others registers — whether something of it remains when it leaves the room, whether it is thought of in the ordinary middle of days when nothing is being asked of it, whether its name occurs to people not because they need something but simply because it is there, alive in someone's imagination.",
     "Most adults would prefer to believe they outgrew this question. They have not. They have only relocated it. The childhood version was blunt: <i>does anyone think about me when I am not there?</i> The adult version has more sophistication — <i>Does this work matter? Does this relationship account for me?</i> — but it is the same question, asking in the same dark, waiting to see if anyone answers. For you, this question is particularly alive because the Island has made it almost impossible to ask out loud. An Island does not petition. That kind of need would require an exposure the Island finds nearly intolerable — and so the question stays inside, forming and reforming, gaining evidence, losing none.",
 ]
@@ -78,7 +78,7 @@ QUESTION_BODY_P2 = [
 ]
 
 QUESTION_BODY_P3 = [
-    "The gospel anchor for the question you carry is this: you are an <i>Adopted Child</i>, a <i>Saint</i> — set apart by God as his own possession, fully known, fully named, inscribed on the palms of his hands. Ephesians 1:4-5: God <i>chose us in him before the foundation of the world, that we should be holy and blameless before him. In love he predestined us for adoption as sons through Jesus Christ.</i> You were thought of before the world began. The question <i>Am I enough to be remembered?</i> was answered at the foundation of the cosmos, and the answer was not a conditional one.",
+    "The gospel anchor for the question you carry is this: you are an <i>Adopted Child</i>, a <i>Saint</i> — set apart by God as his own possession, fully known, fully named, inscribed on the palms of his hands. Ephesians 1:4-5: God <i>chose us in him before the foundation of the world, that we should be holy and blameless before him. In love he predestined us for adoption as sons through Jesus Christ.</i> You were thought of before the world began. The question <i>Am I significant?</i> was answered at the foundation of the cosmos, and the answer was not a conditional one.",
     "Here is the honest rub. Most Islands do not find it easy to receive this answer — not because they doubt it doctrinally but because receiving it requires a kind of openness that the Island has spent years resisting. To receive is a form of need. To say <i>I am fully known and it is enough</i> is to relinquish the tally, and the Island has been keeping the tally so long that the hand cramps at the thought of setting it down. David did this work not once but continuously. <i>How long, O Lord? Will you forget me forever?</i> (Psalm 13:1) He does not pretend the question is permanently settled. He brings it back. This is not weak faith. It is honest faith — exactly the faith the Island needs permission to practice.",
     "Before we close this section, use the table below. You are not analyzing yourself; you are observing. Use recent events, not ancient ones.",
 ]
@@ -86,7 +86,7 @@ QUESTION_BODY_P3 = [
 ISLE_BODY_P1 = [
     "You have built something. You did not build it in a morning, and you probably did not build it consciously. Over years — and usually over a small handful of specific moments in which the world showed you, clearly and memorably, what it did and did not keep — you constructed a way of being in the world that we are going to call, throughout this walkthrough, <b>the Island</b>.",
     "The Island's strategy is this: <i>if I need very little from the outside world, the outside world cannot disappoint me with what it fails to give.</i> The Island is not antisocial, and is not incapable of genuine warmth. Islands often have real relationships, deep loyalties, people they love with a quiet consistency that does not announce itself. But the Island has learned — at some cost, and with real reason — that the most essential interior material is better handled alone. You process before you share. You reach conclusions before you open them for discussion. You have come to prefer the interior to the shared.",
-    "There is much in Scripture that commends a certain self-possession. Proverbs 29:25: <i>Fear of man will prove to be a snare, but whoever trusts in the Lord is kept safe.</i> The ability to hold your own counsel, to process deeply before speaking — these are genuine gifts, and the Island has them in abundance. But the same self-containment that protects you from disappointment also prevents you from being genuinely known. And the question underneath your trigger — <i>Am I enough to be remembered?</i> — cannot be answered by a soul that has made itself systematically unreadable to the people whose memory it most wants. The moat that keeps people from disappointing you is the same moat that keeps them from knowing you.",
+    "There is much in Scripture that commends a certain self-possession. Proverbs 29:25: <i>Fear of man will prove to be a snare, but whoever trusts in the Lord is kept safe.</i> The ability to hold your own counsel, to process deeply before speaking — these are genuine gifts, and the Island has them in abundance. But the same self-containment that protects you from disappointment also prevents you from being genuinely known. And the question underneath your trigger — <i>Am I significant?</i> — cannot be answered by a soul that has made itself systematically unreadable to the people whose memory it most wants. The moat that keeps people from disappointing you is the same moat that keeps them from knowing you.",
 ]
 
 ISLE_BODY_P2 = [
@@ -141,7 +141,7 @@ VERD_PROMPTS = [
 
 TWO_TOG_BODY = [
     "Now we place them next to each other, because the Island and the Quiet Exit are not two separate problems. They are the same longing, managed by the same strategy. <b>The Island is what your longing does when it has enough hope to maintain the perimeter.</b> The Quiet Exit is what your longing does when the perimeter has been breached too many times and the Island has decided, quietly, that re-investment is no longer worth the cost.",
-    "The pattern, in slow motion, looks like this. <b>(1)</b> The Island moves through the world self-sufficiently, keeping the tally privately. <b>(2)</b> Something lands that crosses the perimeter anyway — a disconnection, a forgetting, a failure of significance. <b>(3)</b> The trigger fires: <i>I was not enough to be remembered here.</i> <b>(4)</b> The core question surfaces: <i>Am I enough to be remembered?</i> <b>(5)</b> The Island retreats further, processes alone. <b>(6)</b> This happens again. And at some point — not in a single dramatic moment but in a quiet interior shift — the Island stops directing its care toward the relationship and begins managing the withdrawal. <b>(7)</b> The Quiet Exit has begun. Because it looks like the Island's normal composure, no one notices. <b>(8)</b> The verdict is rendered privately, in a court where no one else had standing. The story that God had not yet finished is quietly closed.",
+    "The pattern, in slow motion, looks like this. <b>(1)</b> The Island moves through the world self-sufficiently, keeping the tally privately. <b>(2)</b> Something lands that crosses the perimeter anyway — a disconnection, a forgetting, a failure of significance. <b>(3)</b> The trigger fires: <i>I was not significant here.</i> <b>(4)</b> The core question surfaces: <i>Am I significant?</i> <b>(5)</b> The Island retreats further, processes alone. <b>(6)</b> This happens again. And at some point — not in a single dramatic moment but in a quiet interior shift — the Island stops directing its care toward the relationship and begins managing the withdrawal. <b>(7)</b> The Quiet Exit has begun. Because it looks like the Island's normal composure, no one notices. <b>(8)</b> The verdict is rendered privately, in a court where no one else had standing. The story that God had not yet finished is quietly closed.",
     "What breaks this pattern is a different answer to the question. Until the Island receives — not merely affirms doctrinally, but genuinely receives into the interior it has been protecting — that it is already known, already inscribed, already carried by the One who does not forget, the loop has nothing to run against. With that answer received and practiced over time, the Island begins to find the perimeter less necessary. The Quiet Exit begins to reverse. Below is your sequence. Fill in the blanks, then read it aloud. The Island and the Quiet Exit lose some of their power when they hear themselves named.",
 ]
 
@@ -295,7 +295,7 @@ def build(submission) -> bytes:
     story.append(Paragraph("PREPARED FOR YOU", S["CoverProfileLabel"]))
     story.append(Paragraph("The Island &nbsp;\u00b7&nbsp; The Quiet Exit", S["CoverProfileVal"]))
     story.append(Paragraph(
-        "Trigger: Disconnection &nbsp;\u00b7&nbsp; Core Question: Am I enough to be remembered?",
+        "Trigger: Disconnection &nbsp;\u00b7&nbsp; Core Question: Am I significant?",
         S["CoverProfileSub"]))
     story.append(Spacer(1, 1.0 * inch))
     story.append(Paragraph(
@@ -320,7 +320,7 @@ def build(submission) -> bytes:
     # ── SECTION 2: Trigger ──
     section_header(story, S, "SECTION TWO  \u00b7  YOUR TRIGGER",
                    "Disconnection.",
-                   "The moment your nervous system says: I was not enough to be remembered here.")
+                   "The moment your nervous system says: I was not significant here.")
     for p in TRIGGER_BODY:
         story.append(Paragraph(p, S["BodyJ"]))
     story.append(PageBreak())
@@ -335,7 +335,7 @@ def build(submission) -> bytes:
 
     # ── SECTION 3: Core Question ──
     section_header(story, S, "SECTION THREE  \u00b7  YOUR CORE QUESTION",
-                   "Am I enough to be remembered?",
+                   "Am I significant?",
                    "The wound the alarm is guarding.")
     for p in QUESTION_BODY_P1:
         story.append(Paragraph(p, S["BodyJ"]))

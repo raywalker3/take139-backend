@@ -186,7 +186,7 @@ QUESTION_BODY_P1 = [
 
     "It is not the same as <i>Am I competent?</i>, though the Campaign has built"
     " extraordinary competence in part as a way of trying to answer it. It is not"
-    " <i>Am I enough to be remembered?</i>, though the fear of being forgotten is"
+    " <i>Am I significant?</i>, though the fear of being forgotten is"
     " a close cousin. It is something more specific and more vulnerable: the question"
     " of whether you are, as you are — apart from the portfolio, apart from the"
     " campaign, apart from what you have built and demonstrated and achieved — the kind"

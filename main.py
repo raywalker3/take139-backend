@@ -475,7 +475,7 @@ def submit_assessment(payload: SubmissionIn, db: Session = Depends(get_db)):
 
 
 @app.get("/submissions/recent")
-def recent_submissions(limit: int = 20, db: Session = Depends(get_db)):
+def recent_submissions(limit: int = 20, db: Session = Depends(get_db), _admin: None = Depends(admin_auth.require_admin)):
     """Admin-only placeholder — returns recent submissions. Will be auth-gated in Phase 2."""
     # Phase 2 will add counselor authentication. For now, this is open (bad — add basic auth soon).
     rows = (
@@ -2342,7 +2342,7 @@ def imago_submit(payload: ImagoSubmissionIn, db: Session = Depends(get_db)):
 
 
 @app.get("/imago/submissions/recent")
-def imago_recent_submissions(limit: int = 20, db: Session = Depends(get_db)):
+def imago_recent_submissions(limit: int = 20, db: Session = Depends(get_db), _admin: None = Depends(admin_auth.require_admin)):
     """Admin placeholder — will be auth-gated in Phase 2."""
     rows = (
         db.query(ImagoSubmission)

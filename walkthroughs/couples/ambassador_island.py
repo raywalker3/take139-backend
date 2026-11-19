@@ -181,7 +181,7 @@ TWO_SHAPES_BODY = [
 
     "Notice what these two profiles do <i>not</i> share, and notice what they actually share "
     "underneath. You are not asking the same question. {name_amb} is asking <i>am I "
-    "lovable?</i> and {name_isle} is asking <i>am I enough to be remembered?</i> &mdash; "
+    "lovable?</i> and {name_isle} is asking <i>am I significant?</i> &mdash; "
     "two questions that, in a marriage, are easy to mistake for each other and almost "
     "impossible to answer for each other in the way each of you most needs.",
 
@@ -208,7 +208,7 @@ GIFT_TO_ISLE = [
     "attention and carry a place in their concern &mdash; is by its nature a longing that "
     "cannot be satisfied by the Island's own efforts. The Island processes alone. The Island "
     "keeps its interior life private. The Island does not petition. And so the Island's "
-    "question &mdash; <i>am I enough to be remembered?</i> &mdash; goes unanswered for "
+    "question &mdash; <i>am I significant?</i> &mdash; goes unanswered for "
     "years at a time, because the Island has constructed a life in which no one is close "
     "enough to answer it.",
 
@@ -835,7 +835,7 @@ def build(sub_a, sub_b) -> bytes:
             Paragraph(
                 f"<font color='#5e5c72'><b>{name_isle.upper()}</b></font><br/>"
                 "Island &middot; Quiet Exit / Ghost<br/>"
-                "<font size=9 color='#6b6862'>Disconnection &middot; Am I enough to be remembered?</font>",
+                "<font size=9 color='#6b6862'>Disconnection &middot; Am I significant?</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -879,7 +879,7 @@ def build(sub_a, sub_b) -> bytes:
             "",
             _profile_card(S, name_isle, ACCENT_HER,
                           "Disconnection / Significance",
-                          "Am I enough to be remembered?",
+                          "Am I significant?",
                           "The Island", "The Quiet Exit / Ghost"),
         ]],
         colWidths=[

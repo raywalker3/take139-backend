@@ -1,7 +1,7 @@
 """Personal Walkthrough — Performance Campaign + Flood.
 
 Voice: Tim Keller (from Walking with God through Pain and Suffering).
-Profile: Significance trigger, "Am I enough to be remembered?" core question.
+Profile: Significance trigger, "Am I significant?" core question.
 ~25 pages, 9 sections.
 
 Calibration anchor: Walkthrough 33 of 36 — Performance Campaign + Flood.
@@ -157,7 +157,7 @@ QUESTION_BODY_P1 = [
     "Under every trigger is a question, and the question is older than the trigger. The "
     "trigger is the alarm; the question is the wound the alarm has spent years guarding.",
 
-    "Yours is this: <b>Am I enough to be remembered?</b>",
+    "Yours is this: <b>Am I significant?</b>",
 
     "It is not the same as <i>Am I competent?</i>, though you have built extraordinary "
     "competence in part as an attempt to answer it. It is not <i>Am I loved?</i>, though "
@@ -273,7 +273,7 @@ CAMP_BODY_P1 = [
     "has a long r\u00e9sum\u00e9 and, often, a thin sense of who they are off the field. It is "
     "the person whose default response to anxiety is not to plan (that is the Architect) "
     "and not to withdraw (that is the Island), but to <i>produce</i>. When the question "
-    "fires \u2014 <i>am I enough to be remembered?</i> \u2014 the Performance's answer "
+    "fires \u2014 <i>am I significant?</i> \u2014 the Performance's answer "
     "is always the same: <i>let me show you one more thing.</i>",
 ]
 
@@ -574,7 +574,7 @@ TWO_TOG_BODY = [
 
 TWO_TOG_TEMPLATE = (
     "When I am ____________________, my body reads it as being made invisible, "
-    "and the old question surfaces \u2014 <i>am I enough to be remembered?</i> "
+    "and the old question surfaces \u2014 <i>am I significant?</i> "
     "My first move is to ____________________, because the Campaign in me believes "
     "that if I can ____________________, the threat will pass. What I have not "
     "been releasing is ____________________. When the structure finally gives, the "
@@ -715,7 +715,7 @@ PRAYER_BODY = [
 
     "Lord Jesus, when the Flood came and the composure fell and the people in the room "
     "saw the runner exhausted \u2014 you were the one who saw what they saw, and more. "
-    "You saw the question underneath the exhaustion: <i>am I enough to be remembered?</i> "
+    "You saw the question underneath the exhaustion: <i>am I significant?</i> "
     "And you answered it before I could ask it, in a body broken and blood poured out, "
     "engraving the answer on your palms in a way no campaign could have produced and "
     "no Flood can wash away. Remind me, in the days when I am rebuilding the wall, "
@@ -892,7 +892,7 @@ def build(submission) -> bytes:
     story.append(Paragraph(
         "The Performance Campaign \u00a0\u00b7\u00a0 The Flood", S["CoverProfileVal"]))
     story.append(Paragraph(
-        "Trigger: Significance \u00a0\u00b7\u00a0 Core Question: Am I enough to be remembered?",
+        "Trigger: Significance \u00a0\u00b7\u00a0 Core Question: Am I significant?",
         S["CoverProfileSub"]))
     story.append(Spacer(1, 1.0 * inch))
     story.append(Paragraph(
@@ -937,7 +937,7 @@ def build(submission) -> bytes:
 
     # \u2500\u2500 SECTION 3: Core Question \u2500\u2500
     section_header(story, S, "SECTION THREE  \u00b7  YOUR CORE QUESTION",
-                   "Am I enough to be remembered?",
+                   "Am I significant?",
                    "The wound the alarm is guarding.")
     for p in QUESTION_BODY_P1:
         story.append(Paragraph(p, S["BodyJ"]))

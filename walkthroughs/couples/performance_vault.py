@@ -9,7 +9,7 @@ other is a Vault. First names are substituted from the submissions:
     {name_vault} -> the Vault spouse's first name
 
 Spouse A (Performance Campaign): runner, achiever; trigger Significance;
-    core question "Am I enough to be remembered?"
+    core question "Am I significant?"
 Spouse B (Vault): curates what is shown; trigger Shame;
     core question "Am I acceptable?"
 
@@ -216,7 +216,7 @@ TWO_SHAPES_BODY = [
     " managing the interior by keeping it precisely filed. The strategies look similar from"
     " outside. They are driven by entirely different fears.",
 
-    "{name_camp}\u2019s question is <i>am I enough to be remembered?</i> \u2014 which is"
+    "{name_camp}\u2019s question is <i>am I significant?</i> \u2014 which is"
     " answered, in the Campaign\u2019s grammar, by producing something that cannot be ignored."
     " {name_vault}\u2019s question is <i>am I acceptable?</i> \u2014 which is answered, in"
     " the Vault\u2019s grammar, by showing only what has been prepared and keeping the rest"
@@ -327,7 +327,7 @@ COLLISION = [
     "Now we come to the small repeating rock. It will be familiar to both of you, even if"
     " you have never had quite these words for it.",
 
-    "{name_camp}\u2019s core question is <i>am I enough to be remembered?</i> The way the"
+    "{name_camp}\u2019s core question is <i>am I significant?</i> The way the"
     " Campaign answers this question is by producing \u2014 by building something visible and"
     " impressive that cannot be ignored. When the question fires, {name_camp}\u2019s first"
     " move is to demonstrate: to accomplish something, to name an achievement, to make sure"
@@ -806,7 +806,7 @@ def build(sub_a, sub_b) -> bytes:
             Paragraph(
                 f"<font color='#8a4a2c'><b>{name_camp.upper()}</b></font><br/>"
                 "Performance Campaign &middot; Attorney<br/>"
-                "<font size=9 color='#6b6862'>Significance &middot; Am I enough to be remembered?</font>",
+                "<font size=9 color='#6b6862'>Significance &middot; Am I significant?</font>",
                 ParagraphStyle("c1", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
             Paragraph(
@@ -856,7 +856,7 @@ def build(sub_a, sub_b) -> bytes:
     side_by_side = Table(
         [[
             _profile_card(S, name_camp, ACCENT, "Significance",
-                          "Am I enough to be remembered?",
+                          "Am I significant?",
                           "The Performance Campaign", "The Attorney"),
             "",
             _profile_card(S, name_vault, ACCENT_HER, "Shame", "Am I acceptable?",

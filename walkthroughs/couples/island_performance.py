@@ -9,9 +9,9 @@ other is a Performance Campaign. First names are substituted from the submission
     {name_camp}  -> the Performance Campaign spouse's first name
 
 Spouse A (Island): self-contained; trigger Disconnection or Significance;
-    core question "Am I enough to be remembered?"
+    core question "Am I significant?"
 Spouse B (Performance Campaign): runner, achiever; trigger Significance;
-    core question "Am I enough to be remembered?"
+    core question "Am I significant?"
 
 The key pastoral dynamic: both spouses carry the same core question but answer
 it with opposite strategies. The Island answers by asking nothing of the world
@@ -153,7 +153,7 @@ OPENING = [
     "Both of you are asking a version of the same question. You have been asking it since"
     " childhood, from inside very different kinds of lives, with very different habits and"
     " very different ways of protecting yourselves from the worst possible answer. The"
-    " question is this: <i>Am I enough to be remembered?</i> {name_isle} has answered that"
+    " question is this: <i>Am I significant?</i> {name_isle} has answered that"
     " question by building an Island \u2014 by needing very little from the outside world,"
     " so that the world\u2019s failure to give it cannot register as a verdict. {name_camp}"
     " has answered the same question by building a Campaign \u2014 by producing, achieving,"
@@ -234,7 +234,7 @@ GIFT_TO_ISLE = [
     "The Island\u2019s deepest wound is the suspicion that its interior life is not worth"
     " another person\u2019s sustained attention. The Island has learned, over years and"
     " through specific evidence, that needing to be remembered is a liability \u2014 that"
-    " the safest response to the question <i>am I enough to be remembered?</i> is to need"
+    " the safest response to the question <i>am I significant?</i> is to need"
     " as little remembering as possible. So the Island has built a life that does not"
     " visibly depend on anyone else\u2019s memory. It processes alone. It carries its"
     " interior alone. It has, in the most practical sense, made itself harder to forget"
@@ -325,7 +325,7 @@ COLLISION = [
     "Now we come to the small repeating rock. It will be familiar to both of you, even"
     " if you have never put a name on what makes it so reliably painful.",
 
-    "Both of you are asking <i>am I enough to be remembered?</i> The gospel answer to"
+    "Both of you are asking <i>am I significant?</i> The gospel answer to"
     " that question is the same for both of you: you are enough because you were chosen"
     " before the foundation of the world, not because of what you produced or how"
     " self-sufficiently you managed. Paul writes in Ephesians 1:4 that God \u201cchose us"
@@ -559,7 +559,7 @@ PRAYER = [
 
     "Teach {name_isle} that receiving is not exposure. That letting {name_camp} in on"
     " the interior is not the same as needing in a way that sets up disappointment."
-    " That the question \u2014 <i>am I enough to be remembered?</i> \u2014 can be"
+    " That the question \u2014 <i>am I significant?</i> \u2014 can be"
     " answered by a soul that allows itself to be known. Teach {name_camp} that"
     " producing nothing is not the same as being forgotten. That being quietly present,"
     " in the Island\u2019s register, is its own kind of love \u2014 the kind that does"
@@ -758,13 +758,13 @@ def build(sub_a, sub_b) -> bytes:
             Paragraph(
                 f"<font color='#4f6b5e'><b>{name_isle.upper()}</b></font><br/>"
                 "Island &middot; Ghost<br/>"
-                "<font size=9 color='#6b6862'>Disconnection &middot; Am I enough to be remembered?</font>",
+                "<font size=9 color='#6b6862'>Disconnection &middot; Am I significant?</font>",
                 ParagraphStyle("c1", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
             Paragraph(
                 f"<font color='#8a4a2c'><b>{name_camp.upper()}</b></font><br/>"
                 "Performance Campaign &middot; Plea<br/>"
-                "<font size=9 color='#6b6862'>Significance &middot; Am I enough to be remembered?</font>",
+                "<font size=9 color='#6b6862'>Significance &middot; Am I significant?</font>",
                 ParagraphStyle("c2", fontName="Inter", fontSize=10.5, leading=15,
                                textColor=INK, alignment=TA_CENTER)),
         ]],
@@ -804,11 +804,11 @@ def build(sub_a, sub_b) -> bytes:
     side_by_side = Table(
         [[
             _profile_card(S, name_isle, ACCENT, "Disconnection / Significance",
-                          "Am I enough to be remembered?",
+                          "Am I significant?",
                           "The Island", "The Ghost"),
             "",
             _profile_card(S, name_camp, ACCENT_HER, "Significance",
-                          "Am I enough to be remembered?",
+                          "Am I significant?",
                           "The Performance Campaign", "The Plea"),
         ]],
         colWidths=[

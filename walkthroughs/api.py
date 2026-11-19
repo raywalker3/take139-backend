@@ -92,14 +92,16 @@ def _hydrate_submission_name(submission, db=None) -> None:
 # perfectly valid combination (e.g. ISLE+COURT) gets a generic stub instead of
 # their real walkthrough — AND the email never sends, because PDF generation
 # is upstream of the email send block in /submit.
+# Submissions store the frontend breakdown codes, where DISAP is the Ghost
+# and GHOST is the Mask. The registry is keyed by name, so translate here.
 _BREAKDOWN_ALIAS = {
-    "COURT": "ATTY",   # Courtroom → Attorney (canonical registry key)
-    "DISAP": "GHOST",  # Disappear → Ghost
-    "REM":   "VERD",   # Remember-everything → Verdict-rendering
+    "COURT": "ATTY",   # The Attorney
+    "DISAP": "GHOST",  # The Ghost
+    "GHOST": "MASK",   # The Mask (frontend code GHOST = Mask)
+    "REM":   "VERD",   # legacy
 }
 _MECHANISM_ALIAS = {
-    "CAMP":  "ADPT",   # Campsite → Adapter (legacy code, just in case)
-    "PERF":  "AMB",    # Performance → Ambassador (legacy code, just in case)
+    "PERF": "CAMP",   # legacy code for The Performance
 }
 
 
